@@ -3,10 +3,12 @@
 		"build": "eleventy",
 		"package": "node scripts/package.js",
 		"dev": "eleventy --watch",
-		"lint": "npm-run-all2 lint:*",
+		"clean": "node scripts/clean.js",
+		"release": "npm-run-all --continue-on-error clean build \"package -- {@}\" --",
+		"lint": "npm-run-all --continue-on-error lint:*",
+		"lint:editorconfig": "editorconfig-checker",
 		"lint:css": "stylelint 'src/**/*.css'",
-		"lint:ts": "tsc --noEmit",
-		"lint:editorconfig": "editorconfig-checker"
+		"lint:ts": "tsc --noEmit"
 	},
 	"type": "module",
 	"devDependencies": {

@@ -116,6 +116,7 @@ async function eleventySetup(eleventyConfig){
 			await viteBuild({
 				build: {
 					emptyOutDir: false, // Keep Eleventy passthroughed files
+					minify: false, // Disable minification for potential faster reviews
 					rollupOptions: {
 						input: viteInput,
 						output: {
