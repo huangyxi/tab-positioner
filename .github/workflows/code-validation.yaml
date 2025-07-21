@@ -55,13 +55,13 @@ jobs:
       run: npm ci
     - name: Build project
       run: |
-        npm run build -- --output ${OUTDIR}
+        npm run build -- --output ${{ vars.OUTDIR }}
     - name: Package extension
       continue-on-error: true
       run: |
-        npm run package -- --verbose --output ${EXTENSION_FILENAME} ${OUTDIR}
+        npm run package -- --verbose --output ${{ vars.EXTENSION_FILENAME }} ${{ vars.OUTDIR }}
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ env.EXTENSION_FILENAME }}
-        path: ${{ env.OUTDIR }}
+        name: ${{ vars.EXTENSION_FILENAME }}
+        path: ${{ vars.OUTDIR }}
