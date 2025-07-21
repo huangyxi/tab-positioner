@@ -30,10 +30,10 @@ jobs:
         run: npm run lint
       - name: Build project
         run: |
-          npm run build -- --output ${{ env.OUTDIR }}
+          npm run build -- --output ${OUTDIR}
       - name: Package extension
         run: |
-          npm run package -- --verbose --output ${ env.EXTENSION_FILENAME } ${{ env.OUTDIR }}
+          npm run package -- --verbose --output ${EXTENSION_FILENAME} ${OUTDIR}
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -43,5 +43,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           draft: true
+          generate_release_notes: true
           files: |
             ${{ env.EXTENSION_FILENAME }}
