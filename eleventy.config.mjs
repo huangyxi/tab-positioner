@@ -7,6 +7,9 @@ import { jsxToString } from 'jsx-async-runtime';
 import sharp from 'sharp';
 // import EleventyVitePlugin from '@11ty/eleventy-plugin-vite';
 import { build as viteBuild } from 'vite';
+import banner from 'vite-plugin-banner';
+
+import manifest from './manifest.json' with { type: "json" };
 
 const execAsync = promisify(exec);
 
@@ -23,11 +26,11 @@ async function getGitInfo(logger) {
 			type: 'warn',
 		})
 	}
-	let version_name = version + '-unknown';
+	let version_name = 'v' + version + '-unknown';
 	try {
 		const { stdout } = await execAsync('git rev-parse HEAD');
 		const commit = stdout.trim();
-		version_name = version + '-' + commit.slice(0, 8);
+		version_name = 'v' + version + '-' + commit.slice(0, 8);
 	} catch (error) {
 		logger.logWithOptions({
 			prefix: '[GitInfo]',
@@ -50,7 +53,6 @@ async function eleventySetup(eleventyConfig){
 	eleventyConfig.addPassthroughCopy('./_locales/');
 	// eleventyConfig.addPassthroughCopy('**/*.css'); // Handled by Vite
 	const svgPath = './icon.svg';
-	const manifestPath = './manifest.json';
 	const iconSizes = [16, 32, 48, 128];
 	const { version, version_name } = await getGitInfo(logger);
 	const viteInput = {
@@ -91,7 +93,6 @@ async function eleventySetup(eleventyConfig){
 			await sharp(svgPath).resize(size, size).png().toFile(outputPath);
 			icons[size] = outputName;
 		}
-		const manifest = JSON.parse(await fs.readFile(manifestPath, 'utf8'));
 		const manifestOutputPath = path.join(outDir(), 'manifest.json');
 		manifest.icons = icons;
 		manifest.version = version;
@@ -126,11 +127,18 @@ async function eleventySetup(eleventyConfig){
 							entryFileNames: '[name].js',
 							assetFileNames: '[name][extname]',
 							chunkFileNames: 'asset-[hash].js',
-							banner: `/* MIT License. github.com/huangyxi/tab-positioner */\n`,
 						},
 					},
 					outDir: outDir(),
 				},
+				plugins: [
+					banner(
+						`/**`+
+						`\n * MIT License. ${manifest.homepage_url}` +
+						`\n * ${manifest.name} ${version_name}` +
+						`\n */`
+					),
+				],
 			});
 			logger.logWithOptions({
 				prefix: '[Vite]',

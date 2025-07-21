@@ -3,7 +3,7 @@
 		"module": "esnext",
 		"target": "esnext",
 		"moduleResolution": "bundler",
-		"resolveJsonModule": true,
+		// "resolveJsonModule": true,
 		"outDir": "dist",
 		"rootDir": ".",
 		"jsx": "react-jsx",

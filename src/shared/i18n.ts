@@ -1,4 +1,4 @@
-import messages from '../../_locales/en/messages.json';
+import messages from '../../_locales/en/messages.json' with { type: 'json' };
 
 export type I18nKey = keyof typeof messages;
 
