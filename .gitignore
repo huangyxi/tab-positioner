@@ -1,0 +1,17 @@
+# Project-specific files
+dist/
+*.zip
+*.png
+
+# Node.js dependencies
+node_modules/
+
+# Mac system files
+.DS_Store
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.swp

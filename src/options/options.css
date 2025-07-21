@@ -1,0 +1,216 @@
+/* Processed by Vite in Eleventy */
+
+/* ==============================================
+	Material Design 3 Color & Style System
+============================================== */
+:root {
+	/* Light Theme Color Roles */
+	--md-sys-color-primary: #6750a4;
+	--md-sys-color-on-primary: #ffffff;
+	--md-sys-color-background: #fdf7ff;
+	--md-sys-color-surface: var(--md-sys-color-background);
+	--md-sys-color-surface-variant: #e7e0ec;
+	--md-sys-color-on-surface: #1d1b20;
+	--md-sys-color-on-surface-variant: #49454f;
+	--md-sys-color-outline: #79747e;
+	--md-sys-color-outline-variant: #cac4d0;
+	--md-sys-color-shadow: #000000;
+	--md-sys-color-surface-container-highest: #e6e0e9;
+
+	--background-image-select: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath fill='%2349454F' d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		/* Dark Theme Color Roles */
+		--md-sys-color-primary: #d0bcff;
+		--md-sys-color-on-primary: #381e72;
+		--md-sys-color-background: #141218;
+		--md-sys-color-surface: var(--md-sys-color-background);
+		--md-sys-color-on-surface: #e6e1e5;
+		--md-sys-color-on-surface-variant: #cac4d0;
+		--md-sys-color-outline: #938f99;
+		--md-sys-color-outline-variant: #49454f;
+		--md-sys-color-surface-container-highest: #36343b;
+
+		--background-image-select: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath fill='%23CAC4D0' d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+	}
+}
+
+/* ==============================================
+	General Body and Layout
+============================================== */
+body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+	background-color: var(--md-sys-color-background);
+	color: var(--md-sys-color-on-surface);
+	margin: 0;
+	width: 350px;
+}
+
+.container {
+	display: flex;
+	flex-direction: column;
+	padding: 16px;
+	gap: 16px;
+}
+
+header {
+	padding: 8px 0;
+}
+
+main {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+footer {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 16px;
+	margin-top: 8px;
+}
+
+/* ==============================================
+	Typography (MD3 Type Scale)
+============================================== */
+h1 {
+	font-size: 22px;
+	font-weight: 400;
+	line-height: 28px;
+	margin: 0;
+	color: var(--md-sys-color-on-surface);
+	text-align: center;
+}
+
+label {
+	font-size: 12px;
+	font-weight: 400;
+	line-height: 16px;
+}
+
+select {
+	font-size: 16px;
+	font-weight: 400;
+	line-height: 24px;
+}
+
+/* ==============================================
+	Select Field
+============================================== */
+
+.select-group {
+	position: relative;
+}
+
+.select-group label {
+	position: absolute;
+	top: -8px;
+	left: 12px;
+	padding: 0 4px;
+	background-color: var(--md-sys-color-background);
+	color: var(--md-sys-color-on-surface-variant);
+}
+
+select {
+	appearance: none;
+	width: 100%;
+	box-sizing: border-box;
+
+	/* Make space for reset button */
+	padding: 15px 52px 15px 12px;
+	outline: 1px solid var(--md-sys-color-outline);
+	border-radius: 4px;
+	background-color: transparent;
+	color: var(--md-sys-color-on-surface);
+	cursor: pointer;
+	background-image: var(--background-image-select);
+	background-repeat: no-repeat;
+	background-position: right 12px center;
+	background-size: 1.5em;
+	transition: outline 0.1s;
+}
+
+select:hover {
+	outline-width: 2px;
+}
+
+select:focus {
+	outline-width: 2px;
+	outline-color: var(--md-sys-color-primary);
+}
+
+select:focus+label {
+	color: var(--md-sys-color-primary);
+}
+
+/* ==============================================
+	Buttons
+============================================== */
+button.reset {
+	position: absolute;
+	top: 50%;
+	right: 44px;
+	transform: translateY(-50%);
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background-color: transparent;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: background-color 0.2s;
+}
+
+button.reset::before {
+	content: '';
+	display: block;
+	width: 20px;
+	height: 20px;
+	mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath d='M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z'/%3e%3c/svg%3e") no-repeat center;
+
+	/* minimum_chrome_version: 120 */
+	mask-size: 20px;
+	background-color: var(--md-sys-color-on-surface-variant);
+	transition: background-color 0.2s;
+}
+
+button.reset:hover {
+	background-color: var(--md-sys-color-surface-container-highest);
+}
+
+button.reset-all {
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 20px;
+	padding: 10px 24px;
+	border-radius: 100px;
+	border: 1px solid var(--md-sys-color-outline);
+	color: var(--md-sys-color-primary);
+	background-color: transparent;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+button.reset-all:hover {
+	background-color: var(--md-sys-color-surface-container-highest);
+}
+
+/* ==============================================
+	Status Message
+============================================== */
+div.status {
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 20px;
+	text-align: center;
+	color: var(--md-sys-color-primary);
+	height: 20px;
+	opacity: 0;
+	transition: opacity 0.5s;
+}

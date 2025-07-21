@@ -1,0 +1,27 @@
+{
+	"scripts": {
+		"build": "eleventy",
+		"package": "node scripts/package.js",
+		"dev": "eleventy --watch",
+		"lint": "npm-run-all2 lint:*",
+		"lint:css": "stylelint 'src/**/*.css'",
+		"lint:ts": "tsc --noEmit",
+		"lint:editorconfig": "editorconfig-checker"
+	},
+	"type": "module",
+	"devDependencies": {
+		"@11ty/eleventy": "^3.1.2",
+		"@types/react": "^19.1.8",
+		"@zip.js/zip.js": "^2.7.64",
+		"chrome-types": "^0.1.361",
+		"editorconfig-checker": "^6.1.0",
+		"jsx-async-runtime": "^1.0.3",
+		"npm-run-all2": "^8.0.4",
+		"sharp": "^0.34.3",
+		"stylelint": "^16.22.0",
+		"stylelint-config-standard": "^38.0.0",
+		"tsx": "^4.20.3",
+		"typescript": "^5.8.3",
+		"vite": "^7.0.5"
+	}
+}

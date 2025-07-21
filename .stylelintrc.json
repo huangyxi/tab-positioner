@@ -1,0 +1,9 @@
+{
+	"extends": "stylelint-config-standard",
+	"rules": {
+		"color-hex-length": null,
+		"custom-property-empty-line-before": null,
+		"no-duplicate-selectors": null,
+		"property-no-vendor-prefix": null
+	}
+}

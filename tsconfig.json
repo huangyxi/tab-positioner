@@ -1,0 +1,23 @@
+{
+	"compilerOptions": {
+		"module": "esnext",
+		"target": "esnext",
+		"moduleResolution": "bundler",
+		"resolveJsonModule": true,
+		"outDir": "dist",
+		"rootDir": ".",
+		"jsx": "react-jsx",
+		"jsxImportSource": "jsx-async-runtime",
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"strict": true,
+	},
+	"include": [
+		"src/",
+		"_locales/**/messages.json",
+	],
+	"exclude": [
+		"node_modules",
+	],
+}

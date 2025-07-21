@@ -1,0 +1,82 @@
+{
+	"extensionName": {
+		"message": "Tab Positioner",
+		"description": "The name of the extension."
+	},
+	"extensionDescription": {
+		"message": "Control where new tabs open and what happens after closing a tab.",
+		"description": "The description of the extension."
+	},
+	"settingsTitle": {
+		"message": "Tab Positioner Settings",
+		"description": "Title for the options page."
+	},
+	"statusSaved": {
+		"message": "Settings saved successfully.",
+		"description": "Status message shown when settings are saved."
+	},
+	"resetSettingTooltip": {
+		"message": "Reset to Default",
+		"description": "Tooltip for the reset button beside each setting."
+	},
+	"resetAllButton": {
+		"message": "Reset All to Default",
+		"description": "Button label to reset all settings to their default values."
+	},
+	"newTabPositionLabel": {
+		"message": "When opening the New Tab page:",
+		"description": "Label for the new chrome://newtab position setting."
+	},
+	"foregroundLinkPositionLabel": {
+		"message": "When opening a link in the foreground:",
+		"description": "Label for the foreground link position setting."
+	},
+	"backgroundTabPositionLabel": {
+		"message": "When opening a link in the background:",
+		"description": "Label for the background link position setting."
+	},
+	"afterCloseActivationLabel": {
+		"message": "After closing a tab, switch to:",
+		"description": "Label for the post-close tab activation behavior."
+	},
+	"optionDefault": {
+		"message": "Use Chrome Default",
+		"description": "Option to use Chrome’s default behavior."
+	},
+	"optionInsertLeft": {
+		"message": "Left of Current Tab",
+		"description": "Option to open the tab to the left of the current one."
+	},
+	"optionInsertRight": {
+		"message": "Right of Current Tab",
+		"description": "Option to open the tab to the right of the current one."
+	},
+	"optionInsertFirst": {
+		"message": "At the First",
+		"description": "Option to open the tab as the first in the window."
+	},
+	"optionInsertLast": {
+		"message": "At the Last",
+		"description": "Option to open the tab as the last in the window."
+	},
+	"optionActivationLeft": {
+		"message": "Tab to the Left",
+		"description": "Option to switch to the left tab after closing."
+	},
+	"optionActivationRight": {
+		"message": "Tab to the Right",
+		"description": "Option to switch to the right tab after closing."
+	},
+	"optionActivationFirst": {
+		"message": "First Tab",
+		"description": "Option to switch to the first tab of the window after closing."
+	},
+	"optionActivationLast": {
+		"message": "Last Tab",
+		"description": "Option to switch to the last tab of the window after closing."
+	},
+	"optionActivationHistory": {
+		"message": "Previously Active Tab",
+		"description": "Option to return to the tab that was active before the closed one."
+	}
+}
