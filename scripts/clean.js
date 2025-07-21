@@ -1,12 +1,43 @@
 #!/usr/bin/env node
 
 import fs from 'node:fs/promises';
+import path from 'node:path';
 import Eleventy from '@11ty/eleventy';
 
-async function main() {
+const SCRIPT_FILENAME = path.basename(process.argv[1]);
+
+export async function main(argv) {
+	let output;
+	while (argv.length) {
+		const arg = argv.shift();
+		switch (arg) {
+			case '--help':
+			case '-h':
+				console.log(`Usage: node ${SCRIPT_FILENAME} [options]`);
+				console.log(`       npm run clean -- [options]`);
+				console.log(`\nOptions:` +
+					'\n  -h, --help      Show this help message' +
+					'\n  --output <path> Specify output directory to clean'
+				);
+				console.log(`\nDefaults:` +
+					`\n  output: Defined in 'eleventy.config.mjs'`)
+				process.exit(0);
+			case '--output':
+				output = argv.shift();
+				// Commented to use the same logic as Eleventy where output can be undefined
+				// if (!output) {
+				// 	console.error('Missing output path after --output');
+				// 	process.exit(1);
+				// }
+				break;
+			default:
+				console.error(`Unknown argument: ${arg}`);
+				process.exit(1);
+		}
+	}
 	const eleventy = new Eleventy(
 		undefined,
-		undefined,
+		output || undefined,
 		{
 			dryRun: true,
 		}
@@ -18,7 +49,7 @@ async function main() {
 		process.exit(1);
 	}
 	const eleventyConfig = eleventy.eleventyConfig;
-	const outDir = eleventyConfig.directories.output;
+	const outDir = output || eleventyConfig.directories.output;
 	await fs.rm(outDir, { force: true, recursive: true });
 	eleventyConfig.logger.logWithOptions({
 		prefix: '[Clean]',
@@ -27,4 +58,4 @@ async function main() {
 	});
 }
 
-main()
+main(process.argv.slice(2));

@@ -21,25 +21,27 @@ jobs:
         with:
           path: |
             ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-npm-
       - name: Install dependencies
         run: npm ci
       - name: Lint files
         run: npm run lint
       - name: Build project
         run: |
-          npm run release -- --verbose --output chrome-extension.zip
+          npm run build -- --output ${{ env.OUTDIR }}
+      - name: Package extension
+        run: |
+          npm run package -- --verbose --output ${ env.EXTENSION_FILENAME } ${{ env.OUTDIR }}
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: artifact
-          path: chrome-extension.zip
+          name: ${{ env.EXTENSION_FILENAME }}
+          path: ${{ env.OUTDIR }}
       - name: Release to GitHub
         uses: softprops/action-gh-release@v2
-        drafts: true
         with:
-          files: chrome-extension.zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          draft: true
+          files: |
+            ${{ env.EXTENSION_FILENAME }}

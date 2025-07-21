@@ -41,13 +41,16 @@ async function getGitInfo(logger) {
 /** @param {import('@11ty/eleventy/UserConfig').default} eleventyConfig */
 async function eleventySetup(eleventyConfig){
 	const logger = eleventyConfig.logger;
-	const outDir = './dist'; //path.resolve('./dist')
-	eleventyConfig.setOutputDirectory(outDir);
+	eleventyConfig.setOutputDirectory('./dist');
+	// Get output directory only after internal merging
+	const outDir = () => {
+		return eleventyConfig.directories.output;
+	};
 	eleventyConfig.setInputDirectory('./src/options'); // Flatten output directory
 	eleventyConfig.addPassthroughCopy('./_locales/');
 	// eleventyConfig.addPassthroughCopy('**/*.css'); // Handled by Vite
 	const svgPath = './icon.svg';
-	const manifestPath = path.resolve('./manifest.json');
+	const manifestPath = './manifest.json';
 	const iconSizes = [16, 32, 48, 128];
 	const { version, version_name } = await getGitInfo(logger);
 	const viteInput = {
@@ -81,15 +84,15 @@ async function eleventySetup(eleventyConfig){
 			return;
 		}
 		const icons = {};
-		await fs.mkdir(outDir, { recursive: true });
+		await fs.mkdir(outDir(), { recursive: true });
 		for (const size of iconSizes) {
 			const outputName = `icon-${size}.png`;
-			const outputPath = path.join(outDir, outputName)
+			const outputPath = path.join(outDir(), outputName)
 			await sharp(svgPath).resize(size, size).png().toFile(outputPath);
 			icons[size] = outputName;
 		}
 		const manifest = JSON.parse(await fs.readFile(manifestPath, 'utf8'));
-		const manifestOutputPath = path.join(outDir, 'manifest.json');
+		const manifestOutputPath = path.join(outDir(), 'manifest.json');
 		manifest.icons = icons;
 		manifest.version = version;
 		manifest.version_name = version_name;
@@ -123,14 +126,15 @@ async function eleventySetup(eleventyConfig){
 							entryFileNames: '[name].js',
 							assetFileNames: '[name][extname]',
 							chunkFileNames: 'asset-[hash].js',
+							banner: `/* MIT License. github.com/huangyxi/tab-positioner */\n`,
 						},
 					},
-					outDir: outDir, // path.resolve(".", eleventyConfig.directories.output),
+					outDir: outDir(),
 				},
 			});
 			logger.logWithOptions({
 				prefix: '[Vite]',
-				message: `Built assets with Vite to ${outDir}`,
+				message: `Built assets with Vite to ${outDir()}`,
 				type: 'info',
 			});
 		} catch (error) {

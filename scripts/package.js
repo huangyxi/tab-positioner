@@ -10,7 +10,7 @@ const SKIP_FILES = [
 	/^\..*/,
 	/.*\.map$/,
 ];
-const SCRIPT_NAME = path.basename(process.argv[1]);
+const SCRIPT_FILENAME = path.basename(process.argv[1]);
 
 function toRelPath(p) {
 	// cwd is the root of the extension project if running by `npm run`
@@ -28,7 +28,7 @@ function parseArgs(argv) {
 		switch (arg) {
 			case '--help':
 			case '-h':
-				console.log(`Usage: node ${SCRIPT_NAME} [options] <inputs>...`);
+				console.log(`Usage: node ${SCRIPT_FILENAME} [options] <inputs>...`);
 				console.log(`       npm run package -- [options] <inputs>...`);
 				console.log(
 					`\nArguments:` +
@@ -123,8 +123,8 @@ async function zipInputs(inputPaths, outputZipPath, verbose = false) {
 	return ret;
 }
 
-async function main() {
-	const { inputPaths, outputPath, verbose } = parseArgs(process.argv.slice(2));
+export async function main(argv) {
+	const { inputPaths, outputPath, verbose } = parseArgs(argv);
 	try {
 		const resolvedInputs = inputPaths.map(p => path.resolve(p));
 		const resolvedOutput = path.resolve(outputPath);
@@ -147,4 +147,4 @@ async function main() {
 	}
 }
 
-main();
+main(process.argv.slice(2));

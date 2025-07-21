@@ -24,9 +24,9 @@ jobs:
       with:
         path: |
           ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+        key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
         restore-keys: |
-          ${{ runner.os }}-node-
+          ${{ runner.os }}-npm-
     - name: Install dependencies
       run: npm ci
     - name: Lint files
@@ -48,20 +48,20 @@ jobs:
       with:
         path: |
           ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+        key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
         restore-keys: |
-          ${{ runner.os }}-node-
+          ${{ runner.os }}-npm-
     - name: Install dependencies
       run: npm ci
     - name: Build project
       run: |
-        npm run build
+        npm run build -- --output ${{ env.OUTDIR }}
     - name: Package extension
       continue-on-error: true
       run: |
-        npm run package -- --verbose --output chrome-extension.zip
+        npm run package -- --verbose --output ${{ env.EXTENSION_FILENAME }} ${{ env.OUTDIR }}
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: artifact
-        path: chrome-extension.zip
+        name: ${{ env.EXTENSION_FILENAME }}
+        path: ${{ env.OUTDIR }}
