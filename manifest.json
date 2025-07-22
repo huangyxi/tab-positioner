@@ -7,8 +7,7 @@
 	"default_locale": "en",
 	"version": "0.1.0",
 	"permissions": [
-		"storage",
-		"tabs"
+		"storage"
 	],
 	"background": {
 		"service_worker": "background.js",
@@ -17,5 +16,6 @@
 	"action": {
 		"default_popup": "options.html"
 	},
-	"options_page": "options.html"
+	"options_page": "options.html",
+	"key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAw/UQSTwBdIcRcA+DJCv7wvUXBTDJ9vcXtsrNcdCTgUuP2qeL8PCi3M0oezkclcu1E+h+grYAU+ijQTvKMcHf4Pq63A08KOnSjY6bWC6aXp+XbOjOSwTVVAb3k0em3HHeiU9hVCsrsouufx3ipZwaU56FQMAyu99mzWLRAHp8+2UR8w+bxHJ1cAjaxoyBXNK7qOCK05i9pAP4h+sRIvkJyFwaoEfCCbyi6C4ZThHrmMz0LpwdbRgCAL7qe2FV1kPLI8ddhKBo7ZrGvNx3LnN4SlXaVVfQm2L/yasC0AP5b4qwFSt33IyOJ+peQ0XnU8WY7Bb998Lpn0ty/qGPeZDU8QIDAQAB"
 }

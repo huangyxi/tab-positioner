@@ -13,6 +13,8 @@
 	"type": "module",
 	"devDependencies": {
 		"@11ty/eleventy": "^3.1.2",
+		"@11ty/eleventy-utils": "^2.0.7",
+		"@types/node": "^24.0.15",
 		"@types/react": "^19.1.8",
 		"@zip.js/zip.js": "^2.7.64",
 		"chrome-types": "^0.1.361",
@@ -24,7 +26,6 @@
 		"stylelint-config-standard": "^38.0.0",
 		"tsx": "^4.20.3",
 		"typescript": "^5.8.3",
-		"vite": "^7.0.5",
-		"vite-plugin-banner": "^0.8.1"
+		"vite": "^7.0.5"
 	}
 }

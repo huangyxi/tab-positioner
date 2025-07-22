@@ -1,3 +1,5 @@
+import type chrome from 'chrome-types';
+
 declare global {
-	const chrome: typeof import('chrome-types');
+	const chrome: typeof chrome;
 }
