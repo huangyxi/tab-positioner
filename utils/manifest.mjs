@@ -1,4 +1,3 @@
-
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import { Merge } from "@11ty/eleventy-utils";
@@ -27,6 +26,7 @@ const DEFAULT_OPTIONS = {
 };
 
 class ManifestPlugin {
+	static LOGGER_PREFIX = '[Manifest]';
 
 	/** @type {import("@11ty/eleventy/src/Util/ProjectDirectories.js").default} */
 	directories;
@@ -66,7 +66,7 @@ class ManifestPlugin {
 		const manifestOutputPath = path.join(outDir, this.options.manifestOutPath);
 		await fs.writeFile(manifestOutputPath, JSON.stringify(manifest, null, '\t'), 'utf8');
 		this.logger.logWithOptions({
-			prefix: '[Manifest]',
+			prefix: ManifestPlugin.LOGGER_PREFIX,
 			message: `Icons and ${this.options.manifestOutPath} generated ` +
 			`with version ${this.options.version} (${this.options.version_name})`,
 			type: 'info',

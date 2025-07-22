@@ -1,5 +1,3 @@
-'use strict';
-
 import 'tsx/esm';
 import { jsxToString } from 'jsx-async-runtime';
 

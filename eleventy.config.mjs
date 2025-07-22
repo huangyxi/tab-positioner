@@ -1,5 +1,3 @@
-'use strict';
-
 import { getGitInfo } from './utils/gitinfo.mjs';
 import { tsxCompile } from './utils/tsx.mjs';
 import ManifestPlugin from './utils/manifest.mjs';
@@ -29,6 +27,7 @@ async function eleventySetup(eleventyConfig){
 		version: version,
 		version_name: version_name,
 	});
+	const datetime = new Date();
 	eleventyConfig.addPlugin(VitePlugin, {
 		entries: {
 			'background': './src/background/main.ts',
@@ -39,6 +38,7 @@ async function eleventySetup(eleventyConfig){
 		banner: `/*!`+
 			`\n * MIT License. ${manifest.homepage_url}` +
 			`\n * ${manifest.name} ${version_name}` +
+			`\n * Build date: ${datetime.toISOString()}` +
 			`\n */`,
 	});
 }
