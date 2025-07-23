@@ -21,8 +21,8 @@ export default function OptionsPage() {
 			</head>
 
 			<body>
-
 				<div class="container">
+
 					<header>
 						<h1 {..._a('settingsTitle')}>{_('settingsTitle')}</h1>
 					</header>
@@ -50,8 +50,10 @@ export default function OptionsPage() {
 							{_('resetAllButton')}
 						</button>
 					</footer>
+
 				</div>
 			</body>
+
 		</html>
 	)
 };

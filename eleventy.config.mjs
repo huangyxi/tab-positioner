@@ -13,7 +13,7 @@ async function eleventySetup(eleventyConfig){
 	eleventyConfig.addPassthroughCopy('./_locales/');
 	// eleventyConfig.addPassthroughCopy('**/*.css'); // Handled by Vite
 	eleventyConfig.addWatchTarget('./'); // .gitignore suppresses this
-
+	eleventyConfig.setWatchJavaScriptDependencies(false); // Allow `eleventy --serve` without occurring an error
 	eleventyConfig.addTemplateFormats('tsx');
 	eleventyConfig.addExtension(['tsx'], {
 		key: '11ty.js',
