@@ -24,7 +24,7 @@
 		"src",
 		"utils",
 		"scripts",
-		"_locales/**/messages.json",
+		"_locales/*/messages.json",
 	],
 	"exclude": [
 		"node_modules",

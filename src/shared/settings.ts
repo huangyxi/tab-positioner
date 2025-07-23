@@ -2,51 +2,63 @@ import { I18nKey } from './i18n';
 // import { errorHandler } from './logging';
 
 const DEFAULT_VALUE = 'default';
-type TabCreationPosition = typeof DEFAULT_VALUE
-	| 'left'
-	| 'right'
-	| 'first'
-	| 'last'
+
+export type SettingKey = never
+	// | 'new_tab_position'
+	// | 'foreground_link_position'
+	| 'background_link_position'
+	// | 'after_close_activation'
 	| never;
-type TabActivationPosition = typeof DEFAULT_VALUE
-	| 'left'
-	| 'right'
-	| 'first'
-	| 'last'
-	| 'history'
-	| never;
-type SettingValue = string; // TabCreationPosition | TabActivationPosition;
-
-export interface ExtensionSettings {
-	// new_tab_position: TabCreationPosition;
-	// foreground_link_position: TabCreationPosition;
-	background_link_position: TabCreationPosition;
-	// after_close_activation: TabActivationPosition;
-}
-
-export type SettingKey = keyof ExtensionSettings;
-
-type SettingKeys<T extends ExtensionSettings[keyof ExtensionSettings]> = {
-	[K in keyof ExtensionSettings]: ExtensionSettings[K] extends T ? K : never;
-}[keyof ExtensionSettings];
-
-export type TabCreationPositionKey = SettingKeys<TabCreationPosition>;
-// type TabActivationPositionKey = SettingKeys<TabActivationPosition>;
-
-export const DEFAULT_SETTINGS: ExtensionSettings = {
-	// new_tab_position: DEFAULT_VALUE,
-	// foreground_link_position: DEFAULT_VALUE,
-	background_link_position: DEFAULT_VALUE,
-	// after_close_activation: DEFAULT_VALUE,
-} as const;
 
 interface SettingChoice {
 	i18nKey: I18nKey;
 }
 
-type SettingChoices<T extends SettingValue> = {
+type SettingChoices<T extends string> = {
 	[K in T]: SettingChoice;
 };
+
+type TabCreationPosition = typeof DEFAULT_VALUE
+	| 'before_active'
+	| 'after_active'
+	| 'as_first'
+	| 'as_last'
+	| never;
+const TAB_CREATION_POSITION_CHOICES: SettingChoices<TabCreationPosition> = {
+	[DEFAULT_VALUE]: { i18nKey: 'optionDefault' },
+	before_active: { i18nKey: 'optionCreateBeforeActive' },
+	after_active: { i18nKey: 'optionCreateAfterActive' },
+	as_first: { i18nKey: 'optionCreateAsFirst' },
+	as_last: { i18nKey: 'optionCreateAsLast' },
+} as const;
+
+type TabActivationPosition = typeof DEFAULT_VALUE
+	| never;
+const TAB_ACTIVATION_POSITION_CHOICES: SettingChoices<TabActivationPosition> = {
+	[DEFAULT_VALUE]: { i18nKey: 'optionDefault' },
+	// left: { i18nKey: 'optionActivateBeforeActive' },
+	// right: { i18nKey: 'optionActivateAfterActive' },
+	// first: { i18nKey: 'optionActivateFirst' },
+	// last: { i18nKey: 'optionActivatieLast' },
+	// history: { i18nKey: 'optionActivateHistory' },
+} as const;
+
+type SettingValue = string; // TabCreationPosition | TabActivationPosition;
+
+export const DEFAULT_SETTINGS = {
+	// new_tab_position: DEFAULT_VALUE as TabCreationPosition,
+	// foreground_link_position: DEFAULT_VALUE as TabCreationPosition,
+	background_link_position: DEFAULT_VALUE as TabCreationPosition,
+	// after_close_activation: DEFAULT_VALUE as TabActivationPosition,
+} as const satisfies Record<SettingKey, SettingValue>;
+export type ExtensionSettings = typeof DEFAULT_SETTINGS;
+
+type SettingKeys<T extends ExtensionSettings[SettingKey]> = {
+	[K in SettingKey]: ExtensionSettings[K] extends T ? K : never;
+}[SettingKey];
+
+export type TabCreationPositionKey = SettingKeys<TabCreationPosition>;
+// type TabActivationPositionKey = SettingKeys<TabActivationPosition>;
 
 export type SettingSchemas = {
 	[K in keyof ExtensionSettings]:
@@ -54,23 +66,6 @@ export type SettingSchemas = {
 		choices: SettingChoices<ExtensionSettings[K]>;
 	};
 };
-
-const TAB_CREATION_POSITION_CHOICES: SettingChoices<TabCreationPosition> = {
-	default: { i18nKey: 'optionDefault' },
-	left: { i18nKey: 'optionInsertLeft' },
-	right: { i18nKey: 'optionInsertRight' },
-	first: { i18nKey: 'optionInsertFirst' },
-	last: { i18nKey: 'optionInsertLast' },
-} as const;
-
-const TAB_ACTIVATION_POSITION_CHOICES: SettingChoices<TabActivationPosition> = {
-	default: { i18nKey: 'optionDefault' },
-	left: { i18nKey: 'optionActivationLeft' },
-	right: { i18nKey: 'optionActivationRight' },
-	first: { i18nKey: 'optionActivationFirst' },
-	last: { i18nKey: 'optionActivationLast' },
-	history: { i18nKey: 'optionActivationHistory' },
-} as const;
 
 export const SETTING_SCHEMAS: SettingSchemas = {
 	// new_tab_position: {

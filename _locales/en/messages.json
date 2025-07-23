@@ -41,42 +41,22 @@
 	},
 	"optionDefault": {
 		"message": "Use Chrome Default",
-		"description": "Option to use Chrome’s default behavior."
+		"description": "Option to use Chrome's default behavior."
 	},
-	"optionInsertLeft": {
-		"message": "Left of Current Tab",
-		"description": "Option to open the tab to the left of the current one."
+	"optionCreateBeforeActive": {
+		"message": "Before the Active Tab (Left)",
+		"description": "Option to open the tab before the currently active tab."
 	},
-	"optionInsertRight": {
-		"message": "Right of Current Tab",
-		"description": "Option to open the tab to the right of the current one."
+	"optionCreateAfterActive": {
+		"message": "After the Active Tab (Right)",
+		"description": "Option to open the tab after the currently active tab."
 	},
-	"optionInsertFirst": {
-		"message": "At the First",
+	"optionCreateAsFirst": {
+		"message": "As the First",
 		"description": "Option to open the tab as the first in the window."
 	},
-	"optionInsertLast": {
+	"optionCreateAsLast": {
 		"message": "At the Last",
 		"description": "Option to open the tab as the last in the window."
-	},
-	"optionActivationLeft": {
-		"message": "Tab to the Left",
-		"description": "Option to switch to the left tab after closing."
-	},
-	"optionActivationRight": {
-		"message": "Tab to the Right",
-		"description": "Option to switch to the right tab after closing."
-	},
-	"optionActivationFirst": {
-		"message": "First Tab",
-		"description": "Option to switch to the first tab of the window after closing."
-	},
-	"optionActivationLast": {
-		"message": "Last Tab",
-		"description": "Option to switch to the last tab of the window after closing."
-	},
-	"optionActivationHistory": {
-		"message": "Previously Active Tab",
-		"description": "Option to return to the tab that was active before the closed one."
 	}
 }

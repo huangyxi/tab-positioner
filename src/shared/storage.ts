@@ -20,7 +20,7 @@ export async function getSettings(
 		return DEFAULT_SETTINGS;
 	}
 }
-type SetSettingType<B extends boolean> = B extends true ? Partial<Record<keyof ExtensionSettings, string>> : Partial<ExtensionSettings>;
+
 export async function setSettings(
 	settings: Partial<ExtensionSettings> = DEFAULT_SETTINGS,
 	sanitize: boolean = true,

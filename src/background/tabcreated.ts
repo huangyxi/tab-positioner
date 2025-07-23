@@ -33,16 +33,16 @@ async function createdTabMover(newTab: chrome.tabs.Tab) {
 	// let index = -1; // Default to 'last'
 	let index: number; // Exhaustness checked by `tsc`
 	switch (setting) {
-		case 'left':
+		case 'before_active':
 			index = activeTab.index;
 			break;
-		case 'right':
+		case 'after_active':
 			index = activeTab.index + 1;
 			break;
-		case 'first':
+		case 'as_first':
 			index = 0;
 			break;
-		case 'last':
+		case 'as_last':
 			index = -1;
 			break;
 	}
