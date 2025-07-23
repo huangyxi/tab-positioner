@@ -12,19 +12,25 @@ const SKIP_FILES = [
 ];
 const SCRIPT_FILENAME = path.basename(process.argv[1]);
 
-function toRelPath(p) {
+function toRelPath(p: string): string {
 	// cwd is the root of the extension project if running by `npm run`
 	return path.relative(process.cwd(), p);
 }
 
-function parseArgs(argv) {
-	const args = [...argv];
-	const inputPaths = [];
+function parseArgs(
+	argv: string[]
+): {
+	inputPaths: string[],
+	outputPath: string,
+	verbose: boolean,
+} {
+	const args = [...argv]; // Copy to avoid modifying the original array
+	const inputPaths: string[] = [];
 	let outputPath = DEFAULT_OUTPUT;
 	let verbose = false;
 
 	while (args.length) {
-		const arg = args.shift();
+		const arg = args.shift() as string;
 		switch (arg) {
 			case '--help':
 			case '-h':
@@ -45,7 +51,7 @@ function parseArgs(argv) {
 				process.exit(0);
 			case '--output':
 			case '-o':
-				outputPath = args.shift();
+				outputPath = args.shift() as string;
 				if (!outputPath) throw new Error('Missing output path after --output');
 				break;
 			case '--verbose':
@@ -64,18 +70,27 @@ function parseArgs(argv) {
 	return { inputPaths, outputPath, verbose };
 }
 
+interface WalkDirEntry {
+	absPath: string;
+	relPath: string;
+	skip: boolean;
+}
+
 // Walk a directory and yield { absPath, relPath } for all visible files
-async function* walkDir(rootDir, baseDir = '') {
+async function* walkDir(
+	rootDir: string,
+	baseDir: string = '',
+): AsyncGenerator<WalkDirEntry> {
 	const entries = await fs.readdir(rootDir, { withFileTypes: true });
 	for (const entry of entries) {
 		const absPath = path.join(rootDir, entry.name);
 		const relPath = path.join(baseDir, entry.name);
 		if (SKIP_FILES.some(pattern => pattern.test(entry.name))) {
-			yield { skip: true, absPath, relPath };
+			yield { absPath, relPath, skip: true };
 			continue;
 		}
 		if (entry.isFile()) {
-			yield { absPath, relPath };
+			yield { absPath, relPath, skip: false };
 			continue;
 		}
 		if(entry.isDirectory()) {
@@ -84,7 +99,12 @@ async function* walkDir(rootDir, baseDir = '') {
 	}
 }
 
-async function zipAppend(zipWriter, fsPath, zipPath, verbose) {
+async function zipAppend<T>(
+	zipWriter: ZipWriter<T>,
+	fsPath: string,
+	zipPath: string,
+	verbose: boolean,
+) {
 	const data = await fs.readFile(fsPath);
 	await zipWriter.add(zipPath, new Uint8ArrayReader(data));
 	if (data.length === 0) {
@@ -95,7 +115,11 @@ async function zipAppend(zipWriter, fsPath, zipPath, verbose) {
 }
 
 
-async function zipInputs(inputPaths, outputZipPath, verbose = false) {
+async function zipInputs(
+	inputPaths: string[],
+	outputZipPath: any,
+	verbose: boolean = false,
+) {
 	let ret = 0;
 	const zipWriter = new ZipWriter(new BlobWriter());
 	for (const input of inputPaths) {
@@ -123,7 +147,7 @@ async function zipInputs(inputPaths, outputZipPath, verbose = false) {
 	return ret;
 }
 
-export async function main(argv) {
+export async function main(argv: string[]) {
 	const { inputPaths, outputPath, verbose } = parseArgs(argv);
 	try {
 		const resolvedInputs = inputPaths.map(p => path.resolve(p));
@@ -141,8 +165,8 @@ export async function main(argv) {
 			process.exit(1);
 		}
 
-	} catch (err) {
-		console.error('❌ Failed to create zip:', err.message);
+	} catch (error: any) {
+		console.error('❌ Failed to create zip:', error.message);
 		process.exit(1);
 	}
 }

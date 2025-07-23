@@ -2,14 +2,15 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import Eleventy from '@11ty/eleventy';
+import { Eleventy } from '@11ty/eleventy';
 
 const SCRIPT_FILENAME = path.basename(process.argv[1]);
 
-export async function main(argv) {
+export async function main(argv: string[]) {
 	let output;
-	while (argv.length) {
-		const arg = argv.shift();
+	const args = [...argv]; // Copy to avoid modifying the original array
+	while (args.length) {
+		const arg = args.shift() as string;
 		switch (arg) {
 			case '--help':
 			case '-h':
@@ -23,7 +24,7 @@ export async function main(argv) {
 					`\n  output: Defined in 'eleventy.config.mjs'`)
 				process.exit(0);
 			case '--output':
-				output = argv.shift();
+				output = args.shift();
 				// Commented to use the same logic as Eleventy where output can be undefined
 				// if (!output) {
 				// 	console.error('Missing output path after --output');
@@ -40,7 +41,7 @@ export async function main(argv) {
 		output || undefined,
 		{
 			dryRun: true,
-		}
+		},
 	);
 	try {
 		await eleventy.initializeConfig();

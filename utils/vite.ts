@@ -1,17 +1,17 @@
-import path from 'node:path';
-import fs from 'node:fs/promises';
-import { Merge } from "@11ty/eleventy-utils";
+import { Merge } from '@11ty/eleventy-utils';
 import { build as viteBuild } from 'vite';
 
-/**
- * @typedef {Object} VitePluginOptions
- * @property {string[]} entries The entry points for the Vite build.
- * @property {boolean} minify Whether to minify the output files. (default: false)
- * @property {string} banner The banner of the output files, should be \/*! xxx *\/
- */
+interface VitePluginOptions {
+	/** Entry points for the Vite build */
+	entries: string[];
+	/** Whether to minify the output files */
+	minify: boolean;
+	/** Banner for the output files, should be \/*! ... *\/ */
+	banner: string;
+}
 
-/** @type {VitePluginOptions} */
-const DEFAULT_OPTIONS = {
+
+const DEFAULT_OPTIONS: VitePluginOptions = {
 	entries: [],
 	minify: false,
 	banner: '',
@@ -26,10 +26,15 @@ class VitePlugin {
 	/** @type {import("@11ty/eleventy/src/Util/ConsoleLogger.js").default} */
 	logger;
 
-	/** @type {VitePluginOptions} */
-	options;
+	options: VitePluginOptions;
 
-	constructor(elventyConfig, options = {}) {
+	constructor(
+		elventyConfig: {
+			directories: any;
+			logger: any;
+		},
+		options: VitePluginOptions = {} as VitePluginOptions,
+	) {
 		this.directories = elventyConfig.directories;
 		this.logger = elventyConfig.logger;
 		this.options = Merge({}, DEFAULT_OPTIONS, options);
@@ -57,7 +62,7 @@ class VitePlugin {
 				message: `Built assets with Vite to ${this.directories.output}`,
 				type: 'info',
 			});
-		} catch (error) {
+		} catch (error: any) {
 			this.logger.logWithOptions({
 				prefix: VitePlugin.LOGGER_PREFIX,
 				message: `Failed to build with Vite: ${error.message}`,
@@ -73,12 +78,19 @@ class VitePlugin {
  * @param {import("@11ty/eleventy/UserConfig").default} eleventyConfig
  * @param {VitePluginOptions} options
  */
-export default function (eleventyConfig, options = {}) {
+export default function (
+	eleventyConfig: {
+		directories: any;
+		logger: any;
+		on: (event: string, callback: Function) => void;
+	},
+	options: VitePluginOptions = {} as VitePluginOptions,
+) {
 	const plugin = new VitePlugin(eleventyConfig, options);
 
 	eleventyConfig.on('eleventy.before', async ({
 		directories, runMode, outputMode
-	}) => {
+	}: any) => {
 		if (
 			runMode === 'serve' ||
 			outputMode === "json" ||

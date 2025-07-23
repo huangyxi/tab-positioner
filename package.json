@@ -1,9 +1,9 @@
 {
 	"scripts": {
 		"build": "eleventy",
-		"package": "node scripts/package.js",
+		"package": "node scripts/package.ts",
 		"dev": "eleventy --watch",
-		"clean": "node scripts/clean.js",
+		"clean": "node scripts/clean.ts",
 		"release": "npm-run-all --continue-on-error clean build \"package -- {@}\" --",
 		"lint": "npm-run-all --continue-on-error lint:*",
 		"lint:editorconfig": "editorconfig-checker",
@@ -15,7 +15,6 @@
 		"@11ty/eleventy": "^3.1.2",
 		"@11ty/eleventy-utils": "^2.0.7",
 		"@types/node": "^24.0.15",
-		"@types/react": "^19.1.8",
 		"@zip.js/zip.js": "^2.7.64",
 		"chrome-types": "^0.1.361",
 		"editorconfig-checker": "^6.1.0",

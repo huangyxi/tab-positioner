@@ -2,7 +2,7 @@ import { exec } from 'node:child_process';
 import { promisify } from 'node:util';
 
 const execAsync = promisify(exec);
-async function execCmd(cmd) {
+async function execCmd(cmd: any) {
 	const { stdout } = await execAsync(cmd);
 	return stdout.trim();
 }
@@ -22,8 +22,8 @@ const LOGGER_PREFIX = '[GitInfo]';
  * @returns
  */
 export async function getGitInfo(
-	logger,
-	since = 'minor',
+	logger: any,
+	since: keyof typeof TAG_MATCH = 'minor',
 	dirty = '+dirty',
 ) {
 	try {
@@ -44,7 +44,7 @@ export async function getGitInfo(
 			version_name: 'v0.0.0.1-unknown',
 		};
 	}
-	const versionPattern = TAG_MATCH[since] || TAG_MATCH.patch;
+	const versionPattern = TAG_MATCH[since] ?? TAG_MATCH.patch;
 	let buildNumber = '.0';
 	try {
 		const stdout = await execCmd(
@@ -87,7 +87,7 @@ export async function getGitInfo(
 		}
 		version = `${version}${buildNumber}`;
 		tag = tag.endsWith(dirty) ? `v${version}${dirty}` : `v${version}`;
-	} catch (error) {
+	} catch (error: any) {
 		logger.logWithOptions({
 			prefix: LOGGER_PREFIX,
 			message: `Failed to get git version, using default version ${version}, ${error.message}`,

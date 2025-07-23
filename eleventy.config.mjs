@@ -1,7 +1,7 @@
-import { getGitInfo } from './utils/gitinfo.mjs';
-import { tsxCompile } from './utils/tsx.mjs';
-import ManifestPlugin from './utils/manifest.mjs';
-import VitePlugin from './utils/vite.mjs';
+import { getGitInfo } from './utils/gitinfo.ts';
+import { tsxCompile } from './utils/tsx.ts';
+import ManifestPlugin from './utils/manifest.ts';
+import VitePlugin from './utils/vite.ts';
 
 import manifest from './manifest.json' with { type: "json" };
 

@@ -3,18 +3,28 @@
 		"module": "esnext",
 		"target": "esnext",
 		"moduleResolution": "bundler",
-		// "resolveJsonModule": true,
 		"outDir": "dist",
 		"rootDir": ".",
 		"jsx": "react-jsx",
 		"jsxImportSource": "jsx-async-runtime",
 		"esModuleInterop": true,
-		"skipLibCheck": true,
+		// "skipLibCheck": true,
+		"rewriteRelativeImportExtensions": true, // Allow import *.ts from *.js
+		"erasableSyntaxOnly": true,
+		// "resolveJsonModule": true, // use `with { type: "json" }`
 		"forceConsistentCasingInFileNames": true,
+		// "typeRoots": [
+		// 	"./src/types",
+		// 	"./node_modules/jsx-async-runtime/dist/types",
+		// 	"./node_modules/@types",
+		// ],
 		"strict": true,
+		// "verbatimModuleSyntax": true,
 	},
 	"include": [
-		"src/",
+		"src",
+		"utils",
+		"scripts",
 		"_locales/**/messages.json",
 	],
 	"exclude": [

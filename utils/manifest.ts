@@ -1,21 +1,26 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { Merge } from "@11ty/eleventy-utils";
+import { Merge } from '@11ty/eleventy-utils';
 import sharp from 'sharp';
 
-/**
- * @typedef {Object} ManifestPluginOptions
- * @property {string} manifestInPath Relative to the project root
- * @property {string} manifestOutPath Relative to the output directory
- * @property {string} iconInPath Relative to the project root
- * @property {number[]} iconOutSizes Array of icon sizes in pixels
- * @property {function(number): string} iconOutFilename Function to generate icon file names based on size
- * @property {string} version Should be up to 4 dot-separated numbers
- * @property {string} version_name If empty (Default), will not patch this field in the manifest.json
- */
+interface ManifestPluginOptions {
+	/** Relative to the project root */
+	manifestInPath: string;
+	/** Relative to the output directory */
+	manifestOutPath: string;
+	/** Relative to the project root */
+	iconInPath: string;
+	/** Array of icon sizes in pixels */
+	iconOutSizes: number[];
+	/** Function to generate icon file names based on size */
+	iconOutFilename: (size: number) => string;
+	/** Should be up to 4 dot-separated numbers */
+	version: string;
+	/** If empty (default), will not patch this field in the manifest.json */
+	version_name: string;
+}
 
-/** @type {ManifestPluginOptions} */
-const DEFAULT_OPTIONS = {
+const DEFAULT_OPTIONS: ManifestPluginOptions = {
 	manifestInPath: './manifest.json',
 	manifestOutPath: 'manifest.json',
 	iconInPath: './icon.svg',
@@ -34,10 +39,15 @@ class ManifestPlugin {
 	/** @type {import("@11ty/eleventy/src/Util/ConsoleLogger.js").default} */
 	logger;
 
-	/** @type {ManifestPluginOptions} */
-	options;
+	options: ManifestPluginOptions;
 
-	constructor(elventyConfig, options = {}) {
+	constructor(
+		elventyConfig: {
+			directories: any;
+			logger: any;
+		},
+		options: ManifestPluginOptions = {} as ManifestPluginOptions,
+	) {
 		this.directories = elventyConfig.directories;
 		this.logger = elventyConfig.logger;
 		this.options = Merge({}, DEFAULT_OPTIONS, options);
@@ -45,7 +55,7 @@ class ManifestPlugin {
 
 	async patch() {
 		const outDir = this.directories.output;
-		const icons = {};
+		const icons: { [size: number]: string } = {};
 		await fs.mkdir(outDir, { recursive: true });
 		for (const size of this.options.iconOutSizes) {
 			const iconOutputFilename = this.options.iconOutFilename(size);
@@ -78,12 +88,19 @@ class ManifestPlugin {
  * @param {import("@11ty/eleventy/UserConfig").default} eleventyConfig
  * @param {ManifestPluginOptions} options
  */
-export default function (eleventyConfig, options = {}) {
+export default function (
+	eleventyConfig: {
+		directories: any;
+		logger: any;
+		once: (event: string, callback: Function) => void;
+	},
+	options: ManifestPluginOptions = {} as ManifestPluginOptions,
+) {
 	const plugin = new ManifestPlugin(eleventyConfig, options);
 
 	eleventyConfig.once('eleventy.before', async ({
 		directories, runMode, outputMode
-	}) => {
+	}: any) => {
 		if (
 			runMode === 'serve' ||
 			outputMode === "json" ||
