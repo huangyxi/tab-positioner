@@ -32,7 +32,7 @@
 		"description": "Label for the foreground link position setting."
 	},
 	"backgroundTabPositionLabel": {
-		"message": "When opening a link in the background:",
+		"message": "When opening a link:",
 		"description": "Label for the background link position setting."
 	},
 	"afterCloseActivationLabel": {
@@ -51,12 +51,32 @@
 		"message": "After the Active Tab (Right)",
 		"description": "Option to open the tab after the currently active tab."
 	},
-	"optionCreateAsFirst": {
+	"optionCreateWindowFirst": {
 		"message": "As the First",
 		"description": "Option to open the tab as the first in the window."
 	},
-	"optionCreateAsLast": {
+	"optionCreateWindowLast": {
 		"message": "At the Last",
 		"description": "Option to open the tab as the last in the window."
+	},
+	"optionActivateBeforeRemoved": {
+		"message": "The Tab to the Left",
+		"description": "Option to activate the tab to the left of the closed tab."
+	},
+	"optionActivateAfterRemoved": {
+		"message": "The Tab to the Right",
+		"description": "Option to activate the tab to the right of the closed tab."
+	},
+	"optionActivateWindowFirst": {
+		"message": "The First Tab",
+		"description": "Option to open the first tab after closing a tab."
+	},
+	"optionActivateWindowLast": {
+		"message": "The Last Tab",
+		"description": "Option to open the last tab after closing a tab."
+	},
+	"optionActivateHistory": {
+		"message": "The Previously Active Tab",
+		"description": "Option to activate the previously active tab after closing a tab."
 	}
 }

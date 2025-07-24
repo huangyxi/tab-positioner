@@ -4,9 +4,9 @@ import { I18nKey } from './i18n';
 const DEFAULT_VALUE = 'default';
 
 export type SettingKey = never
-	// | 'new_tab_position'
-	// | 'foreground_link_position'
+	| 'new_tab_position'
 	| 'background_link_position'
+	// | 'foreground_link_position'
 	// | 'after_close_activation'
 	| never;
 
@@ -18,37 +18,42 @@ type SettingChoices<T extends string> = {
 	[K in T]: SettingChoice;
 };
 
-type TabCreationPosition = typeof DEFAULT_VALUE
+export type TabCreationPosition = typeof DEFAULT_VALUE
 	| 'before_active'
 	| 'after_active'
-	| 'as_first'
-	| 'as_last'
+	| 'window_first'
+	| 'window_last'
 	| never;
 const TAB_CREATION_POSITION_CHOICES: SettingChoices<TabCreationPosition> = {
 	[DEFAULT_VALUE]: { i18nKey: 'optionDefault' },
 	before_active: { i18nKey: 'optionCreateBeforeActive' },
 	after_active: { i18nKey: 'optionCreateAfterActive' },
-	as_first: { i18nKey: 'optionCreateAsFirst' },
-	as_last: { i18nKey: 'optionCreateAsLast' },
+	window_first: { i18nKey: 'optionCreateWindowFirst' },
+	window_last: { i18nKey: 'optionCreateWindowLast' },
 } as const;
 
 type TabActivationPosition = typeof DEFAULT_VALUE
+	| 'before_removed'
+	| 'after_removed'
+	| 'window_first'
+	| 'window_last'
+	| 'history'
 	| never;
 const TAB_ACTIVATION_POSITION_CHOICES: SettingChoices<TabActivationPosition> = {
 	[DEFAULT_VALUE]: { i18nKey: 'optionDefault' },
-	// left: { i18nKey: 'optionActivateBeforeActive' },
-	// right: { i18nKey: 'optionActivateAfterActive' },
-	// first: { i18nKey: 'optionActivateFirst' },
-	// last: { i18nKey: 'optionActivatieLast' },
-	// history: { i18nKey: 'optionActivateHistory' },
+	before_removed: { i18nKey: 'optionActivateBeforeRemoved' },
+	after_removed: { i18nKey: 'optionActivateAfterRemoved' },
+	window_first: { i18nKey: 'optionActivateWindowFirst' },
+	window_last: { i18nKey: 'optionActivateWindowLast' },
+	history: { i18nKey: 'optionActivateHistory' },
 } as const;
 
 type SettingValue = string; // TabCreationPosition | TabActivationPosition;
 
 export const DEFAULT_SETTINGS = {
-	// new_tab_position: DEFAULT_VALUE as TabCreationPosition,
-	// foreground_link_position: DEFAULT_VALUE as TabCreationPosition,
+	new_tab_position: DEFAULT_VALUE as TabCreationPosition,
 	background_link_position: DEFAULT_VALUE as TabCreationPosition,
+	// foreground_link_position: DEFAULT_VALUE as TabCreationPosition,
 	// after_close_activation: DEFAULT_VALUE as TabActivationPosition,
 } as const satisfies Record<SettingKey, SettingValue>;
 export type ExtensionSettings = typeof DEFAULT_SETTINGS;
@@ -68,18 +73,18 @@ export type SettingSchemas = {
 };
 
 export const SETTING_SCHEMAS: SettingSchemas = {
-	// new_tab_position: {
-	// 	i18nKey: 'newTabPositionLabel',
-	// 	choices: TAB_CREATION_POSITION_CHOICES,
-	// },
-	// foreground_link_position: {
-	// 	i18nKey: 'foregroundLinkPositionLabel',
-	// 	choices: TAB_CREATION_POSITION_CHOICES,
-	// },
+	new_tab_position: {
+		i18nKey: 'newTabPositionLabel',
+		choices: TAB_CREATION_POSITION_CHOICES,
+	},
 	background_link_position: {
 		i18nKey: 'backgroundTabPositionLabel',
 		choices: TAB_CREATION_POSITION_CHOICES,
 	},
+	// foreground_link_position: {
+	// 	i18nKey: 'foregroundTabPositionLabel',
+	// 	choices: TAB_CREATION_POSITION_CHOICES,
+	// },
 	// after_close_activation: {
 	// 	i18nKey: 'afterCloseActivationLabel',
 	// 	choices: TAB_ACTIVATION_POSITION_CHOICES,

@@ -7,7 +7,8 @@
 	"default_locale": "en",
 	"version": "0.1.0",
 	"permissions": [
-		"storage"
+		"storage",
+		"tabs"
 	],
 	"background": {
 		"service_worker": "background.js",
