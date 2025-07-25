@@ -27,11 +27,12 @@ async function createdTabMover(
 	apiTabs: typeof chrome.tabs,
 	newTab: chrome.tabs.Tab,
 ) {
+	const currentIndex = TABS_INFO.getRecent().index;
+	// The above line should be executed ASAP before the new tab is activated
 	const tabId = newTab.id;
 	if (!tabId || tabId === -1) return; // chrome.tabs.TAB_ID_NONE
 	const setting = await getTabCreationSetting(newTab);
 	if (setting === 'default') return;
-	const currentIndex = TABS_INFO.getRecent().index;
 	// let index = -1; // Default to 'last'
 	let newIndex: number; // Exhaustness checked by `tsc`
 	switch (setting) {
