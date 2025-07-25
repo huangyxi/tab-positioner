@@ -10,18 +10,21 @@ type TabIndex = number;
 interface RecentTabInfo {
 	id: TabId;
 	index: TabIndex;
+}
+interface RemovedTabInfo {
+	id: TabId;
 	windowId: WindowId;
 }
 
 class TabsInfo {
 	private currentTabs = new Map<WindowId, Map<TabId, TabInfo>>();
 
-	private recentTab: RecentTabInfo = {
-		id: -1,
-		index: -1,
-		windowId: -1,
-	};
+	private recentTab = new Map<WindowId, RecentTabInfo>();
 
+	private removedTab: RemovedTabInfo = {
+		id: -1,
+		windowId: -1,
+	}
 	/**
 	 * Get the **current** tabs in a window.
 	 * The result is updated immediately after each event, but **before** other events in the event queue.
@@ -45,10 +48,22 @@ class TabsInfo {
 	 * Get the **recent** tab info.
 	 * The result is updated immediately after 'onActivated' event,
 	 * which is the only event that updates the **recent** tab info.
+	 * @param windowId - The ID of the window to retrieve the recent tab info for.
 	 * @returns The recent tab info, or an object with -1 values if no tab is active.
 	 */
-	public getRecent(): RecentTabInfo {
-		return this.recentTab;
+	public getRecent(windowId: WindowId): RecentTabInfo {
+		return this.recentTab.get(windowId) ?? {
+			id: -1,
+			index: -1,
+		}
+	}
+
+	/**
+	 * Get the recent removed tab info.
+	 * @returns The removed tab info, or an object with -1 values if no tab was removed.
+	 */
+	public getRemoved(): RemovedTabInfo {
+		return this.removedTab;
 	}
 
 	/**
@@ -71,11 +86,10 @@ class TabsInfo {
 			if (!tab.active) {
 				continue;
 			}
-			this.recentTab = {
+			this.recentTab.set(tab.windowId, {
 				id: tab.id!,
 				index: tab.index,
-				windowId: tab.windowId,
-			};
+			});
 		}
 	}
 
@@ -102,8 +116,13 @@ class TabsInfo {
 		}
 		const windowTabs = this.currentTabs.get(windowId)!;
 		// 'detach' the last tab would not fire onRemoved event, so compare the size
+		this.removedTab = {
+			id: tabId,
+			windowId: windowId,
+		};
 		if (isWindowClosing || windowTabs.size === 1) {
 			this.currentTabs.delete(windowId);
+			this.recentTab.delete(windowId);
 			return;
 		}
 		windowTabs.delete(tabId);
@@ -121,11 +140,10 @@ class TabsInfo {
 		if (tabInfo) {
 			tabInfo.lastAccessed = Date.now();
 		}
-		this.recentTab = {
+		this.recentTab.set(windowId, {
 			id: tabId,
 			index: index,
-			windowId: windowId,
-		};
+		});
 	}
 
 	public registerListeners(

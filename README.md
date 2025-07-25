@@ -6,9 +6,7 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/huangyxi/tab-positioner)
 <!-- [![Actions](https://github.com/huangyxi/tab-positioner/actions/workflows/code-validation.yml/badge.svg?branch=main)](https://github.com/huangyxi/tab-positioner/actions/workflows/code-validation.yml) -->
 
-**OPEN SOURCE, NO ADS, NO TRACKING!**
-
-
+**OPEN SOURCE • NO ADS • NO TRACKING**
 
 Tab Positioner lets you customize the position of new tabs and control which tab becomes active after a tab is closed.
 It is a modern successor to the [Tab Position Options](https://chromewebstore.google.com/detail/tab-position-options/fjccjnfkdkdmjohojoggodkigkjkkjhl) extension, rebuilt from the ground up to support [Chrome's new Manifest V3 platform](https://developer.chrome.com/docs/extensions/mv3/intro/).
@@ -29,7 +27,7 @@ It is a modern successor to the [Tab Position Options](https://chromewebstore.go
 ### Chrome Web Store
 You can install Tab Positioner from the [Chrome Web Store](https://chromewebstore.google.com/detail/ejlekdhgfefgeoobnnfgmafagedicagj).
 
-### Manual Installation
+### Offline Installation
 1. Download the latest release from the [Releases page](https://github.com/huangyxi/tab-positioner/releases/latest).
 2. Extract the downloaded ZIP file.
 3. Open Chrome and navigate to `chrome://extensions`.

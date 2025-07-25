@@ -7,11 +7,14 @@ import { TABS_INFO } from './tabsinfo';
 function getTabCreationSetting(
 	newTab: chrome.tabs.Tab,
 ): TabCreationPosition {
-	const windowId = newTab.windowId;
-	const recentTab = TABS_INFO.getRecent();
-	if (windowId !== recentTab.windowId) {
-		return 'default';
-	}
+	// const windowId = newTab.windowId;
+	// const recentTab = TABS_INFO.getRecent();
+	// if (DEBUG) {
+	// 	console.log('    Ca1. Recent window ID:', recentTab.windowId, 'New window ID:', windowId);
+	// }
+	// if (windowId !== recentTab.windowId) {
+	// 	return 'default';
+	// }
 	const isNewTabPage = NEW_PAGE_URIS.includes(newTab.pendingUrl || newTab.url || '');
 	let settingKey: TabCreationPositionKey;
 	if (isNewTabPage) {
@@ -30,7 +33,8 @@ async function createdTabMover(
 	if (DEBUG) {
 		console.log('  C1. Tab created');
 	}
-	const currentIndex = TABS_INFO.getRecent().index;
+	const currentTab = TABS_INFO.getRecent(newTab.windowId);
+	const currentIndex = currentTab.index;
 	// The above line should be executed ASAP before the new tab is activated
 	const tabId = newTab.id;
 	if (DEBUG) {
