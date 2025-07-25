@@ -1,4 +1,5 @@
 # Tab Positioner
+
 [![Chrome Web Store](https://img.shields.io/chrome-web-store/v/ejlekdhgfefgeoobnnfgmafagedicagj?label=Chrome%20Web%20Store&logo=google)](https://chromewebstore.google.com/detail/ejlekdhgfefgeoobnnfgmafagedicagj)
 [![GitHub Release](https://img.shields.io/github/v/release/huangyxi/tab-positioner?label=Release&logo=github)](https://github.com/huangyxi/tab-positioner/releases/latest)
 [![Actions](https://img.shields.io/github/actions/workflow/status/huangyxi/tab-positioner/code-validation.yml?label=Actions&logo=github&branch=main)](https://github.com/huangyxi/tab-positioner/actions/workflows/code-validation.yml)
@@ -20,6 +21,7 @@ It is a modern successor to the [Tab Position Options](https://chromewebstore.go
 * **Link Tab Position**: Set a separate rule for tabs opened from links.
 * **Tab Activation**: Choose which tab becomes active after you close one.
 * **Sync Settings**: Your tab position preferences are synced across all your devices, via [Chrome's built-in sync feature](https://support.google.com/chrome/answer/185277#zippy=%2Csign-in-turn-on-sync).
+* **Dark Mode**: The extension automatically adapts to Chrome's dark mode.
 
 
 ## Installation
