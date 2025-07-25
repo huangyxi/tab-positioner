@@ -75,8 +75,8 @@
 		"message": "The Last Tab",
 		"description": "Option to open the last tab after closing a tab."
 	},
-	"optionActivateHistory": {
+	"optionActivateActivationHistory": {
 		"message": "The Previously Active Tab",
-		"description": "Option to activate the previously active tab after closing a tab."
+		"description": "Option to activate the previously activated tab after closing a tab."
 	}
 }

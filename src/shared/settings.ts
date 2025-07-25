@@ -7,7 +7,7 @@ export type SettingKey = never
 	| 'new_tab_position'
 	| 'background_link_position'
 	// | 'foreground_link_position'
-	// | 'after_close_activation'
+	| 'after_close_activation'
 	| never;
 
 interface SettingChoice {
@@ -32,12 +32,12 @@ const TAB_CREATION_POSITION_CHOICES: SettingChoices<TabCreationPosition> = {
 	window_last: { i18nKey: 'optionCreateWindowLast' },
 } as const;
 
-type TabActivationPosition = typeof DEFAULT_VALUE
+export type TabActivationPosition = typeof DEFAULT_VALUE
 	| 'before_removed'
 	| 'after_removed'
 	| 'window_first'
 	| 'window_last'
-	| 'history'
+	// | 'activation_history'
 	| never;
 const TAB_ACTIVATION_POSITION_CHOICES: SettingChoices<TabActivationPosition> = {
 	[DEFAULT_VALUE]: { i18nKey: 'optionDefault' },
@@ -45,7 +45,7 @@ const TAB_ACTIVATION_POSITION_CHOICES: SettingChoices<TabActivationPosition> = {
 	after_removed: { i18nKey: 'optionActivateAfterRemoved' },
 	window_first: { i18nKey: 'optionActivateWindowFirst' },
 	window_last: { i18nKey: 'optionActivateWindowLast' },
-	history: { i18nKey: 'optionActivateHistory' },
+	// activation_history: { i18nKey: 'optionActivateActivationHistory' },
 } as const;
 
 type SettingValue = string; // TabCreationPosition | TabActivationPosition;
@@ -54,7 +54,7 @@ export const DEFAULT_SETTINGS = {
 	new_tab_position: DEFAULT_VALUE as TabCreationPosition,
 	background_link_position: DEFAULT_VALUE as TabCreationPosition,
 	// foreground_link_position: DEFAULT_VALUE as TabCreationPosition,
-	// after_close_activation: DEFAULT_VALUE as TabActivationPosition,
+	after_close_activation: DEFAULT_VALUE as TabActivationPosition,
 } as const satisfies Record<SettingKey, SettingValue>;
 export type ExtensionSettings = typeof DEFAULT_SETTINGS;
 
@@ -63,7 +63,7 @@ type SettingKeys<T extends ExtensionSettings[SettingKey]> = {
 }[SettingKey];
 
 export type TabCreationPositionKey = SettingKeys<TabCreationPosition>;
-// type TabActivationPositionKey = SettingKeys<TabActivationPosition>;
+export type TabActivationPositionKey = SettingKeys<TabActivationPosition>;
 
 export type SettingSchemas = {
 	[K in keyof ExtensionSettings]:
@@ -85,10 +85,10 @@ export const SETTING_SCHEMAS: SettingSchemas = {
 	// 	i18nKey: 'foregroundTabPositionLabel',
 	// 	choices: TAB_CREATION_POSITION_CHOICES,
 	// },
-	// after_close_activation: {
-	// 	i18nKey: 'afterCloseActivationLabel',
-	// 	choices: TAB_ACTIVATION_POSITION_CHOICES,
-	// }
+	after_close_activation: {
+		i18nKey: 'afterCloseActivationLabel',
+		choices: TAB_ACTIVATION_POSITION_CHOICES,
+	}
 } as const;
 
 export function sanitizeSettings<T extends Partial<Record<SettingKey, string>>>(
