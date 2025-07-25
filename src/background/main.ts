@@ -14,6 +14,12 @@ async function main() {
 		await saveSettings(settings);
 	});
 
+	chrome.runtime.onStartup.addListener(async () => {
+		const settings = await loadSettings();
+		setSettings(settings);
+		await saveSettings(settings);
+	});
+
 	chrome.storage.onChanged.addListener(async (changes, areaName) => {
 		if (areaName !== 'sync') {
 			return;

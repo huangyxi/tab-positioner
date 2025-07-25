@@ -2,7 +2,7 @@ import { ExtensionSettings, DEFAULT_SETTINGS, sanitizeSettings } from './setting
 import { errorHandler } from './logging';
 
 const storageSync = chrome.storage.sync;
-const storageSession = chrome.storage.session;
+// const storageSession = chrome.storage.session;
 
 /**
  * Loads the current settings from storage.
@@ -50,23 +50,23 @@ export async function clearSettings(): Promise<void> {
 	}
 }
 
-export async function getSessionState(key: string): Promise<any | undefined> {
-	try {
-		const session = await storageSession.get(key);
-		return session[key] ?? undefined;
-	} catch (error) {
-		errorHandler(error);
-		return undefined;
-	}
-}
+// export async function getSessionState(key: string): Promise<any | undefined> {
+// 	try {
+// 		const session = await storageSession.get(key);
+// 		return session[key] ?? undefined;
+// 	} catch (error) {
+// 		errorHandler(error);
+// 		return undefined;
+// 	}
+// }
 
-export async function setSessionState(
-	key: string,
-	value: any,
-): Promise<void> {
-	try {
-		await storageSession.set({ [key]: value });
-	} catch (error) {
-		errorHandler(error);
-	}
-}
+// export async function setSessionState(
+// 	key: string,
+// 	value: any,
+// ): Promise<void> {
+// 	try {
+// 		await storageSession.set({ [key]: value });
+// 	} catch (error) {
+// 		errorHandler(error);
+// 	}
+// }

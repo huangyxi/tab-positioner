@@ -1,7 +1,9 @@
 # Project-specific files
 dist/
-*.zip
 *.png
+*.zip
+*.crx
+*.pem
 
 # Node.js dependencies
 node_modules/
