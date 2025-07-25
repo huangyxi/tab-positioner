@@ -55,8 +55,11 @@ export const DEFAULT_SETTINGS = {
 	background_link_position: DEFAULT_VALUE as TabCreationPosition,
 	// foreground_link_position: DEFAULT_VALUE as TabCreationPosition,
 	after_close_activation: DEFAULT_VALUE as TabActivationPosition,
-} as const satisfies Record<SettingKey, SettingValue>;
+} satisfies Record<SettingKey, SettingValue>;
 export type ExtensionSettings = typeof DEFAULT_SETTINGS;
+const CURRENT_SETTINGS: ExtensionSettings = {
+	...DEFAULT_SETTINGS,
+}
 
 type SettingKeys<T extends ExtensionSettings[SettingKey]> = {
 	[K in SettingKey]: ExtensionSettings[K] extends T ? K : never;
@@ -107,4 +110,17 @@ export function sanitizeSettings<T extends Partial<Record<SettingKey, string>>>(
 		sanitizedSettings[key] = DEFAULT_SETTINGS[key];
 	}
 	return sanitizedSettings as any;
+}
+
+export function setSettings(
+	settings: ExtensionSettings,
+) {
+	let key: SettingKey;
+	for (key in settings) {
+		CURRENT_SETTINGS[key] = settings[key] as any;
+	}
+}
+
+export function getSettings(): ExtensionSettings {
+	return { ...CURRENT_SETTINGS };
 }

@@ -43,6 +43,9 @@ class VitePlugin {
 	async build() {
 		try {
 			await viteBuild({
+				define: {
+					'DEBUG': JSON.stringify(process.env.DEBUG),
+				},
 				build: {
 					emptyOutDir: false, // Keep Eleventy passthroughed files
 					minify: this.options.minify, // Disable minification for potential faster reviews

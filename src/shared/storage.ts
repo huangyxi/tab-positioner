@@ -4,24 +4,31 @@ import { errorHandler } from './logging';
 const storageSync = chrome.storage.sync;
 const storageSession = chrome.storage.session;
 
-export async function getSettings(
-	sanitize: boolean = true,
-): Promise<ExtensionSettings> {
+/**
+ * Loads the current settings from storage.
+ * Does not update the local `CURRENT_SETTINGS` variable.
+ * @returns A promise that resolves to the sanitized current settings.
+ */
+export async function loadSettings(): Promise<ExtensionSettings> {
 	try {
 		// filter out invalid settings
 		const settings = await storageSync.get(DEFAULT_SETTINGS) as Record<keyof ExtensionSettings, string>;
-		if (sanitize) {
-			return sanitizeSettings(settings as ExtensionSettings);
-		} else {
-			return settings as ExtensionSettings;
-		}
+		const sanitizedSettings = sanitizeSettings(settings);
+		return sanitizedSettings;
 	} catch (error) {
 		errorHandler(error);
 		return DEFAULT_SETTINGS;
 	}
 }
 
-export async function setSettings(
+/**
+ * Saves settings to storage.
+ * Does not update the local `CURRENT_SETTINGS` variable.
+ * @param settings The settings to save. Defaults to `DEFAULT_SETTINGS`.
+ * @param sanitize Whether to sanitize the settings before saving. Defaults to `true`.
+ * @returns A promise that resolves when the settings are saved.
+ */
+export async function saveSettings(
 	settings: Partial<ExtensionSettings> = DEFAULT_SETTINGS,
 	sanitize: boolean = true,
 ): Promise<void> {

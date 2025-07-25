@@ -1,6 +1,7 @@
 {
 	"scripts": {
 		"build": "eleventy",
+		"build:debug": "DEBUG=true eleventy",
 		"package": "node scripts/package.ts",
 		"dev": "eleventy --watch",
 		"clean": "node scripts/clean.ts",

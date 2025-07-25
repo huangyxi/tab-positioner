@@ -56,6 +56,9 @@ class TabsInfo {
 	 * where the `windowId` and `id` are defined.
 	 */
 	private initialize(normalTabs: chrome.tabs.Tab[]) {
+		if (DEBUG) {
+			console.log('TABS_INFO: Initialized');
+		}
 		for (const tab of normalTabs) {
 			if (!this.currentTabs.has(tab.windowId)) {
 				this.currentTabs.set(tab.windowId, new Map<TabId, TabInfo>());
@@ -77,6 +80,9 @@ class TabsInfo {
 	}
 
 	private addTab(windowId: WindowId, tabId: TabId, openerTabId?: TabId) {
+		if (DEBUG) {
+			console.log('TABS_INFO: Adding tab');
+		}
 		if (!this.currentTabs.has(windowId)) {
 			this.currentTabs.set(windowId, new Map<TabId, TabInfo>());
 		}
@@ -88,6 +94,9 @@ class TabsInfo {
 	}
 
 	private removeTab(windowId: WindowId, tabId: TabId, isWindowClosing: boolean) {
+		if (DEBUG) {
+			console.log('TABS_INFO: Removing tab');
+		}
 		if (!this.currentTabs.has(windowId)) {
 			return;
 		}
@@ -101,7 +110,9 @@ class TabsInfo {
 	}
 
 	private activateTab(windowId: WindowId, tabId: TabId, index: TabIndex) {
-		console.log(`Activating tab ${tabId} in window ${windowId} at index ${index}`);
+		if (DEBUG) {
+			console.log(`TABS_INFO: Activating tab ${tabId} in window ${windowId} at index ${index}`);
+		}
 		const windowTabs = this.currentTabs.get(windowId);
 		if (!windowTabs) {
 			return;

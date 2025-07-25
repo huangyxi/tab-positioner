@@ -1,11 +1,11 @@
 import type { TabActivationPosition } from '../shared/settings';
 import { errorHandler } from '../shared/logging';
-import { getSettings } from '../shared/storage';
+import { getSettings } from '../shared/settings';
 
 import { TABS_INFO } from './tabsinfo';
 
-async function getTabActivationSetting(): Promise<TabActivationPosition> {
-	const settings = await getSettings(true);
+function getTabActivationSetting(): TabActivationPosition {
+	const settings = getSettings();
 	return settings['after_close_activation'];
 }
 
@@ -13,14 +13,26 @@ async function tabRemovedActivater(
 	apiTabs: typeof chrome.tabs,
 	tabId: number,
 ) {
+	if (DEBUG) {
+		console.log('  R1. Tab removed:', tabId);
+	}
 	const recentTab = TABS_INFO.getRecent();
+	if (DEBUG) {
+		console.log('  R2. Recent tab:', recentTab);
+	}
 	if (tabId !== recentTab.id) return;
+	const setting = getTabActivationSetting();
+	if (DEBUG) {
+		console.log('  R3. Tab activation setting:', setting);
+	}
+	if (setting === 'default') return;
+
 	// currentTabs should retrieve ASAP before the new tab is activated
 	const currentTabs = TABS_INFO.getCurrents(recentTab.windowId);
-	// The above lines should be executed ASAP before the new default tab is activated
+	if (DEBUG) {
+		console.log('  R4. Get current tabs');
+	}
 
-	const setting = await getTabActivationSetting();
-	if (setting === 'default') return;
 	// No tabs remain in the current window to activate; this is handled by the browser.
 	if (currentTabs.length === 0) return;
 	const currentTab = currentTabs[0];
@@ -43,6 +55,9 @@ async function tabRemovedActivater(
 		// 	newTabId = currentTab.id;
 		// 	newIndex = recentTab.index;
 		// 	break;
+	}
+	if (DEBUG) {
+		console.log(`  R5. New index: ${newIndex}, New tab ID: ${newTabId}`);
 	}
 	if (newTabId === undefined) {
 		const newTabIds = await apiTabs.query({

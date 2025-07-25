@@ -1,7 +1,7 @@
 
 import { I18nKey, getI18nMessage, getI18nAttribute, I18N_HTML_PROPERTIES } from '../shared/i18n';
 import { SettingKey, ExtensionSettings, DEFAULT_SETTINGS } from '../shared/settings';
-import { getSettings, setSettings, clearSettings } from '../shared/storage';
+import { loadSettings, saveSettings, clearSettings } from '../shared/storage';
 
 function showStatus(messageKey: I18nKey) {
 	const status = document.getElementById('status');
@@ -28,19 +28,19 @@ function localizeHtmlPage() {
 	});
 }
 
-async function saveSettings(selectElements: NodeListOf<HTMLSelectElement>) {
+async function saveSetting(selectElements: NodeListOf<HTMLSelectElement>) {
 	const settings: Partial<Record<SettingKey, string>> = {}
 	for (const select of selectElements) {
 		const settingKey = select.id as SettingKey;
 		if (!(settingKey in DEFAULT_SETTINGS)) continue;
 		settings[settingKey] = select.value;
 	}
-	await setSettings(settings as ExtensionSettings, true);
+	await saveSettings(settings as ExtensionSettings, true);
 	showStatus('statusSaved');
 }
 
 async function restoreSettings(selectElements: NodeListOf<HTMLSelectElement>) {
-	const settings = await getSettings(true);
+	const settings = await loadSettings();
 	for (const select of selectElements) {
 		const settingKey = select.id as SettingKey;
 		if (!(settingKey in settings)) continue;
@@ -52,7 +52,7 @@ async function resetSetting(settingKey: SettingKey, selectElements: NodeListOf<H
 	for (const selectElement of selectElements) {
 		if (selectElement.id !== settingKey) continue;
 		selectElement.value = DEFAULT_SETTINGS[settingKey];
-		await setSettings({ [settingKey]: DEFAULT_SETTINGS[settingKey] });
+		await saveSettings({ [settingKey]: DEFAULT_SETTINGS[settingKey] });
 		showStatus('statusSaved');
 		return;
 	}
@@ -65,7 +65,7 @@ async function resetAllSettings(selectElements: NodeListOf<HTMLSelectElement>) {
 		selectElement.value = DEFAULT_SETTINGS[settingKey];
 	}
 	await clearSettings();
-	await setSettings();
+	await saveSettings();
 	showStatus('statusSaved');
 }
 
@@ -77,7 +77,7 @@ async function main() {
 	await restoreSettings(selectElements);
 
 	document.querySelectorAll('select').forEach(select => {
-		select.addEventListener('change', () => saveSettings(selectElements));
+		select.addEventListener('change', () => saveSetting(selectElements));
 	});
 
 	document.querySelectorAll('button.reset').forEach(button => {

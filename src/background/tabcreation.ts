@@ -1,12 +1,12 @@
 import type { TabCreationPosition, TabCreationPositionKey } from '../shared/settings';
-import { getSettings } from '../shared/storage';
+import { getSettings } from '../shared/settings';
 import { NEW_PAGE_URIS } from '../shared/constants';
 import { errorHandler } from '../shared/logging';
 import { TABS_INFO } from './tabsinfo';
 
-async function getTabCreationSetting(
+function getTabCreationSetting(
 	newTab: chrome.tabs.Tab,
-): Promise<TabCreationPosition> {
+): TabCreationPosition {
 	const windowId = newTab.windowId;
 	const recentTab = TABS_INFO.getRecent();
 	if (windowId !== recentTab.windowId) {
@@ -19,7 +19,7 @@ async function getTabCreationSetting(
 	} else {
 		settingKey = 'background_link_position';
 	}
-	const settings = await getSettings(true);
+	const settings = getSettings();
 	return settings[settingKey];
 }
 
@@ -27,11 +27,20 @@ async function createdTabMover(
 	apiTabs: typeof chrome.tabs,
 	newTab: chrome.tabs.Tab,
 ) {
+	if (DEBUG) {
+		console.log('  C1. Tab created');
+	}
 	const currentIndex = TABS_INFO.getRecent().index;
 	// The above line should be executed ASAP before the new tab is activated
 	const tabId = newTab.id;
+	if (DEBUG) {
+		console.log('  C2. Tab ID:', tabId);
+	}
 	if (!tabId || tabId === -1) return; // chrome.tabs.TAB_ID_NONE
-	const setting = await getTabCreationSetting(newTab);
+	const setting = getTabCreationSetting(newTab);
+	if (DEBUG) {
+		console.log('  C3. Tab creation setting:', setting);
+	}
 	if (setting === 'default') return;
 	// let index = -1; // Default to 'last'
 	let newIndex: number; // Exhaustness checked by `tsc`
@@ -48,6 +57,9 @@ async function createdTabMover(
 		case 'window_last':
 			newIndex = -1;
 			break;
+	}
+	if (DEBUG) {
+		console.log(`  C4. New index: ${newIndex}`);
 	}
 	try {
 		await apiTabs.move(tabId, { index: newIndex });
