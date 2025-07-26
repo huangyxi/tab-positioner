@@ -44,6 +44,7 @@ class VitePlugin {
 		try {
 			await viteBuild({
 				define: {
+					'api': 'chrome',
 					'DEBUG': JSON.stringify(process.env.DEBUG),
 				},
 				build: {

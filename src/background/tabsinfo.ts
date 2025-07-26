@@ -17,10 +17,17 @@ interface RemovedTabInfo {
 }
 
 class TabsInfo {
+	// Updating the indexes of all current tabs immediately after each event may cause performance issues,
+	// so we only store the indexes of the most recently active tab for each window.
 	private currentTabs = new Map<WindowId, Map<TabId, TabInfo>>();
 
+	// Switching windows does not trigger any event if no other tab becomes active,
+	// so we need to track the recent tab info for each window to store the index of the removed tab,
+	// since this information can't be retrieved from the API once the tab is removed.
 	private recentTab = new Map<WindowId, RecentTabInfo>();
 
+	// Removed tab may not be the recent tab,
+	// so we need to store the removed tab info separately.
 	private removedTab: RemovedTabInfo = {
 		id: -1,
 		windowId: -1,
@@ -70,7 +77,7 @@ class TabsInfo {
 	 * @param normalTabs Tabs with `windowType: 'normal'` to initialize the TabsInfo,
 	 * where the `windowId` and `id` are defined.
 	 */
-	private initialize(normalTabs: chrome.tabs.Tab[]) {
+	private initialize(normalTabs: api.tabs.Tab[]) {
 		if (DEBUG) {
 			console.log('TABS_INFO: Initialized');
 		}
@@ -147,8 +154,8 @@ class TabsInfo {
 	}
 
 	public registerListeners(
-		apiRuntime: typeof chrome.runtime,
-		apiTabs: typeof chrome.tabs,
+		apiRuntime: typeof api.runtime,
+		apiTabs: typeof api.tabs,
 	) {
 		apiRuntime.onInstalled.addListener(async () => {
 			const tabs = await apiTabs.query({ windowType: 'normal' });

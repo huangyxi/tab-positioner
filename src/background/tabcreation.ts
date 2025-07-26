@@ -5,16 +5,8 @@ import { errorHandler } from '../shared/logging';
 import { TABS_INFO } from './tabsinfo';
 
 function getTabCreationSetting(
-	newTab: chrome.tabs.Tab,
+	newTab: api.tabs.Tab,
 ): TabCreationPosition {
-	// const windowId = newTab.windowId;
-	// const recentTab = TABS_INFO.getRecent();
-	// if (DEBUG) {
-	// 	console.log('    Ca1. Recent window ID:', recentTab.windowId, 'New window ID:', windowId);
-	// }
-	// if (windowId !== recentTab.windowId) {
-	// 	return 'default';
-	// }
 	const isNewTabPage = NEW_PAGE_URIS.includes(newTab.pendingUrl || newTab.url || '');
 	let settingKey: TabCreationPositionKey;
 	if (isNewTabPage) {
@@ -27,8 +19,8 @@ function getTabCreationSetting(
 }
 
 async function createdTabMover(
-	apiTabs: typeof chrome.tabs,
-	newTab: chrome.tabs.Tab,
+	apiTabs: typeof api.tabs,
+	newTab: api.tabs.Tab,
 ) {
 	if (DEBUG) {
 		console.log('  C1. Tab created');
@@ -40,7 +32,7 @@ async function createdTabMover(
 	if (DEBUG) {
 		console.log('  C2. Tab ID:', tabId);
 	}
-	if (!tabId || tabId === -1) return; // chrome.tabs.TAB_ID_NONE
+	if (!tabId || tabId === -1) return; // api.tabs.TAB_ID_NONE
 	const setting = getTabCreationSetting(newTab);
 	if (DEBUG) {
 		console.log('  C3. Tab creation setting:', setting);
@@ -72,7 +64,7 @@ async function createdTabMover(
 	}
 }
 
-export async function registerTabCreatedListener(apiTabs: typeof chrome.tabs) {
+export async function registerTabCreatedListener(apiTabs: typeof api.tabs) {
 	apiTabs.onCreated.addListener(
 		createdTabMover.bind(null, apiTabs)
 	);

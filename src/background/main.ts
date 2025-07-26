@@ -8,19 +8,19 @@ async function main() {
 	if (DEBUG) {
 		console.log('Tab Positioner background script started');
 	}
-	chrome.runtime.onInstalled.addListener(async () => {
+	api.runtime.onInstalled.addListener(async () => {
 		const settings = await loadSettings();
 		setSettings(settings);
 		await saveSettings(settings);
 	});
 
-	chrome.runtime.onStartup.addListener(async () => {
+	api.runtime.onStartup.addListener(async () => {
 		const settings = await loadSettings();
 		setSettings(settings);
 		await saveSettings(settings);
 	});
 
-	chrome.storage.onChanged.addListener(async (changes, areaName) => {
+	api.storage.onChanged.addListener(async (changes, areaName) => {
 		if (areaName !== 'sync') {
 			return;
 		}
@@ -39,9 +39,9 @@ async function main() {
 	// - Remove: 1.onRemoved -> 2.onRemoved -> 1.onActivated -> 2.onActivated
 	// - Move between Windows: 1.onDetached -> 2.onDetached ( -> 1.onActivated -> 2.onActivated )
 	//   -> 1.onAttached -> 2.onAttached -> 1.onActivated -> 2.onActivated
-	TABS_INFO.registerListeners(chrome.runtime, chrome.tabs);
-	registerTabCreatedListener(chrome.tabs);
-	registerTabRemovedListener(chrome.tabs);
+	TABS_INFO.registerListeners(api.runtime, api.tabs);
+	registerTabCreatedListener(api.tabs);
+	registerTabRemovedListener(api.tabs);
 }
 
 main();

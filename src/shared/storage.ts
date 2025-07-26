@@ -1,8 +1,8 @@
 import { ExtensionSettings, DEFAULT_SETTINGS, sanitizeSettings } from './settings';
 import { errorHandler } from './logging';
 
-const storageSync = chrome.storage.sync;
-// const storageSession = chrome.storage.session;
+const storageSync = api.storage.sync;
+// const storageSession = api.storage.session;
 
 /**
  * Loads the current settings from storage.

@@ -10,7 +10,7 @@ function getTabActivationSetting(): TabActivationPosition {
 }
 
 async function tabRemovedActivater(
-	apiTabs: typeof chrome.tabs,
+	apiTabs: typeof api.tabs,
 	tabId: number,
 ) {
 	if (DEBUG) {
@@ -80,7 +80,7 @@ async function tabRemovedActivater(
 	}
 }
 
-export function registerTabRemovedListener(apiTabs: typeof chrome.tabs) {
+export function registerTabRemovedListener(apiTabs: typeof api.tabs) {
 	apiTabs.onRemoved.addListener(
 		tabRemovedActivater.bind(null, apiTabs)
 	);

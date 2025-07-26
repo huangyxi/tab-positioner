@@ -1,5 +1,6 @@
-// import type chrome from 'chrome-types';
 import 'chrome-types'
-// declare global {
-// 	const chrome: typeof import('chrome-types');
-// }
+
+declare global {
+	// defined in /utils/vite.ts
+	export import api = chrome;
+}
