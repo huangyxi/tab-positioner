@@ -45,7 +45,7 @@ async function tabRemovedActivater(
 	let newTabId: number | undefined;
 	switch (setting) {
 		case 'before_removed':
-			newIndex = recentTab.index - 1;
+			newIndex = Math.max(0, recentTab.index - 1);
 			break;
 		case 'after_removed':
 			newIndex = recentTab.index;
