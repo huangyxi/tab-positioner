@@ -62,6 +62,9 @@ async function createdTabMover(
 	} catch (error: any) {
 		errorHandler(error);
 	}
+	if (DEBUG) {
+		console.log('  C5. Tab moved');
+	}
 }
 
 export async function registerTabCreatedListener(apiTabs: typeof api.tabs) {

@@ -8,12 +8,18 @@ export function registerSyncSettingsListeners(
 	apiRuntime.onInstalled.addListener(async () => {
 		const settings = await loadSettings();
 		setSettings(settings);
+		if (DEBUG) {
+			console.log('Settings loaded on install:', settings);
+		}
 		await saveSettings(settings);
 	});
 
 	apiRuntime.onStartup.addListener(async () => {
 		const settings = await loadSettings();
 		setSettings(settings);
+		if (DEBUG) {
+			console.log('Settings loaded on startup:', settings);
+		}
 		await saveSettings(settings);
 	});
 

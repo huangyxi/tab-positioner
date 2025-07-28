@@ -73,10 +73,16 @@ async function tabRemovedActivater(
 		if (newTabIds.length === 0) return; // No tab found at the specified index
 		newTabId = newTabIds[0].id!;
 	}
+	if (DEBUG) {
+		console.log('  R7. New tab ID:', newTabId, 'New index:', newIndex);
+	}
 	try {
 		await apiTabs.update(newTabId, { active: true });
 	} catch (error: any) {
 		errorHandler(error);
+	}
+	if (DEBUG) {
+		console.log('  R8. Tab activated');
 	}
 }
 
