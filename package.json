@@ -6,6 +6,7 @@
 		"dev": "eleventy --watch",
 		"clean": "node scripts/clean.ts",
 		"release": "npm-run-all --continue-on-error clean build \"package -- {@}\" --",
+		"release:debug": "npm-run-all --continue-on-error clean build:debug \"package -- {@}\" --",
 		"lint": "npm-run-all --continue-on-error lint:*",
 		"lint:editorconfig": "editorconfig-checker",
 		"lint:css": "stylelint 'src/**/*.css'",
