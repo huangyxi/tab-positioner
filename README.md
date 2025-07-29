@@ -8,6 +8,8 @@
 
 **OPEN SOURCE • NO ADS • NO TRACKING**
 
+Tabs open with flair, close with care — you're the one who steers them where.
+
 Tab Positioner lets you customize the position of new tabs and control which tab becomes active after a tab is closed.
 It is a modern successor to the [Tab Position Options](https://chromewebstore.google.com/detail/tab-position-options/fjccjnfkdkdmjohojoggodkigkjkkjhl) extension, rebuilt from the ground up to support [Chrome's new Manifest V3 platform](https://developer.chrome.com/docs/extensions/mv3/intro/).
 
