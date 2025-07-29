@@ -15,6 +15,7 @@ interface RemovedTabInfo {
 	id: TabId;
 	windowId: WindowId;
 }
+type DateTime = number;
 
 class TabsInfo {
 	// Updating the indexes of all current tabs immediately after each event may cause performance issues,
@@ -32,6 +33,13 @@ class TabsInfo {
 		id: -1,
 		windowId: -1,
 	}
+
+	// Used to skip tab processing in batches.
+	private currentCreatedAt: DateTime = Date.now();
+	private recentCreatedAt: DateTime = 0;
+	private currentRemovedAt: DateTime = Date.now();
+	private recentRemovedAt: DateTime = 0;
+
 	/**
 	 * Get the **current** tabs in a window.
 	 * The result is updated immediately after each event, but **before** other events in the event queue.
@@ -71,6 +79,24 @@ class TabsInfo {
 	 */
 	public getRemoved(): RemovedTabInfo {
 		return this.removedTab;
+	}
+
+	/**
+	 * Get the time difference between the most recent tab creation and the previous one.
+	 * This is used to determine if the tab creation is part of a batch operation.
+	 * @returns The time difference in milliseconds.
+	 */
+	public getCreationDelay(): DateTime {
+		return this.currentCreatedAt - this.recentCreatedAt;
+	}
+
+	/**
+	 * Get the time difference between the most recent tab removal and the previous one.
+	 * This is used to determine if the tab removal is part of a batch operation.
+	 * @returns The time difference in milliseconds.
+	 */
+	public getRemovalDelay(): DateTime {
+		return this.currentRemovedAt - this.recentRemovedAt;
 	}
 
 	/**
@@ -131,6 +157,8 @@ class TabsInfo {
 		if (DEBUG) {
 			console.log('TABS_INFO: Adding tab');
 		}
+		this.recentCreatedAt = this.currentCreatedAt;
+		this.currentCreatedAt = Date.now();
 		if (!this.currentTabs.has(windowId)) {
 			this.currentTabs.set(windowId, new Map<TabId, TabInfo>());
 		}
@@ -149,6 +177,8 @@ class TabsInfo {
 		if (DEBUG) {
 			console.log('TABS_INFO: Removing tab');
 		}
+		this.recentRemovedAt = this.currentRemovedAt;
+		this.currentRemovedAt = Date.now();
 		if (!this.currentTabs.has(windowId)) {
 			return;
 		}

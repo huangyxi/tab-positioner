@@ -1,8 +1,9 @@
 import type { TabCreationPosition, TabCreationPositionKey } from '../shared/settings';
 import { getSettings } from '../shared/settings';
-import { NEW_PAGE_URIS } from '../shared/constants';
+import { NEW_PAGE_URIS, MAX_BATCH_DELAY_MS } from '../shared/constants';
 import { errorHandler } from '../shared/logging';
 import { TABS_INFO } from './tabsinfo';
+
 
 function getTabCreationSetting(
 	newTab: api.tabs.Tab,
@@ -25,17 +26,24 @@ async function createdTabMover(
 	if (DEBUG) {
 		console.log('  C1. Tab created');
 	}
+	const delay = TABS_INFO.getCreationDelay();
+	if (DEBUG) {
+		console.log('  C2. Creation delay:', delay);
+	}
+	if (delay < MAX_BATCH_DELAY_MS) {
+		return;
+	}
 	const currentTab = TABS_INFO.getRecent(newTab.windowId);
 	const currentIndex = currentTab.index;
 	// The above line should be executed ASAP before the new tab is activated
 	const tabId = newTab.id;
 	if (DEBUG) {
-		console.log('  C2. Tab ID:', tabId);
+		console.log('  C3. Tab ID:', tabId);
 	}
 	if (!tabId || tabId === -1) return; // api.tabs.TAB_ID_NONE
 	const setting = getTabCreationSetting(newTab);
 	if (DEBUG) {
-		console.log('  C3. Tab creation setting:', setting);
+		console.log('  C4. Tab creation setting:', setting);
 	}
 	if (setting === 'default') return;
 	// let index = -1; // Default to 'last'
@@ -55,7 +63,7 @@ async function createdTabMover(
 			break;
 	}
 	if (DEBUG) {
-		console.log(`  C4. New index: ${newIndex}`);
+		console.log(`  C5. New index: ${newIndex}`);
 	}
 	try {
 		await apiTabs.move(tabId, { index: newIndex });
@@ -63,7 +71,7 @@ async function createdTabMover(
 		errorHandler(error);
 	}
 	if (DEBUG) {
-		console.log('  C5. Tab moved');
+		console.log('  C6. Tab moved');
 	}
 }
 

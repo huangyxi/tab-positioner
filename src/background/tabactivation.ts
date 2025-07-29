@@ -1,6 +1,7 @@
 import type { TabActivationPosition } from '../shared/settings';
 import { errorHandler } from '../shared/logging';
 import { getSettings } from '../shared/settings';
+import { MAX_BATCH_DELAY_MS } from '../shared/constants';
 
 import { TABS_INFO } from './tabsinfo';
 
@@ -16,27 +17,34 @@ async function tabRemovedActivater(
 	if (DEBUG) {
 		console.log('  R1. Tab removed:', tabId);
 	}
+	const delay = TABS_INFO.getRemovalDelay();
+	if (DEBUG) {
+		console.log('  R2. Removal delay:', delay);
+	}
+	if (delay < MAX_BATCH_DELAY_MS) {
+		return;
+	}
 	const removedTab = TABS_INFO.getRemoved();
 	if (DEBUG) {
-		console.log('  R2. Removed tab:', removedTab);
+		console.log('  R3. Removed tab:', removedTab);
 	}
 	if (tabId !== removedTab.id) return;
 	const windowId = removedTab.windowId;
 	const recentTab = TABS_INFO.getRecent(windowId);
 	if (DEBUG) {
-		console.log('  R3. Recent tab:', recentTab);
+		console.log('  R4. Recent tab:', recentTab);
 	}
 	if (removedTab.id !== recentTab.id) return;
 	const setting = getTabActivationSetting();
 	if (DEBUG) {
-		console.log('  R4. Tab activation setting:', setting);
+		console.log('  R5. Tab activation setting:', setting);
 	}
 	if (setting === 'default') return;
 
 	// currentTabs should retrieve ASAP before the new tab is activated
 	const currentTabs = TABS_INFO.getCurrents(windowId);
 	if (DEBUG) {
-		console.log('  R5. Get current tabs');
+		console.log('  R6. Get current tabs');
 	}
 
 	// No tabs remain in the current window to activate; this is handled by the browser.
@@ -62,7 +70,7 @@ async function tabRemovedActivater(
 		// 	break;
 	}
 	if (DEBUG) {
-		console.log(`  R6. New index: ${newIndex}, New tab ID: ${newTabId}`);
+		console.log(`  R7. New index: ${newIndex}, New tab ID: ${newTabId}`);
 	}
 	if (newTabId === undefined) {
 		const newTabIds = await apiTabs.query({
@@ -74,7 +82,7 @@ async function tabRemovedActivater(
 		newTabId = newTabIds[0].id!;
 	}
 	if (DEBUG) {
-		console.log('  R7. New tab ID:', newTabId, 'New index:', newIndex);
+		console.log('  R8. New tab ID:', newTabId, 'New index:', newIndex);
 	}
 	try {
 		await apiTabs.update(newTabId, { active: true });
@@ -82,7 +90,7 @@ async function tabRemovedActivater(
 		errorHandler(error);
 	}
 	if (DEBUG) {
-		console.log('  R8. Tab activated');
+		console.log('  R9. Tab activated');
 	}
 }
 
