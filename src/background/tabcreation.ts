@@ -65,13 +65,19 @@ async function createdTabMover(
 	if (DEBUG) {
 		console.log(`  C5. New index: ${newIndex}`);
 	}
+	if (newIndex == newTab.index) {
+		return;
+	}
+	if (DEBUG) {
+		console.log('  C6. Moving tab');
+	}
 	try {
 		await apiTabs.move(tabId, { index: newIndex });
 	} catch (error: any) {
 		errorHandler(error);
 	}
 	if (DEBUG) {
-		console.log('  C6. Tab moved');
+		console.log('  C7. Tab moved');
 	}
 }
 
