@@ -148,6 +148,11 @@ select:focus+label {
 	color: var(--md-sys-color-primary);
 }
 
+option {
+	background-color: var(--md-sys-color-surface);
+	color: var(--md-sys-color-on-surface);
+}
+
 /* ==============================================
 	Buttons
 ============================================== */
