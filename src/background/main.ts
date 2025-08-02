@@ -1,5 +1,5 @@
-import { registerSyncSettingsListeners } from './syncsettings';
-import { TABS_INFO } from './tabsinfo';
+import { SyncSettings } from './syncsettings';
+import { TabsInfo } from './tabsinfo';
 import { registerTabCreatedListener } from './tabcreation';
 import { registerTabRemovedListener } from './tabactivation';
 
@@ -12,7 +12,7 @@ async function main() {
 	const apiStorage = api.storage;
 	const apiTabs = api.tabs;
 
-	registerSyncSettingsListeners(apiRuntime, apiStorage);
+	SyncSettings.registerListeners(apiRuntime, apiStorage);
 
 	// In right order to ensure the listeners in TABS_INFO are registered before others.
 	// Subsequent events may fire before earlier ones finish processing if the earlier ones take too long.
@@ -20,7 +20,7 @@ async function main() {
 	// - Remove: 1.onRemoved -> 2.onRemoved -> 1.onActivated -> 2.onActivated
 	// - Move between Windows: 1.onDetached -> 2.onDetached ( -> 1.onActivated -> 2.onActivated )
 	//   -> 1.onAttached -> 2.onAttached -> 1.onActivated -> 2.onActivated
-	TABS_INFO.registerListeners(apiRuntime, apiTabs);
+	TabsInfo.registerListeners(apiRuntime, apiTabs);
 	registerTabCreatedListener(apiTabs);
 	registerTabRemovedListener(apiTabs);
 }

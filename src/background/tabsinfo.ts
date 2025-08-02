@@ -1,3 +1,5 @@
+import { SessionSingleton } from "../shared/storage";
+
 type WindowId = number;
 type TabId = number;
 // TabInfo does not store the index, as it can change.
@@ -17,15 +19,17 @@ interface RemovedTabInfo {
 }
 type DateTime = number;
 
-class TabsInfo {
+export class TabsInfo extends SessionSingleton {
+
 	// Updating the indexes of all current tabs immediately after each event may cause performance issues,
 	// so we only store the indexes of the most recently active tab for each window.
-	private currentTabs = new Map<WindowId, Map<TabId, TabInfo>>();
+	private currentTabs: Record<WindowId, Record<TabId, TabInfo>> = {};
+
 
 	// Switching windows does not trigger any event if no other tab becomes active,
 	// so we need to track the recent tab info for each window to store the index of the removed tab,
 	// since this information can't be retrieved from the API once the tab is removed.
-	private recentTabs = new Map<WindowId, RecentTabInfo>();
+	private recentTabs: Record<WindowId, RecentTabInfo> = {};
 
 	// Removed tab may not be the recent tab,
 	// so we need to store the removed tab info separately.
@@ -44,17 +48,16 @@ class TabsInfo {
 	 * Get the **current** tabs in a window.
 	 * The result is updated immediately after each event, but **before** other events in the event queue.
 	 * @param windowId - The ID of the window to retrieve tabs for.
-	 * @param count - The number of tabs to return, sorted by last accessed time.
 	 * @returns An array of TabInfo objects, sorted with the most recently accessed tabs first.
 	 */
 	public getCurrents(
 		windowId: WindowId,
 	): TabInfo[] {
-		if (!this.currentTabs.has(windowId)) {
+		const windowTabs = this.currentTabs[windowId];
+		if (!windowTabs) {
 			return [];
 		}
-		const windowTabs = this.currentTabs.get(windowId)!;
-		const sortedTabs = Array.from(windowTabs.values())
+		const sortedTabs = Object.values(windowTabs)
 			.sort((a, b) => b.lastAccessed - a.lastAccessed) // Sort by last accessed time, descending
 		return sortedTabs;
 	}
@@ -67,7 +70,7 @@ class TabsInfo {
 	 * @returns The recent tab info, or an object with -1 values if no tab is active.
 	 */
 	public getRecent(windowId: WindowId): RecentTabInfo {
-		return this.recentTabs.get(windowId) ?? {
+		return this.recentTabs[windowId] ?? {
 			id: -1,
 			index: -1,
 		}
@@ -103,29 +106,32 @@ class TabsInfo {
 	 * @param normalTabs Tabs with `windowType: 'normal'` to initialize the TabsInfo,
 	 * where the `windowId` and `id` are defined.
 	 */
-	private initialize(
+	public async initialize(
 		normalTabs: api.tabs.Tab[],
 	) {
 		if (DEBUG) {
-			console.log('TABS_INFO: Initialized');
+			console.log('TABS_INFO: Initialized', this);
 		}
 		for (const tab of normalTabs) {
-			if (!this.currentTabs.has(tab.windowId)) {
-				this.currentTabs.set(tab.windowId, new Map<TabId, TabInfo>());
+			if (tab.windowId === undefined || tab.id === undefined) continue;
+
+			if (!this.currentTabs[tab.windowId]) {
+				this.currentTabs[tab.windowId] = {};
 			}
-			this.currentTabs.get(tab.windowId)!.set(tab.id!, {
-				id: tab.id!,
+			this.currentTabs[tab.windowId][tab.id] = {
+				id: tab.id,
 				lastAccessed: tab.lastAccessed,
 				openerTabId: tab.openerTabId,
-			});
+			};
 			if (!tab.active) {
 				continue;
 			}
-			this.recentTabs.set(tab.windowId, {
-				id: tab.id!,
+			this.recentTabs[tab.windowId] = {
+				id: tab.id,
 				index: tab.index,
-			});
+			};
 		}
+		await this.saveState();
 	}
 
 	/**
@@ -135,21 +141,22 @@ class TabsInfo {
 	 * @param normalActiveTabs - Tabs with `windowType: 'normal'` and 'active: true` to update the recent tabs,
 	 * where the `windowId` and `id` are defined.
 	 */
-	private updateRecentTabs(
+	private async updateRecentTabs(
 		normalActiveTabs: api.tabs.Tab[],
 	) {
 		if (DEBUG) {
 			console.log('TABS_INFO: Recent tabs updated');
 		}
 		for (const tab of normalActiveTabs) {
-			this.recentTabs.set(tab.windowId, {
+			this.recentTabs[tab.windowId] = {
 				id: tab.id!,
 				index: tab.index,
-			});
+			};
 		}
+		await this.saveState();
 	}
 
-	private addTab(
+	private async addTab(
 		windowId: WindowId,
 		tabId: TabId,
 		openerTabId?: TabId,
@@ -159,17 +166,18 @@ class TabsInfo {
 		}
 		this.recentCreatedAt = this.currentCreatedAt;
 		this.currentCreatedAt = Date.now();
-		if (!this.currentTabs.has(windowId)) {
-			this.currentTabs.set(windowId, new Map<TabId, TabInfo>());
+		if (!this.currentTabs[windowId]) {
+			this.currentTabs[windowId] = {};
 		}
-		this.currentTabs.get(windowId)!.set(tabId, {
+		this.currentTabs[windowId][tabId] = {
 			id: tabId,
 			lastAccessed: Date.now(),
 			openerTabId: openerTabId,
-		});
+		};
+		await this.saveState();
 	}
 
-	private removeTab(
+	private async removeTab(
 		windowId: WindowId,
 		tabId: TabId,
 		isWindowClosing: boolean,
@@ -179,24 +187,26 @@ class TabsInfo {
 		}
 		this.recentRemovedAt = this.currentRemovedAt;
 		this.currentRemovedAt = Date.now();
-		if (!this.currentTabs.has(windowId)) {
+		const windowTabs = this.currentTabs[windowId];
+		if (!windowTabs) {
 			return;
 		}
-		const windowTabs = this.currentTabs.get(windowId)!;
-		// 'detach' the last tab would not fire onRemoved event, so compare the size
+
 		this.removedTab = {
 			id: tabId,
 			windowId: windowId,
 		};
-		if (isWindowClosing || windowTabs.size === 1) {
-			this.currentTabs.delete(windowId);
-			this.recentTabs.delete(windowId);
+		// 'detach' the last tab would not fire onRemoved event, so compare the size
+		if (isWindowClosing || Object.keys(windowTabs).length === 1) {
+			delete this.currentTabs[windowId];
+			delete this.recentTabs[windowId];
 			return;
 		}
-		windowTabs.delete(tabId);
+		delete windowTabs[tabId];
+		await this.saveState();
 	}
 
-	private activateTab(
+	public async activateTab(
 		windowId: WindowId,
 		tabId: TabId,
 		index: TabIndex,
@@ -204,63 +214,66 @@ class TabsInfo {
 		if (DEBUG) {
 			console.log(`TABS_INFO: Activating tab ${tabId} in window ${windowId} at index ${index}`);
 		}
-		const windowTabs = this.currentTabs.get(windowId);
+		const windowTabs = this.currentTabs[windowId];
 		if (!windowTabs) {
 			return;
 		}
-		const tabInfo = windowTabs!.get(tabId);
+		const tabInfo = windowTabs[tabId];
 		if (tabInfo) {
 			tabInfo.lastAccessed = Date.now();
 		}
-		this.recentTabs.set(windowId, {
+		this.recentTabs[windowId] = {
 			id: tabId,
 			index: index,
-		});
+		};
+		await this.saveState();
 	}
 
-	public registerListeners(
+	public static registerListeners(
 		apiRuntime: typeof api.runtime,
 		apiTabs: typeof api.tabs,
 	) {
 		apiRuntime.onInstalled.addListener(async () => {
+			const instance = await this.getInstance();
 			const normalTabs = await apiTabs.query({ windowType: 'normal' });
-			this.initialize(normalTabs);
+			await instance.initialize(normalTabs);
 		});
 
 		apiRuntime.onStartup.addListener(async () => {
+			const instance = await this.getInstance();
 			const normalTabs = await apiTabs.query({ windowType: 'normal' });
-			this.initialize(normalTabs);
+			await instance.initialize(normalTabs);
 		});
 
-		apiTabs.onCreated.addListener((tab) => {
+		apiTabs.onCreated.addListener(async (tab) => {
 			if (tab.id === undefined || tab.id === apiTabs.TAB_ID_NONE) {
 				return;
 			}
-			this.addTab(tab.windowId, tab.id, tab.openerTabId);
+			const instance = await this.getInstance();
+			await instance.addTab(tab.windowId, tab.id, tab.openerTabId);
 		});
 
 		apiTabs.onRemoved.addListener(async (tabId, removeInfo) => {
-			this.removeTab(removeInfo.windowId, tabId, removeInfo.isWindowClosing);
-			if (this.recentTabs.get(removeInfo.windowId)?.id !== tabId) {
+			const instance = await this.getInstance();
+			await instance.removeTab(removeInfo.windowId, tabId, removeInfo.isWindowClosing);
+			if (instance.recentTabs[removeInfo.windowId]?.id !== tabId) {
 				const normalActiveTabs = await apiTabs.query({
 					windowType: 'normal',
 					active: true,
 					windowId: removeInfo.windowId,
 				});
-				this.updateRecentTabs(normalActiveTabs);
+				await instance.updateRecentTabs(normalActiveTabs);
 			}
 		});
 
-		apiTabs.onAttached.addListener((tabId, attachInfo) => {
-			if (attachInfo.newWindowId !== undefined) {
-				this.addTab(attachInfo.newWindowId, tabId);
-			}
+		apiTabs.onAttached.addListener(async (tabId, attachInfo) => {
+			const instance = await this.getInstance();
+			await instance.addTab(attachInfo.newWindowId, tabId);
 		});
 
-		apiTabs.onDetached.addListener((tabId, detachInfo) => {
-			if (detachInfo.oldWindowId !== undefined) {
-				this.removeTab(detachInfo.oldWindowId, tabId, false);
-			}
+		apiTabs.onDetached.addListener(async (tabId, detachInfo) => {
+			const instance = await this.getInstance();
+			await instance.removeTab(detachInfo.oldWindowId, tabId, false);
 		});
 
 		apiTabs.onActivated.addListener(async (activeInfo) => {
@@ -268,22 +281,22 @@ class TabsInfo {
 			if (tab.id === undefined || tab.id === apiTabs.TAB_ID_NONE) {
 				return;
 			}
-			this.activateTab(activeInfo.windowId, activeInfo.tabId, tab.index);
+			const instance = await this.getInstance();
+			await instance.activateTab(activeInfo.windowId, activeInfo.tabId, tab.index);
 		});
 
-		apiTabs.onUpdated.addListener(async (tabId, changeInfo) => {
+		apiTabs.onUpdated.addListener(async (_tabId, changeInfo, _tab) => {
 			if (DEBUG) {
-				console.log('TABS_INFO: Tab updated', tabId, changeInfo);
+				console.log('TABS_INFO: Tab updated', _tabId, changeInfo);
 			}
 			if (changeInfo.pinned === true) {
+				const instance = await this.getInstance();
 				const normalActiveTabs = await apiTabs.query({
 					windowType: 'normal',
 					active: true,
 				});
-				this.updateRecentTabs(normalActiveTabs);
+				await instance.updateRecentTabs(normalActiveTabs);
 			}
 		});
 	}
 }
-
-export const TABS_INFO = new TabsInfo();

@@ -1,13 +1,14 @@
 import type { TabCreationPosition, TabCreationPositionKey } from '../shared/settings';
-import { getSettings } from '../shared/settings';
 import { NEW_PAGE_URIS, MAX_BATCH_DELAY_MS } from '../shared/constants';
 import { errorHandler } from '../shared/logging';
-import { TABS_INFO } from './tabsinfo';
+
+import { SyncSettings } from './syncsettings';
+import { TabsInfo } from './tabsinfo';
 
 
-function getTabCreationSetting(
+async function getTabCreationSetting(
 	newTab: api.tabs.Tab,
-): TabCreationPosition {
+): Promise<[TabCreationPosition, TabCreationPositionKey]> {
 	const isNewTabPage = NEW_PAGE_URIS.includes(newTab.pendingUrl || newTab.url || '');
 	let settingKey: TabCreationPositionKey;
 	if (isNewTabPage) {
@@ -15,8 +16,8 @@ function getTabCreationSetting(
 	} else {
 		settingKey = 'background_link_position';
 	}
-	const settings = getSettings();
-	return settings[settingKey];
+	const settings = await SyncSettings.getInstance();
+	return [settings.get(settingKey), settingKey] as const;
 }
 
 async function createdTabMover(
@@ -26,14 +27,16 @@ async function createdTabMover(
 	if (DEBUG) {
 		console.log('  C1. Tab created');
 	}
-	const delay = TABS_INFO.getCreationDelay();
+	const hasOffloaded = TabsInfo.hasOffloaded();
+	const tabsInfo = await TabsInfo.getInstance();
+	const delay = tabsInfo.getCreationDelay();
 	if (DEBUG) {
 		console.log('  C2. Creation delay:', delay);
 	}
 	if (delay < MAX_BATCH_DELAY_MS) {
 		return;
 	}
-	const currentTab = TABS_INFO.getRecent(newTab.windowId);
+	const currentTab = tabsInfo.getRecent(newTab.windowId);
 	const currentIndex = currentTab.index;
 	// The above line should be executed ASAP before the new tab is activated
 	const tabId = newTab.id;
@@ -41,7 +44,7 @@ async function createdTabMover(
 		console.log('  C3. Tab ID:', tabId);
 	}
 	if (!tabId || tabId === -1) return; // api.tabs.TAB_ID_NONE
-	const setting = getTabCreationSetting(newTab);
+	const [setting, settingKey] = await getTabCreationSetting(newTab);
 	if (DEBUG) {
 		console.log('  C4. Tab creation setting:', setting);
 	}
@@ -73,6 +76,10 @@ async function createdTabMover(
 	}
 	try {
 		await apiTabs.move(tabId, { index: newIndex });
+		// Update the new tab's index in TabsInfo when the worker had been offloaded.
+		if (hasOffloaded && settingKey === 'new_tab_position') {
+			await tabsInfo.activateTab(newTab.windowId, tabId, newIndex);
+		}
 	} catch (error: any) {
 		errorHandler(error);
 	}

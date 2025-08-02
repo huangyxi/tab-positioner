@@ -1,37 +1,53 @@
-import { loadSettings, saveSettings } from '../shared/storage';
-import { setSettings } from '../shared/settings';
+import { loadSettings, saveSettings, SessionSingleton } from '../shared/storage';
+import { DEFAULT_SETTINGS } from '../shared/settings';
 
-export function registerSyncSettingsListeners(
-	apiRuntime: typeof api.runtime,
-	apiStorage: typeof api.storage,
-) {
-	apiRuntime.onInstalled.addListener(async () => {
-		const settings = await loadSettings();
-		setSettings(settings);
-		if (DEBUG) {
-			console.log('Settings loaded on install:', settings);
-		}
-		await saveSettings(settings);
-	});
+export class SyncSettings extends SessionSingleton {
+	private settings = DEFAULT_SETTINGS;
 
-	apiRuntime.onStartup.addListener(async () => {
-		const settings = await loadSettings();
-		setSettings(settings);
-		if (DEBUG) {
-			console.log('Settings loaded on startup:', settings);
-		}
-		await saveSettings(settings);
-	});
+	public get<T extends keyof typeof DEFAULT_SETTINGS>(
+		key: T
+	): typeof DEFAULT_SETTINGS[T] {
+		return this.settings[key];
+	}
 
-	apiStorage.onChanged.addListener(async (changes, areaName) => {
-		if (areaName !== 'sync') {
-			return;
-		}
-		const settings = await loadSettings();
-		setSettings(settings);
-		if (DEBUG) {
-			console.log('Settings changed:', changes);
-		}
-		await saveSettings(settings);
-	});
+	public static registerListeners(
+		apiRuntime: typeof api.runtime,
+		apiStorage: typeof api.storage,
+	) {
+		apiRuntime.onInstalled.addListener(async () => {
+			const instance = await this.getInstance();
+			const settings = await loadSettings();
+			instance.settings = settings;
+			instance.saveState();
+			if (DEBUG) {
+				console.log('SyncSettings: Settings loaded on install:', settings);
+			}
+			await saveSettings(settings);
+		});
+
+		apiRuntime.onStartup.addListener(async () => {
+			const instance = await this.getInstance();
+			const settings = await loadSettings();
+			instance.settings = settings;
+			instance.saveState();
+			if (DEBUG) {
+				console.log('SyncSettings: Settings loaded on startup:', settings);
+			}
+			await saveSettings(settings);
+		});
+
+		apiStorage.onChanged.addListener(async (changes, areaName) => {
+			if (areaName !== 'sync') {
+				return;
+			}
+			const instance = await this.getInstance();
+			const settings = await loadSettings();
+			instance.settings = settings;
+			instance.saveState();
+			if (DEBUG) {
+				console.log('SyncSettings: Settings changed:', changes);
+			}
+			await saveSettings(settings);
+		});
+	}
 }

@@ -1,13 +1,13 @@
 import type { TabActivationPosition } from '../shared/settings';
 import { errorHandler } from '../shared/logging';
-import { getSettings } from '../shared/settings';
 import { MAX_BATCH_DELAY_MS } from '../shared/constants';
 
-import { TABS_INFO } from './tabsinfo';
+import { TabsInfo } from './tabsinfo';
+import { SyncSettings } from './syncsettings';
 
-function getTabActivationSetting(): TabActivationPosition {
-	const settings = getSettings();
-	return settings['after_close_activation'];
+async function getTabActivationSetting(): Promise<TabActivationPosition> {
+	const settings = (await SyncSettings.getInstance());
+	return settings.get('after_close_activation');
 }
 
 async function tabRemovedActivater(
@@ -17,32 +17,33 @@ async function tabRemovedActivater(
 	if (DEBUG) {
 		console.log('  R1. Tab removed:', tabId);
 	}
-	const delay = TABS_INFO.getRemovalDelay();
+	const tabsInfo = await TabsInfo.getInstance();
+	const delay = tabsInfo.getRemovalDelay();
 	if (DEBUG) {
 		console.log('  R2. Removal delay:', delay);
 	}
 	if (delay < MAX_BATCH_DELAY_MS) {
 		return;
 	}
-	const removedTab = TABS_INFO.getRemoved();
+	const removedTab = tabsInfo.getRemoved();
 	if (DEBUG) {
 		console.log('  R3. Removed tab:', removedTab);
 	}
 	if (tabId !== removedTab.id) return;
 	const windowId = removedTab.windowId;
-	const recentTab = TABS_INFO.getRecent(windowId);
+	const recentTab = tabsInfo.getRecent(windowId);
 	if (DEBUG) {
 		console.log('  R4. Recent tab:', recentTab);
 	}
 	if (removedTab.id !== recentTab.id) return;
-	const setting = getTabActivationSetting();
+	const setting = await getTabActivationSetting();
 	if (DEBUG) {
 		console.log('  R5. Tab activation setting:', setting);
 	}
 	if (setting === 'default') return;
 
 	// currentTabs should retrieve ASAP before the new tab is activated
-	const currentTabs = TABS_INFO.getCurrents(windowId);
+	const currentTabs = tabsInfo.getCurrents(windowId);
 	if (DEBUG) {
 		console.log('  R6. Get current tabs');
 	}

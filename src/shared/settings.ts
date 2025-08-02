@@ -56,6 +56,12 @@ export const DEFAULT_SETTINGS = {
 	// foreground_link_position: DEFAULT_VALUE as TabCreationPosition,
 	after_close_activation: DEFAULT_VALUE as TabActivationPosition,
 } satisfies Record<SettingKey, SettingValue>;
+// export interface ExtensionSettings extends Record<SettingKey, SettingValue> {
+// 	new_tab_position: TabCreationPosition;
+// 	background_link_position: TabCreationPosition;
+// 	// foreground_link_position: TabCreationPosition;
+// 	after_close_activation: TabActivationPosition;
+// }
 export type ExtensionSettings = typeof DEFAULT_SETTINGS;
 const CURRENT_SETTINGS: ExtensionSettings = {
 	...DEFAULT_SETTINGS,
