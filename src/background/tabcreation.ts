@@ -28,7 +28,7 @@ async function createdTabMover(
 		console.log('  C1. Tab created');
 	}
 	const hasLoaded = TabsInfo.hasLoaded();
-	const tabsInfo = hasLoaded ? TabsInfo.getSyncInstance() : await TabsInfo.getInstance();
+	const tabsInfo = hasLoaded ? TabsInfo.getLoadedInstance() : await TabsInfo.getInstance();
 	const delay = tabsInfo.getCreationDelay();
 	if (DEBUG) {
 		console.log('  C2. Creation delay:', delay);

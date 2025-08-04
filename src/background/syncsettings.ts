@@ -1,4 +1,5 @@
-import { loadSettings, saveSettings, SessionSingleton } from '../shared/storage';
+import { SessionSingleton } from '../shared/session';
+import { loadSettings, saveSettings } from '../shared/storage';
 import { DEFAULT_SETTINGS } from '../shared/settings';
 
 export class SyncSettings extends SessionSingleton {

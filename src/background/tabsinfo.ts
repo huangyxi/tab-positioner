@@ -1,4 +1,4 @@
-import { SessionSingleton } from "../shared/storage";
+import { SessionSingleton } from "../shared/session";
 
 type WindowId = number;
 type TabId = number;
@@ -249,12 +249,12 @@ export class TabsInfo extends SessionSingleton {
 			if (tab.id === undefined || tab.id === apiTabs.TAB_ID_NONE) {
 				return;
 			}
-			const instance = this.hasLoaded() ? this.getSyncInstance() : await this.getInstance();
+			const instance = this.hasLoaded() ? this.getLoadedInstance() : await this.getInstance();
 			await instance.addTab(tab.windowId, tab.id, tab.openerTabId);
 		});
 
 		apiTabs.onRemoved.addListener(async (tabId, removeInfo) => {
-			const instance = this.hasLoaded() ? this.getSyncInstance() : await this.getInstance();
+			const instance = this.hasLoaded() ? this.getLoadedInstance() : await this.getInstance();
 			await instance.removeTab(removeInfo.windowId, tabId, removeInfo.isWindowClosing);
 			if (instance.recentTabs[removeInfo.windowId]?.id !== tabId) {
 				const normalActiveTabs = await apiTabs.query({
@@ -267,12 +267,12 @@ export class TabsInfo extends SessionSingleton {
 		});
 
 		apiTabs.onAttached.addListener(async (tabId, attachInfo) => {
-			const instance = this.hasLoaded() ? this.getSyncInstance() : await this.getInstance();
+			const instance = this.hasLoaded() ? this.getLoadedInstance() : await this.getInstance();
 			await instance.addTab(attachInfo.newWindowId, tabId);
 		});
 
 		apiTabs.onDetached.addListener(async (tabId, detachInfo) => {
-			const instance = this.hasLoaded() ? this.getSyncInstance() : await this.getInstance();
+			const instance = this.hasLoaded() ? this.getLoadedInstance() : await this.getInstance();
 			await instance.removeTab(detachInfo.oldWindowId, tabId, false);
 		});
 
@@ -281,7 +281,7 @@ export class TabsInfo extends SessionSingleton {
 			if (tab.id === undefined || tab.id === apiTabs.TAB_ID_NONE) {
 				return;
 			}
-			const instance = this.hasLoaded() ? this.getSyncInstance() : await this.getInstance();
+			const instance = this.hasLoaded() ? this.getLoadedInstance() : await this.getInstance();
 			await instance.activateTab(activeInfo.windowId, activeInfo.tabId, tab.index);
 		});
 
@@ -290,7 +290,7 @@ export class TabsInfo extends SessionSingleton {
 				console.log(' tabsInfo: Tab updated', _tabId, changeInfo);
 			}
 			if (changeInfo.pinned === true) {
-				const instance = this.hasLoaded() ? this.getSyncInstance() : await this.getInstance();
+				const instance = this.hasLoaded() ? this.getLoadedInstance() : await this.getInstance();
 				const normalActiveTabs = await apiTabs.query({
 					active: true,
 					windowType: 'normal',
