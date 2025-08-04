@@ -20,7 +20,7 @@ export class SyncSettings extends SessionSingleton {
 			instance.settings = settings;
 			instance.saveState();
 			if (DEBUG) {
-				console.log('SyncSettings: Settings loaded on install:', settings);
+				console.log(' syncSettings: Settings loaded on install:', settings);
 			}
 			await saveSettings(settings);
 		});
@@ -31,7 +31,7 @@ export class SyncSettings extends SessionSingleton {
 			instance.settings = settings;
 			instance.saveState();
 			if (DEBUG) {
-				console.log('SyncSettings: Settings loaded on startup:', settings);
+				console.log(' syncSettings: Settings loaded on startup:', settings);
 			}
 			await saveSettings(settings);
 		});
@@ -45,7 +45,7 @@ export class SyncSettings extends SessionSingleton {
 			instance.settings = settings;
 			instance.saveState();
 			if (DEBUG) {
-				console.log('SyncSettings: Settings changed:', changes);
+				console.log(' syncSettings: Settings changed:', changes);
 			}
 			await saveSettings(settings);
 		});

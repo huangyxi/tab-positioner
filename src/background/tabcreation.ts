@@ -27,8 +27,8 @@ async function createdTabMover(
 	if (DEBUG) {
 		console.log('  C1. Tab created');
 	}
-	const hasOffloaded = TabsInfo.hasOffloaded();
-	const tabsInfo = await TabsInfo.getInstance();
+	const hasLoaded = TabsInfo.hasLoaded();
+	const tabsInfo = hasLoaded ? TabsInfo.getSyncInstance() : await TabsInfo.getInstance();
 	const delay = tabsInfo.getCreationDelay();
 	if (DEBUG) {
 		console.log('  C2. Creation delay:', delay);
@@ -38,6 +38,7 @@ async function createdTabMover(
 	}
 	const currentTab = tabsInfo.getRecent(newTab.windowId);
 	const currentIndex = currentTab.index;
+
 	// The above line should be executed ASAP before the new tab is activated
 	const tabId = newTab.id;
 	if (DEBUG) {
@@ -77,7 +78,7 @@ async function createdTabMover(
 	try {
 		await apiTabs.move(tabId, { index: newIndex });
 		// Update the new tab's index in TabsInfo when the worker had been offloaded.
-		if (hasOffloaded && settingKey === 'new_tab_position') {
+		if (!hasLoaded && settingKey === 'new_tab_position') {
 			await tabsInfo.activateTab(newTab.windowId, tabId, newIndex);
 		}
 	} catch (error: any) {

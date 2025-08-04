@@ -17,7 +17,8 @@ async function tabRemovedActivater(
 	if (DEBUG) {
 		console.log('  R1. Tab removed:', tabId);
 	}
-	const tabsInfo = await TabsInfo.getInstance();
+
+	const tabsInfo = TabsInfo.hasLoaded() ? TabsInfo.getSyncInstance() : await TabsInfo.getInstance();
 	const delay = tabsInfo.getRemovalDelay();
 	if (DEBUG) {
 		console.log('  R2. Removal delay:', delay);

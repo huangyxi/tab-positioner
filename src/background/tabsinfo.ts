@@ -110,7 +110,7 @@ export class TabsInfo extends SessionSingleton {
 		normalTabs: api.tabs.Tab[],
 	) {
 		if (DEBUG) {
-			console.log('TABS_INFO: Initialized', this);
+			console.log(' tabsInfo: Initialized', this);
 		}
 		for (const tab of normalTabs) {
 			if (tab.windowId === undefined || tab.id === undefined) continue;
@@ -145,7 +145,7 @@ export class TabsInfo extends SessionSingleton {
 		normalActiveTabs: api.tabs.Tab[],
 	) {
 		if (DEBUG) {
-			console.log('TABS_INFO: Recent tabs updated');
+			console.log(' tabsInfo: Recent tabs updated');
 		}
 		for (const tab of normalActiveTabs) {
 			this.recentTabs[tab.windowId] = {
@@ -162,7 +162,7 @@ export class TabsInfo extends SessionSingleton {
 		openerTabId?: TabId,
 	) {
 		if (DEBUG) {
-			console.log('TABS_INFO: Adding tab');
+			console.log(' tabsInfo: Adding tab');
 		}
 		this.recentCreatedAt = this.currentCreatedAt;
 		this.currentCreatedAt = Date.now();
@@ -183,7 +183,7 @@ export class TabsInfo extends SessionSingleton {
 		isWindowClosing: boolean,
 	) {
 		if (DEBUG) {
-			console.log('TABS_INFO: Removing tab');
+			console.log(' tabsInfo: Removing tab');
 		}
 		this.recentRemovedAt = this.currentRemovedAt;
 		this.currentRemovedAt = Date.now();
@@ -212,7 +212,7 @@ export class TabsInfo extends SessionSingleton {
 		index: TabIndex,
 	) {
 		if (DEBUG) {
-			console.log(`TABS_INFO: Activating tab ${tabId} in window ${windowId} at index ${index}`);
+			console.log(` tabsInfo: Activating tab ${tabId} in window ${windowId} at index ${index}`);
 		}
 		const windowTabs = this.currentTabs[windowId];
 		if (!windowTabs) {
@@ -249,30 +249,30 @@ export class TabsInfo extends SessionSingleton {
 			if (tab.id === undefined || tab.id === apiTabs.TAB_ID_NONE) {
 				return;
 			}
-			const instance = await this.getInstance();
+			const instance = this.hasLoaded() ? this.getSyncInstance() : await this.getInstance();
 			await instance.addTab(tab.windowId, tab.id, tab.openerTabId);
 		});
 
 		apiTabs.onRemoved.addListener(async (tabId, removeInfo) => {
-			const instance = await this.getInstance();
+			const instance = this.hasLoaded() ? this.getSyncInstance() : await this.getInstance();
 			await instance.removeTab(removeInfo.windowId, tabId, removeInfo.isWindowClosing);
 			if (instance.recentTabs[removeInfo.windowId]?.id !== tabId) {
 				const normalActiveTabs = await apiTabs.query({
-					windowType: 'normal',
 					active: true,
 					windowId: removeInfo.windowId,
+					windowType: 'normal',
 				});
 				await instance.updateRecentTabs(normalActiveTabs);
 			}
 		});
 
 		apiTabs.onAttached.addListener(async (tabId, attachInfo) => {
-			const instance = await this.getInstance();
+			const instance = this.hasLoaded() ? this.getSyncInstance() : await this.getInstance();
 			await instance.addTab(attachInfo.newWindowId, tabId);
 		});
 
 		apiTabs.onDetached.addListener(async (tabId, detachInfo) => {
-			const instance = await this.getInstance();
+			const instance = this.hasLoaded() ? this.getSyncInstance() : await this.getInstance();
 			await instance.removeTab(detachInfo.oldWindowId, tabId, false);
 		});
 
@@ -281,19 +281,19 @@ export class TabsInfo extends SessionSingleton {
 			if (tab.id === undefined || tab.id === apiTabs.TAB_ID_NONE) {
 				return;
 			}
-			const instance = await this.getInstance();
+			const instance = this.hasLoaded() ? this.getSyncInstance() : await this.getInstance();
 			await instance.activateTab(activeInfo.windowId, activeInfo.tabId, tab.index);
 		});
 
 		apiTabs.onUpdated.addListener(async (_tabId, changeInfo, _tab) => {
 			if (DEBUG) {
-				console.log('TABS_INFO: Tab updated', _tabId, changeInfo);
+				console.log(' tabsInfo: Tab updated', _tabId, changeInfo);
 			}
 			if (changeInfo.pinned === true) {
-				const instance = await this.getInstance();
+				const instance = this.hasLoaded() ? this.getSyncInstance() : await this.getInstance();
 				const normalActiveTabs = await apiTabs.query({
-					windowType: 'normal',
 					active: true,
+					windowType: 'normal',
 				});
 				await instance.updateRecentTabs(normalActiveTabs);
 			}

@@ -86,11 +86,18 @@ export abstract class SessionSingleton {
 	// Use `getInstance()` to get the singleton instance.
 	public constructor() { }
 
-	public static hasOffloaded<T extends typeof SessionSingleton>(
+	public static hasLoaded<T extends typeof SessionSingleton>(
 		this: T,
 	): boolean {
-		return !this._instances.has(this);
+		return this._instances.has(this);
 	}
+
+	public static getSyncInstance<T extends typeof SessionSingleton>(
+		this: T,
+	): InstanceType<T> {
+		return this._instances.get(this) as InstanceType<T>;
+	}
+
 
 	/**
 	 * Gets the singleton instance of the class.
@@ -104,8 +111,8 @@ export abstract class SessionSingleton {
 		this: T,
 		...args: ConstructorParameters<T>
 	): Promise<InstanceType<T>> {
-		if (this._instances.has(this)) {
-			return this._instances.get(this) as InstanceType<T>;
+		if (this.hasLoaded()) {
+			return this.getSyncInstance();
 		}
 		if (this._initializationPromises.has(this)) {
 			return this._initializationPromises.get(this) as Promise<InstanceType<T>>;
@@ -113,7 +120,7 @@ export abstract class SessionSingleton {
 		const loadingPromise = (async () => {
 			try {
 				if (DEBUG) {
-					console.log(`${this.name}: Creating new instance`);
+					console.log(`_${this.name}: Creating new instance`);
 				}
 				const instance = new (this as any)(...args) as InstanceType<T>;
 				if (await instance.hasState()) {
@@ -136,7 +143,7 @@ export abstract class SessionSingleton {
 			await ongoing;
 		}
 		if (DEBUG) {
-			console.log(`${this.name}: Saving state`);
+			console.log(`_${this.name}: Saving state`);
 		}
 		const timestamp = DEBUG ? Date.now() : 0;
 		const savePromise = (async () => {
@@ -148,7 +155,7 @@ export abstract class SessionSingleton {
 				}
 				await this.flagState();
 				if (DEBUG) {
-					console.log(`${this.name}: State saved in ${Date.now() - timestamp}ms`);
+					console.log(`_${this.name}: State saved in ${Date.now() - timestamp}ms`);
 				}
 			} finally {
 				cls._savePromises.delete(cls);
@@ -160,7 +167,7 @@ export abstract class SessionSingleton {
 
 	private async loadState() {
 		if (DEBUG) {
-			console.log(`${this.name}: Loading state`);
+			console.log(`_${this.name}: Loading state`);
 		}
 		const timestamp = DEBUG ? Date.now() : 0;
 		for (const property of Object.getOwnPropertyNames(this)) {
@@ -169,7 +176,7 @@ export abstract class SessionSingleton {
 			(this as any)[property] = JSON.parse(value);
 		}
 		if (DEBUG) {
-			console.log(`${this.name}: State loaded in ${Date.now() - timestamp}ms`);
+			console.log(`_${this.name}: State loaded in ${Date.now() - timestamp}ms`);
 		}
 	}
 
