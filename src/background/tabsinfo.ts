@@ -246,7 +246,10 @@ export class TabsInfo extends SessionSingleton {
 		});
 
 		apiTabs.onCreated.addListener(async (tab) => {
-			if (tab.id === undefined || tab.id === apiTabs.TAB_ID_NONE) {
+			if (false
+				|| tab.id === undefined
+				|| tab.id === apiTabs.TAB_ID_NONE
+			) {
 				return;
 			}
 			const instance = this.hasLoaded() ? this.getLoadedInstance() : await this.getInstance();
@@ -277,8 +280,19 @@ export class TabsInfo extends SessionSingleton {
 		});
 
 		apiTabs.onActivated.addListener(async (activeInfo) => {
-			const tab = await apiTabs.get(activeInfo.tabId);
-			if (tab.id === undefined || tab.id === apiTabs.TAB_ID_NONE) {
+			let tab: api.tabs.Tab;
+			try {
+				tab = await apiTabs.get(activeInfo.tabId);
+			} catch (error) {
+				if (DEBUG) {
+					console.log(` tabsInfo: Tab ${activeInfo.tabId} not found`, error);
+				}
+				return;
+			}
+			if (tab.id !== activeInfo.tabId) {
+				if (DEBUG) {
+					console.log(` tabsInfo: Tab ID mismatch: ${tab.id} !== ${activeInfo.tabId}`);
+				}
 				return;
 			}
 			const instance = this.hasLoaded() ? this.getLoadedInstance() : await this.getInstance();
