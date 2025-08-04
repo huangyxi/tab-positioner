@@ -1,5 +1,6 @@
 import type { TabCreationPosition, TabCreationPositionKey } from '../shared/settings';
 import { NEW_PAGE_URIS, MAX_BATCH_DELAY_MS } from '../shared/constants';
+import { Listeners } from '../shared/listeners';
 import { errorHandler } from '../shared/logging';
 
 import { SyncSettings } from './syncsettings';
@@ -79,7 +80,7 @@ async function createdTabMover(
 		await apiTabs.move(tabId, { index: newIndex });
 		// Update the new tab's index in TabsInfo when the worker had been offloaded.
 		if (!hasLoaded && settingKey === 'new_tab_position') {
-			await tabsInfo.activateTab(newTab.windowId, tabId, newIndex);
+			tabsInfo.activateTab(newTab.windowId, tabId, newIndex);
 		}
 	} catch (error: any) {
 		errorHandler(error);
@@ -89,8 +90,11 @@ async function createdTabMover(
 	}
 }
 
-export async function registerTabCreatedListener(apiTabs: typeof api.tabs) {
-	apiTabs.onCreated.addListener(
+export async function registerTabCreatedListener(
+	listeners: Listeners,
+	apiTabs: typeof api.tabs,
+) {
+	listeners.add(apiTabs.onCreated,
 		createdTabMover.bind(null, apiTabs)
 	);
 }

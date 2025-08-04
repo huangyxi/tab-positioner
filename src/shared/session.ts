@@ -1,4 +1,5 @@
 import { errorHandler } from './logging';
+import { STATE_SAVE_DELAY_MS } from './constants';
 
 const storageSession = api.storage.session;
 
@@ -25,7 +26,7 @@ async function setSessionState(
 
 /**
  * Abstract class for session-based singletons.
- * Provides methods to save and load state (members of the inherited class) automatically.
+ * Provides methods to save and load state (members of the inherited class, not start with '_') automatically.
  * All subclasses should call `getInstance()` to get the singleton instance.
  * @note members of the inherited class should be serializable to JSON, Maps, Sets, and other complex types are not supported.
  */
@@ -33,6 +34,7 @@ export abstract class SessionSingleton {
 	private static _instances: Map<typeof SessionSingleton, SessionSingleton> = new Map();
 	private static _initializationPromises: Map<typeof SessionSingleton, Promise<SessionSingleton>> = new Map();
 	private static _savePromises: Map<typeof SessionSingleton, Promise<void> | null> = new Map();
+	private static _saveController: Map<typeof SessionSingleton, AbortController> = new Map();
 
 	// DO NOT call this constructor directly.
 	// Use `getInstance()` to get the singleton instance.
@@ -88,19 +90,41 @@ export abstract class SessionSingleton {
 		return loadingPromise;
 	}
 
-	protected async saveState() {
+	protected async saveState(
+		properties?: Array<keyof this & string>,
+	) {
+		if (properties === undefined) {
+			properties = this.properties() as any[];
+		}
 		const cls = this.constructor as typeof SessionSingleton;
+		const existingController = cls._saveController.get(cls);
+		if (existingController) {
+			existingController.abort();
+		}
 		const ongoing = cls._savePromises.get(cls);
 		if (ongoing) {
 			await ongoing;
 		}
+		const controller = new AbortController();
+		cls._saveController.set(cls, controller);
 		if (DEBUG) {
 			console.log(`_${this.name}: Saving state`);
 		}
 		const timestamp = DEBUG ? Date.now() : 0;
 		const savePromise = (async () => {
 			try {
-				for (const property of Object.getOwnPropertyNames(this)) {
+				// delay MAX_BATCH_DELAY_MS
+				await new Promise((resolve) => setTimeout(resolve, STATE_SAVE_DELAY_MS));
+				for (const property of properties) {
+					if (controller.signal.aborted) {
+						if (DEBUG) {
+							console.log(`_${this.name}: Save aborted since property ${property}`);
+						}
+						return;
+					}
+					if (property.startsWith('_')) {
+						continue; // Skip special properties
+					}
 					const value = (this as any)[property];
 					if (value === undefined) continue;
 					await setSessionState(this.sessionKeyFor(property), JSON.stringify(value));
@@ -110,6 +134,7 @@ export abstract class SessionSingleton {
 					console.log(`_${this.name}: State saved in ${Date.now() - timestamp}ms`);
 				}
 			} finally {
+				cls._saveController.delete(cls);
 				cls._savePromises.delete(cls);
 			}
 		})();
@@ -122,7 +147,10 @@ export abstract class SessionSingleton {
 			console.log(`_${this.name}: Loading state`);
 		}
 		const timestamp = DEBUG ? Date.now() : 0;
-		for (const property of Object.getOwnPropertyNames(this)) {
+		for (const property of this.properties()) {
+			if (property.startsWith('_')) {
+				continue; // Skip special properties
+			}
 			const value = await getSessionState(this.sessionKeyFor(property));
 			if (value === undefined) continue;
 			(this as any)[property] = JSON.parse(value);
@@ -154,4 +182,9 @@ export abstract class SessionSingleton {
 	private sessionKeyFor(property: string): string {
 		return `${this.name}:${property}`;
 	}
+
+	private properties(): string[] {
+		return Object.getOwnPropertyNames(this);
+	}
+
 }

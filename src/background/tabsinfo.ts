@@ -1,4 +1,6 @@
+import { Listeners } from "../shared/listeners";
 import { SessionSingleton } from "../shared/session";
+import { FIRST_ACTIVATION_DELAY_MS } from "../shared/constants";
 
 type WindowId = number;
 type TabId = number;
@@ -43,6 +45,9 @@ export class TabsInfo extends SessionSingleton {
 	private recentCreatedAt: DateTime = 0;
 	private currentRemovedAt: DateTime = Date.now();
 	private recentRemovedAt: DateTime = 0;
+
+	// Used to track if the background worker has been offloaded.
+	private _hasTabActivated = false;
 
 	/**
 	 * Get the **current** tabs in a window.
@@ -106,12 +111,14 @@ export class TabsInfo extends SessionSingleton {
 	 * @param normalTabs Tabs with `windowType: 'normal'` to initialize the TabsInfo,
 	 * where the `windowId` and `id` are defined.
 	 */
-	public async initialize(
+	public initialize(
 		normalTabs: api.tabs.Tab[],
 	) {
 		if (DEBUG) {
 			console.log(' tabsInfo: Initialized', this);
 		}
+		this.currentTabs = {};
+		this.recentTabs = {};
 		for (const tab of normalTabs) {
 			if (tab.windowId === undefined || tab.id === undefined) continue;
 
@@ -131,7 +138,7 @@ export class TabsInfo extends SessionSingleton {
 				index: tab.index,
 			};
 		}
-		await this.saveState();
+		this.saveState();
 	}
 
 	/**
@@ -141,7 +148,7 @@ export class TabsInfo extends SessionSingleton {
 	 * @param normalActiveTabs - Tabs with `windowType: 'normal'` and 'active: true` to update the recent tabs,
 	 * where the `windowId` and `id` are defined.
 	 */
-	private async updateRecentTabs(
+	private updateRecentTabs(
 		normalActiveTabs: api.tabs.Tab[],
 	) {
 		if (DEBUG) {
@@ -153,10 +160,10 @@ export class TabsInfo extends SessionSingleton {
 				index: tab.index,
 			};
 		}
-		await this.saveState();
+		this.saveState();
 	}
 
-	private async addTab(
+	private addTab(
 		windowId: WindowId,
 		tabId: TabId,
 		openerTabId?: TabId,
@@ -174,10 +181,10 @@ export class TabsInfo extends SessionSingleton {
 			lastAccessed: Date.now(),
 			openerTabId: openerTabId,
 		};
-		await this.saveState();
+		this.saveState();
 	}
 
-	private async removeTab(
+	private removeTab(
 		windowId: WindowId,
 		tabId: TabId,
 		isWindowClosing: boolean,
@@ -203,10 +210,10 @@ export class TabsInfo extends SessionSingleton {
 			return;
 		}
 		delete windowTabs[tabId];
-		await this.saveState();
+		this.saveState();
 	}
 
-	public async activateTab(
+	public activateTab(
 		windowId: WindowId,
 		tabId: TabId,
 		index: TabIndex,
@@ -226,26 +233,29 @@ export class TabsInfo extends SessionSingleton {
 			id: tabId,
 			index: index,
 		};
-		await this.saveState();
+		this.saveState();
 	}
 
 	public static registerListeners(
+		listeners: Listeners,
 		apiRuntime: typeof api.runtime,
 		apiTabs: typeof api.tabs,
 	) {
-		apiRuntime.onInstalled.addListener(async () => {
+		listeners.add(apiRuntime.onInstalled, async () => {
 			const instance = await this.getInstance();
+			instance._hasTabActivated = true;
 			const normalTabs = await apiTabs.query({ windowType: 'normal' });
-			await instance.initialize(normalTabs);
+			instance.initialize(normalTabs);
 		});
 
-		apiRuntime.onStartup.addListener(async () => {
+		listeners.add(apiRuntime.onStartup, async () => {
 			const instance = await this.getInstance();
+			instance._hasTabActivated = true;
 			const normalTabs = await apiTabs.query({ windowType: 'normal' });
-			await instance.initialize(normalTabs);
+			instance.initialize(normalTabs);
 		});
 
-		apiTabs.onCreated.addListener(async (tab) => {
+		listeners.add(apiTabs.onCreated, async (tab) => {
 			if (false
 				|| tab.id === undefined
 				|| tab.id === apiTabs.TAB_ID_NONE
@@ -253,33 +263,33 @@ export class TabsInfo extends SessionSingleton {
 				return;
 			}
 			const instance = this.hasLoaded() ? this.getLoadedInstance() : await this.getInstance();
-			await instance.addTab(tab.windowId, tab.id, tab.openerTabId);
+			instance.addTab(tab.windowId, tab.id, tab.openerTabId);
 		});
 
-		apiTabs.onRemoved.addListener(async (tabId, removeInfo) => {
+		listeners.add(apiTabs.onRemoved, async (tabId, removeInfo) => {
 			const instance = this.hasLoaded() ? this.getLoadedInstance() : await this.getInstance();
-			await instance.removeTab(removeInfo.windowId, tabId, removeInfo.isWindowClosing);
+			instance.removeTab(removeInfo.windowId, tabId, removeInfo.isWindowClosing);
 			if (instance.recentTabs[removeInfo.windowId]?.id !== tabId) {
 				const normalActiveTabs = await apiTabs.query({
 					active: true,
 					windowId: removeInfo.windowId,
 					windowType: 'normal',
 				});
-				await instance.updateRecentTabs(normalActiveTabs);
+				instance.updateRecentTabs(normalActiveTabs);
 			}
 		});
 
-		apiTabs.onAttached.addListener(async (tabId, attachInfo) => {
+		listeners.add(apiTabs.onAttached, async (tabId, attachInfo) => {
 			const instance = this.hasLoaded() ? this.getLoadedInstance() : await this.getInstance();
-			await instance.addTab(attachInfo.newWindowId, tabId);
+			instance.addTab(attachInfo.newWindowId, tabId);
 		});
 
-		apiTabs.onDetached.addListener(async (tabId, detachInfo) => {
+		listeners.add(apiTabs.onDetached, async (tabId, detachInfo) => {
 			const instance = this.hasLoaded() ? this.getLoadedInstance() : await this.getInstance();
-			await instance.removeTab(detachInfo.oldWindowId, tabId, false);
+			instance.removeTab(detachInfo.oldWindowId, tabId, false);
 		});
 
-		apiTabs.onActivated.addListener(async (activeInfo) => {
+		listeners.add(apiTabs.onActivated, async (activeInfo) => {
 			let tab: api.tabs.Tab;
 			try {
 				tab = await apiTabs.get(activeInfo.tabId);
@@ -296,10 +306,14 @@ export class TabsInfo extends SessionSingleton {
 				return;
 			}
 			const instance = this.hasLoaded() ? this.getLoadedInstance() : await this.getInstance();
-			await instance.activateTab(activeInfo.windowId, activeInfo.tabId, tab.index);
+			if (!instance._hasTabActivated) {
+				instance._hasTabActivated = true;
+				await new Promise(resolve => setTimeout(resolve, FIRST_ACTIVATION_DELAY_MS));
+			}
+			instance.activateTab(activeInfo.windowId, activeInfo.tabId, tab.index);
 		});
 
-		apiTabs.onUpdated.addListener(async (_tabId, changeInfo, _tab) => {
+		listeners.add(apiTabs.onUpdated, async (_tabId, changeInfo, _tab) => {
 			if (DEBUG) {
 				console.log(' tabsInfo: Tab updated', _tabId, changeInfo);
 			}
@@ -309,8 +323,18 @@ export class TabsInfo extends SessionSingleton {
 					active: true,
 					windowType: 'normal',
 				});
-				await instance.updateRecentTabs(normalActiveTabs);
+				instance.updateRecentTabs(normalActiveTabs);
 			}
+		});
+
+		listeners.add(apiTabs.onMoved, async (tabId, moveInfo) => {
+			if (DEBUG) {
+				console.log(' tabsInfo: Tab moved', tabId, moveInfo);
+			}
+			const instance = await this.getInstance();
+			instance._hasTabActivated = true;
+			const normalTabs = await apiTabs.query({ windowType: 'normal' });
+			instance.initialize(normalTabs);
 		});
 	}
 }

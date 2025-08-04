@@ -1,6 +1,7 @@
 import type { TabActivationPosition } from '../shared/settings';
-import { errorHandler } from '../shared/logging';
 import { MAX_BATCH_DELAY_MS } from '../shared/constants';
+import { Listeners } from '../shared/listeners';
+import { errorHandler } from '../shared/logging';
 
 import { TabsInfo } from './tabsinfo';
 import { SyncSettings } from './syncsettings';
@@ -96,8 +97,11 @@ async function tabRemovedActivater(
 	}
 }
 
-export function registerTabRemovedListener(apiTabs: typeof api.tabs) {
-	apiTabs.onRemoved.addListener(
+export function registerTabRemovedListener(
+	listeners: Listeners,
+	apiTabs: typeof api.tabs,
+) {
+	listeners.add(apiTabs.onRemoved,
 		tabRemovedActivater.bind(null, apiTabs)
 	);
 }

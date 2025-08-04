@@ -1,3 +1,4 @@
+import { Listeners } from '../shared/listeners';
 import { SessionSingleton } from '../shared/session';
 import { loadSettings, saveSettings } from '../shared/storage';
 import { DEFAULT_SETTINGS } from '../shared/settings';
@@ -12,10 +13,11 @@ export class SyncSettings extends SessionSingleton {
 	}
 
 	public static registerListeners(
+		listeners: Listeners,
 		apiRuntime: typeof api.runtime,
 		apiStorage: typeof api.storage,
 	) {
-		apiRuntime.onInstalled.addListener(async () => {
+		listeners.add(apiRuntime.onInstalled, async () => {
 			const instance = await this.getInstance();
 			const settings = await loadSettings();
 			instance.settings = settings;
@@ -26,7 +28,7 @@ export class SyncSettings extends SessionSingleton {
 			await saveSettings(settings);
 		});
 
-		apiRuntime.onStartup.addListener(async () => {
+		listeners.add(apiRuntime.onStartup, async () => {
 			const instance = await this.getInstance();
 			const settings = await loadSettings();
 			instance.settings = settings;
@@ -37,7 +39,7 @@ export class SyncSettings extends SessionSingleton {
 			await saveSettings(settings);
 		});
 
-		apiStorage.onChanged.addListener(async (changes, areaName) => {
+		listeners.add(apiStorage.onChanged, async (changes, areaName) => {
 			if (areaName !== 'sync') {
 				return;
 			}
