@@ -102,9 +102,13 @@ export abstract class SessionSingleton {
 		}
 		const cls = this.constructor as typeof SessionSingleton;
 		const existingController = cls._saveController.get(cls);
-		if (existingController) {
-			existingController.abort();
+		if (existingController?.signal.aborted) {
+			if (DEBUG) {
+				console.log(`_${this.name}: Skipping duplicated save since controller is aborted`);
+			}
+			return;
 		}
+		existingController?.abort();
 		const ongoing = cls._savePromises.get(cls);
 		if (ongoing) {
 			await ongoing;
