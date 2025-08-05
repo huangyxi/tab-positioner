@@ -15,7 +15,9 @@
 	--md-sys-color-outline: #79747e;
 	--md-sys-color-outline-variant: #cac4d0;
 	--md-sys-color-shadow: #000000;
-	--md-sys-color-surface-container-highest: #e6e0e9;
+	--md-sys-color-error: #b3261e;
+	--md-sys-color-surface-container-high: #e6e0e9;
+	--md-sys-color-surface-container-highest: #e0dae3;
 
 	--background-image-select: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath fill='%2349454F' d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
 }
@@ -31,7 +33,9 @@
 		--md-sys-color-on-surface-variant: #cac4d0;
 		--md-sys-color-outline: #938f99;
 		--md-sys-color-outline-variant: #49454f;
-		--md-sys-color-surface-container-highest: #36343b;
+		--md-sys-color-error: #f2b8b5;
+		--md-sys-color-surface-container-high: #36343b;
+		--md-sys-color-surface-container-highest: #403e45;
 
 		--background-image-select: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath fill='%23CAC4D0' d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
 	}
@@ -50,7 +54,8 @@ body {
 	max-width: 600px;
 }
 
-div.container {
+div.container,
+div.details-content {
 	display: flex;
 	flex-direction: column;
 	padding: 16px;
@@ -93,21 +98,99 @@ label {
 	line-height: 16px;
 }
 
-select {
+select,
+input[type="number"] {
 	font-size: 16px;
 	font-weight: 400;
 	line-height: 24px;
 }
 
-/* ==============================================
-	Select Field
-============================================== */
+label.checkbox-group .checkbox-label {
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 20px;
+	color: var(--md-sys-color-on-surface);
+}
 
-.select-group {
+summary {
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 20px;
+}
+
+/* ==============================================
+	Text Input Field
+============================================== */
+div.input-group {
 	position: relative;
 }
 
-.select-group label {
+div.input-group label {
+	position: absolute;
+	top: -8px;
+	left: 12px;
+	padding: 0 4px;
+	background-color: var(--md-sys-color-background);
+	color: var(--md-sys-color-on-surface-variant);
+	transition: color 0.1s;
+}
+
+/* For when input is inside an open details element */
+details[open] div.input-group label {
+	background-color: var(--md-sys-color-surface-container-high);
+}
+
+input[type="number"] {
+	appearance: none;
+	width: 100%;
+	box-sizing: border-box;
+	padding: 15px 52px 15px 12px;
+	outline: 1px solid var(--md-sys-color-outline);
+	border: none;
+	border-radius: 4px;
+	background-color: transparent;
+	color: var(--md-sys-color-on-surface);
+	transition: outline 0.1s;
+}
+
+/* Add more padding for stepper buttons */
+div.input-group.has-steppers input[type="number"] {
+	padding-right: 124px;
+}
+
+input[type="number"]:hover {
+	outline-width: 2px;
+}
+
+input[type="number"]:focus {
+	outline-width: 2px;
+	outline-color: var(--md-sys-color-primary);
+}
+
+input[type="number"]:focus+label {
+	color: var(--md-sys-color-primary);
+}
+
+input[type="number"]:invalid {
+	outline-color: var(--md-sys-color-error);
+}
+
+input[type="number"]:invalid:focus {
+	outline-color: var(--md-sys-color-error);
+}
+
+input[type="number"]:invalid+label {
+	color: var(--md-sys-color-error);
+}
+
+/* ==============================================
+	Select Field
+============================================== */
+div.select-group {
+	position: relative;
+}
+
+div.select-group label {
 	position: absolute;
 	top: -8px;
 	left: 12px;
@@ -116,23 +199,47 @@ select {
 	color: var(--md-sys-color-on-surface-variant);
 }
 
+/* For when select is inside an open details element */
+details[open] div.select-group label {
+	background-color: var(--md-sys-color-surface-container-high);
+}
+
 select {
 	appearance: none;
 	width: 100%;
 	box-sizing: border-box;
-
-	/* Make space for reset button */
-	padding: 15px 52px 15px 12px;
+	padding: 15px 92px 15px 12px;
 	outline: 1px solid var(--md-sys-color-outline);
+	border: none;
 	border-radius: 4px;
 	background-color: transparent;
 	color: var(--md-sys-color-on-surface);
 	cursor: pointer;
-	background-image: var(--background-image-select);
-	background-repeat: no-repeat;
-	background-position: right 12px center;
-	background-size: 2em;
+	background-image: none;
 	transition: outline 0.1s;
+}
+
+/* Custom dropdown arrow for select */
+div.select-group::after {
+	content: '';
+	position: absolute;
+	top: 50%;
+	right: 52px;
+	width: 24px;
+	height: 24px;
+	transform: translateY(-50%) rotate(0deg);
+	background-color: var(--md-sys-color-on-surface-variant);
+	mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath d='M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3e%3c/svg%3e") no-repeat center;
+	mask-size: contain;
+	transition: transform 0.2s ease-in-out;
+
+	/* Make sure it doesn't block clicks */
+	pointer-events: none;
+}
+
+/* Rotate arrow on focus */
+div.select-group:focus-within::after {
+	transform: translateY(-50%) rotate(180deg);
 }
 
 select:hover {
@@ -154,12 +261,143 @@ option {
 }
 
 /* ==============================================
+	Checkbox
+============================================== */
+
+/* Add position: relative and padding for reset button */
+label.checkbox-group {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	padding: 8px 52px 8px 8px;
+	border-radius: 8px;
+	transition: background-color 0.2s;
+	-webkit-tap-highlight-color: transparent;
+	position: relative;
+}
+
+label.checkbox-group:not(:has(button.reset:hover)):hover {
+	background-color: var(--md-sys-color-surface-container-highest);
+}
+
+label.checkbox-group input[type="checkbox"] {
+	appearance: none;
+	-webkit-appearance: none;
+	position: absolute;
+	opacity: 0;
+	cursor: pointer;
+}
+
+label.checkbox-group .checkbox-label {
+	padding-left: 12px;
+	user-select: none;
+}
+
+label.checkbox-group .checkbox-visual {
+	position: relative;
+	width: 18px;
+	height: 18px;
+	border: 2px solid var(--md-sys-color-outline);
+	border-radius: 2px;
+	transition: all 0.2s;
+
+	/* Ensure visual part stays in flow */
+	flex-shrink: 0;
+}
+
+label.checkbox-group input[type="checkbox"]:checked~.checkbox-visual {
+	background-color: var(--md-sys-color-primary);
+	border-color: var(--md-sys-color-primary);
+}
+
+/* The checkmark */
+label.checkbox-group .checkbox-visual::after {
+	content: "";
+	position: absolute;
+	display: none;
+	left: 5px;
+	top: 1px;
+	width: 5px;
+	height: 10px;
+	border: solid var(--md-sys-color-on-primary);
+	border-width: 0 2px 2px 0;
+	transform: rotate(45deg);
+}
+
+label.checkbox-group input[type="checkbox"]:checked~.checkbox-visual::after {
+	display: block;
+}
+
+label.checkbox-group input[type="checkbox"]:focus-visible~.checkbox-visual {
+	box-shadow: 0 0 0 2px var(--md-sys-color-background), 0 0 0 4px var(--md-sys-color-primary);
+}
+
+
+/* ==============================================
+	Details & Summary (Accordion)
+============================================== */
+details {
+	border: 1px solid var(--md-sys-color-outline-variant);
+	border-radius: 4px;
+	transition: background-color 0.2s;
+	overflow: hidden;
+}
+
+details:not([open]):hover {
+	background-color: var(--md-sys-color-surface-container-high);
+}
+
+details[open] {
+	background-color: var(--md-sys-color-surface-container-high);
+}
+
+summary {
+	position: relative;
+	padding: 16px 48px 16px 16px;
+	color: var(--md-sys-color-on-surface-variant);
+	cursor: pointer;
+	list-style: none;
+	user-select: none;
+	transition: color 0.2s;
+}
+
+details[open]>summary {
+	color: var(--md-sys-color-on-surface);
+}
+
+/* Hide for Safari */
+summary::-webkit-details-marker {
+	display: none;
+}
+
+/* Custom dropdown arrow */
+summary::after {
+	content: '';
+	position: absolute;
+	top: 50%;
+	right: 16px;
+	width: 24px;
+	height: 24px;
+	transform: translateY(-50%) rotate(0deg);
+	background-color: var(--md-sys-color-on-surface-variant);
+	mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath d='M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3e%3c/svg%3e") no-repeat center;
+	mask-size: contain;
+	transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+details[open]>summary::after {
+	transform: translateY(-50%) rotate(180deg);
+	background-color: var(--md-sys-color-on-surface);
+}
+
+
+/* ==============================================
 	Buttons
 ============================================== */
 button.reset {
 	position: absolute;
 	top: 50%;
-	right: 44px;
+	right: 12px;
 	transform: translateY(-50%);
 
 	/* Touch target size */
@@ -209,6 +447,56 @@ button.reset-all {
 button.reset-all:hover {
 	background-color: var(--md-sys-color-surface-container-highest);
 }
+
+/* ==============================================
+	Stepper Buttons
+============================================== */
+button.stepper {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 2.5em;
+	height: 2.5em;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background-color: transparent;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: background-color 0.2s;
+}
+
+button.stepper:hover {
+	background-color: var(--md-sys-color-surface-container-highest);
+}
+
+button.stepper::before {
+	content: '';
+	display: block;
+	width: 20px;
+	height: 20px;
+	background-color: var(--md-sys-color-on-surface-variant);
+	mask-size: 1.5em;
+}
+
+button.stepper.increment {
+	right: 52px;
+}
+
+button.stepper.increment::before {
+	mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/%3e%3c/svg%3e") no-repeat center;
+}
+
+button.stepper.decrement {
+	right: 88px;
+}
+
+button.stepper.decrement::before {
+	mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath d='M19 13H5v-2h14v2z'/%3e%3c/svg%3e") no-repeat center;
+}
+
 
 /* ==============================================
 	Status Message

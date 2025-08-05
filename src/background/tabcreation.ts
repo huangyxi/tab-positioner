@@ -52,7 +52,7 @@ async function createdTabMover(
 	}
 	if (setting === 'default') return;
 	// let index = -1; // Default to 'last'
-	let newIndex: number; // Exhaustness checked by `tsc`
+	let newIndex: number = -1; // Default to 'last'
 	switch (setting) {
 		case 'before_active':
 			newIndex = currentIndex;
@@ -66,6 +66,8 @@ async function createdTabMover(
 		case 'window_last':
 			newIndex = -1;
 			break;
+		default:
+			const _exhaustive: never = setting;
 	}
 	if (DEBUG) {
 		console.log(`  C5. New index: ${newIndex}`);

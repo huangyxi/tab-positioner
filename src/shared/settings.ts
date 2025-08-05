@@ -3,14 +3,19 @@ import { errorHandler } from './logging';
 
 const DEFAULT_VALUE = 'default';
 
+
+/**
+ * @note Advanced settings (collapsed by default) are started with `$`.
+ */
 export type SettingKey = never
 	| 'new_tab_position'
 	| 'background_link_position'
 	// | 'foreground_link_position'
 	| 'after_close_activation'
+	| '$persistent_background'
 	| never;
 
-interface SettingText {
+export interface SettingText {
 	i18nKey: I18nKey;
 }
 
@@ -53,6 +58,7 @@ export const DEFAULT_SETTINGS = {
 	background_link_position: DEFAULT_VALUE as TabCreationPosition,
 	// foreground_link_position: DEFAULT_VALUE as TabCreationPosition,
 	after_close_activation: DEFAULT_VALUE as TabActivationPosition,
+	$persistent_background: false,
 } satisfies Record<SettingKey, any>;
 // export interface ExtensionSettings extends Record<SettingKey, ChoiceValue> {
 // 	new_tab_position: TabCreationPosition;
@@ -73,9 +79,14 @@ export type TabCreationPositionKey = SettingKeys<TabCreationPosition>;
 export type TabActivationPositionKey = SettingKeys<TabActivationPosition>;
 
 type SettingValue<K extends SettingKey> =
-	| ExtensionSettings[K] extends string ? { type: 'choices', choices: SettingChoices<ExtensionSettings[K]> } : never
 	| ExtensionSettings[K] extends boolean ? { type: 'boolean' } : never
-	| ExtensionSettings[K] extends number ? { type: 'number' } : never
+	| ExtensionSettings[K] extends number ? {
+		type: 'number',
+		min?: number,
+		max?: number,
+		step?: number,
+	} : never
+	| ExtensionSettings[K] extends string ? { type: 'choices', choices: SettingChoices<ExtensionSettings[K]> } : never
 
 export type SettingSchemas = {
 	[K in keyof ExtensionSettings]:
@@ -102,6 +113,10 @@ export const SETTING_SCHEMAS: SettingSchemas = {
 		type: 'choices',
 		choices: TAB_ACTIVATION_POSITION_CHOICES,
 	},
+	$persistent_background: {
+		i18nKey: 'persistentBackgroundSpan',
+		type: 'boolean',
+	},
 } as const;
 
 export function sanitizeSettings<T extends Partial<Record<SettingKey, any>>>(
@@ -109,17 +124,21 @@ export function sanitizeSettings<T extends Partial<Record<SettingKey, any>>>(
 	settingName?: string,
 ): T extends Record<SettingKey, any> ? ExtensionSettings : Partial<ExtensionSettings> {
 	const sanitizedSettings: Partial<Record<keyof T, any>> = {};
-	for (const [key, value] of Object.entries(settings) as Array<[SettingKey, string]>) {
+	for (const [key, value] of Object.entries(settings) as Array<[SettingKey, any]>) {
 		const setting = SETTING_SCHEMAS[key];
-		switch (setting.type) {
-			// case 'boolean':
-			// 	if (typeof value === 'boolean') {
-			// 		sanitizedSettings[key] = value;
-			// 		continue;
-			// 	}
-			// 	break;
+		const type = setting.type;
+		switch (type) {
+			case 'boolean':
+				if (typeof value === 'boolean') {
+					sanitizedSettings[key] = value;
+					continue;
+				}
+				break;
 			// case 'number':
 			// 	if (typeof value === 'number' && !isNaN(value)) {
+			// 		const { min, max, step } = setting;
+			// 		if (min !== undefined && value < min) break;
+			// 		if (max !== undefined && value > max) break;
 			// 		sanitizedSettings[key] = value;
 			// 		continue;
 			// 	}
@@ -130,6 +149,8 @@ export function sanitizeSettings<T extends Partial<Record<SettingKey, any>>>(
 					continue;
 				}
 				break;
+			default:
+				const _exhaustive: never = type;
 		}
 		errorHandler(
 			`Invalid setting value for ${key}: ${value}${settingName ? ` in '${settingName}'` : ''}`

@@ -23,6 +23,10 @@
 		"message": "Reset All to Default",
 		"description": "Button label to reset all settings to their default values."
 	},
+	"advancedSettingsSummary": {
+		"message": "Advanced Settings",
+		"description": "Label for the advanced settings section."
+	},
 	"newTabPositionLabel": {
 		"message": "When opening the New Tab page:",
 		"description": "Label for the new chrome://newtab position setting."
@@ -38,6 +42,10 @@
 	"afterCloseActivationLabel": {
 		"message": "After closing a tab, switch to:",
 		"description": "Label for the post-close tab activation behavior."
+	},
+	"persistentBackgroundSpan": {
+		"message": "Persistent Extension Worker",
+		"description": "Checkbox span (label) for the persistent background setting."
 	},
 	"optionDefault": {
 		"message": "Use Chrome Default",

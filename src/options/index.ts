@@ -1,7 +1,29 @@
 
 import { I18nKey, getI18nMessage, getI18nAttribute, I18N_HTML_PROPERTIES } from '../shared/i18n';
-import { SettingKey, ExtensionSettings, DEFAULT_SETTINGS } from '../shared/settings';
+import type { SettingKey, ExtensionSettings } from '../shared/settings';
+import { DEFAULT_SETTINGS, SETTING_SCHEMAS } from '../shared/settings';
 import { loadSettings, saveSettings, clearSettings } from '../shared/storage';
+
+type SettingElement = HTMLSelectElement | HTMLInputElement;
+
+function setElementSetting(
+	element: SettingElement,
+	settings: ExtensionSettings = DEFAULT_SETTINGS,
+) {
+	const settingKey = element.id as SettingKey;
+	if (!(settingKey in settings)) return;
+	switch (element.type) {
+		case 'checkbox':
+			element.checked = settings[settingKey] as boolean;
+			break;
+		case 'number':
+			element.valueAsNumber = settings[settingKey] as any;
+			break;
+		case 'select-one':
+			element.value = settings[settingKey] as string;
+			break;
+	}
+}
 
 function showStatus(messageKey: I18nKey) {
 	const status = document.getElementById('status');
@@ -28,41 +50,47 @@ function localizeHtmlPage() {
 	});
 }
 
-async function saveSetting(selectElements: NodeListOf<HTMLSelectElement>) {
-	const settings: Partial<Record<SettingKey, string>> = {}
-	for (const select of selectElements) {
-		const settingKey = select.id as SettingKey;
+async function saveSetting(elements: NodeListOf<SettingElement>) {
+	const settings: Partial<Record<SettingKey, any>> = {}
+	for (const element of elements) {
+		const settingKey = element.id as SettingKey;
 		if (!(settingKey in DEFAULT_SETTINGS)) continue;
-		settings[settingKey] = select.value;
+		switch (element.type) {
+			case 'checkbox':
+				settings[settingKey] = element.checked;
+				break;
+			case 'number':
+				settings[settingKey] = element.valueAsNumber;
+				break;
+			case 'select-one':
+				settings[settingKey] = element.value;
+				break;
+		}
 	}
-	await saveSettings(settings as ExtensionSettings, true);
+	await saveSettings(settings, true);
 	showStatus('statusSaved');
 }
 
-async function restoreSettings(selectElements: NodeListOf<HTMLSelectElement>) {
+async function restoreSettings(elements: NodeListOf<SettingElement>) {
 	const settings = await loadSettings();
-	for (const select of selectElements) {
-		const settingKey = select.id as SettingKey;
-		if (!(settingKey in settings)) continue;
-		select.value = settings[settingKey];
+	for (const element of elements) {
+		setElementSetting(element, settings);
 	}
 }
 
-async function resetSetting(settingKey: SettingKey, selectElements: NodeListOf<HTMLSelectElement>) {
-	for (const selectElement of selectElements) {
-		if (selectElement.id !== settingKey) continue;
-		selectElement.value = DEFAULT_SETTINGS[settingKey];
+async function resetSetting(settingKey: SettingKey, elements: NodeListOf<SettingElement>) {
+	for (const element of elements) {
+		if (element.id !== settingKey) continue;
+		setElementSetting(element, DEFAULT_SETTINGS);
 		await saveSettings({ [settingKey]: DEFAULT_SETTINGS[settingKey] });
 		showStatus('statusSaved');
 		return;
 	}
 }
 
-async function resetAllSettings(selectElements: NodeListOf<HTMLSelectElement>) {
-	for (const selectElement of selectElements) {
-		const settingKey = selectElement.id as SettingKey;
-		if (!(settingKey in DEFAULT_SETTINGS)) continue;
-		selectElement.value = DEFAULT_SETTINGS[settingKey];
+async function resetAllSettings(elements: NodeListOf<SettingElement>) {
+	for (const element of elements) {
+		setElementSetting(element, DEFAULT_SETTINGS);
 	}
 	await clearSettings();
 	await saveSettings();
@@ -73,19 +101,20 @@ async function main() {
 	localizeHtmlPage();
 
 	const selectElements = document.querySelectorAll('select');
+	const elements = document.querySelectorAll('select, input[type="checkbox"], input[type="number"]') as NodeListOf<SettingElement>;
 
-	await restoreSettings(selectElements);
+	await restoreSettings(elements);
 
-	document.querySelectorAll('select').forEach(select => {
-		select.addEventListener('change', () => saveSetting(selectElements));
+	elements.forEach(element => {
+		element.addEventListener('change', () => saveSetting(elements));
 	});
 
 	document.querySelectorAll('button.reset').forEach(button => {
 		const settingKey = button.id.replace('reset-', '') as SettingKey;
-		button.addEventListener('click', () => resetSetting(settingKey, selectElements));
+		button.addEventListener('click', () => resetSetting(settingKey, elements));
 	});
 
-	document.getElementById('reset-all')?.addEventListener('click', () => resetAllSettings(selectElements));
+	document.getElementById('reset-all')?.addEventListener('click', () => resetAllSettings(elements));
 }
 
 main();

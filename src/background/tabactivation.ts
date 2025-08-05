@@ -52,7 +52,7 @@ async function tabRemovedActivater(
 
 	// No tabs remain in the current window to activate; this is handled by the browser.
 	if (currentTabs.length === 0) return;
-	let newIndex: number; // Exhaustiveness checked by `tsc`
+	let newIndex: number = -1;
 	let newTabId: number | undefined;
 	switch (setting) {
 		case 'before_removed':
@@ -71,6 +71,8 @@ async function tabRemovedActivater(
 		// 	newTabId = currentTab.id;
 		// 	newIndex = recentTab.index;
 		// 	break;
+		default:
+			const _exhaustive: never = setting;
 	}
 	if (DEBUG) {
 		console.log(`  R7. New index: ${newIndex}, New tab ID: ${newTabId}`);
