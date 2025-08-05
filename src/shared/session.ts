@@ -40,6 +40,10 @@ export abstract class SessionSingleton {
 	// Use `getInstance()` to get the singleton instance.
 	public constructor() { }
 
+	private skipProperty(property: string): boolean {
+		return property.startsWith('_')
+	}
+
 	public static hasLoaded<T extends typeof SessionSingleton>(
 		this: T,
 	): boolean {
@@ -129,8 +133,8 @@ export abstract class SessionSingleton {
 						}
 						return;
 					}
-					if (property.startsWith('_')) {
-						continue; // Skip special properties
+					if (this.skipProperty(property)) {
+						continue;
 					}
 					const value = (this as any)[property];
 					if (value === undefined) continue;
@@ -149,13 +153,13 @@ export abstract class SessionSingleton {
 		await savePromise;
 	}
 
-	private async loadState() {
+	protected async loadState() {
 		if (DEBUG) {
 			console.log(`_${this.name}: Loading state`);
 		}
 		const timestamp = DEBUG ? Date.now() : 0;
 		for (const property of this.properties()) {
-			if (property.startsWith('_')) {
+			if (this.skipProperty(property)) {
 				continue; // Skip special properties
 			}
 			const value = await getSessionState(this.sessionKeyFor(property));
@@ -193,5 +197,4 @@ export abstract class SessionSingleton {
 	private properties(): string[] {
 		return Object.getOwnPropertyNames(this);
 	}
-
 }

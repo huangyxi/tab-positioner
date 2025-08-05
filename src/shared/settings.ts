@@ -3,7 +3,6 @@ import { errorHandler } from './logging';
 
 const DEFAULT_VALUE = 'default';
 
-
 /**
  * @note Advanced settings (collapsed by default) are started with `$`.
  */
