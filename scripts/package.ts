@@ -19,15 +19,12 @@ function toRelPath(p: string): string {
 
 function parseArgs(
 	argv: string[]
-): {
-	inputPaths: string[],
-	outputPath: string,
-	verbose: boolean,
-} {
+) {
 	const args = [...argv]; // Copy to avoid modifying the original array
 	const inputPaths: string[] = [];
 	let outputPath = DEFAULT_OUTPUT;
 	let verbose = false;
+	let preserveRoot = false;
 
 	while (args.length) {
 		const arg = args.shift() as string;
@@ -40,6 +37,7 @@ function parseArgs(
 					`\nArguments:` +
 					'\n  -h, --help,         Show this help message' +
 					'\n  -o, --output <path> Specify output zip file' +
+					'\n  -p, --preserve-root Preserve root directory structure' +
 					'\n  -v, --verbose       Enable verbose output' +
 					'\n  <inputs>            One or more input files or directories to zip'
 				);
@@ -54,6 +52,10 @@ function parseArgs(
 				outputPath = args.shift() as string;
 				if (!outputPath) throw new Error('Missing output path after --output');
 				break;
+			case '--preserve-root':
+			case '-p':
+				preserveRoot = true;
+				break;
 			case '--verbose':
 			case '-v':
 				verbose = true;
@@ -67,7 +69,7 @@ function parseArgs(
 		inputPaths.push(DEFAULT_INPUTS);
 	}
 
-	return { inputPaths, outputPath, verbose };
+	return { inputPaths, outputPath, preserveRoot, verbose };
 }
 
 interface WalkDirEntry {
@@ -118,6 +120,7 @@ async function zipAppend<T>(
 async function zipInputs(
 	inputPaths: string[],
 	outputZipPath: any,
+	preserveRoot: boolean = false,
 	verbose: boolean = false,
 ) {
 	let ret = 0;
@@ -132,7 +135,8 @@ async function zipInputs(
 		}
 		if (stats.isDirectory()) {
 			if (verbose) console.log('📁 Adding directory:', toRelPath(input));
-			for await (const entry of walkDir(input, base)) {
+			const inputBase = preserveRoot ? base : '';
+			for await (const entry of walkDir(input, inputBase)) {
 				if (entry.skip) {
 					if (verbose) console.log(' ⊘', toRelPath(entry.absPath), '[skipped]');
 					continue;
@@ -148,7 +152,7 @@ async function zipInputs(
 }
 
 export async function main(argv: string[]) {
-	const { inputPaths, outputPath, verbose } = parseArgs(argv);
+	const { inputPaths, outputPath, preserveRoot, verbose } = parseArgs(argv);
 	try {
 		const resolvedInputs = inputPaths.map(p => path.resolve(p));
 		const resolvedOutput = path.resolve(outputPath);
@@ -157,7 +161,7 @@ export async function main(argv: string[]) {
 			for (const input of resolvedInputs) console.log(' -', toRelPath(input));
 			console.log('➡️  Output:', toRelPath(resolvedOutput));
 		}
-		const ret = await zipInputs(resolvedInputs, resolvedOutput, verbose);
+		const ret = await zipInputs(resolvedInputs, resolvedOutput, preserveRoot, verbose);
 		if (ret === 0) {
 			console.log(`✅ Packed extension to ${toRelPath(resolvedOutput)}`);
 		} else {
