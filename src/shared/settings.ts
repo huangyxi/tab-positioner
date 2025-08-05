@@ -73,9 +73,9 @@ export type TabCreationPositionKey = SettingKeys<TabCreationPosition>;
 export type TabActivationPositionKey = SettingKeys<TabActivationPosition>;
 
 type SettingValue<K extends SettingKey> =
-	| ExtensionSettings[K] extends string ? { type: 'choices', value: SettingChoices<ExtensionSettings[K]> } : never
-	| ExtensionSettings[K] extends boolean ? { type: 'boolean',value: boolean } : never
-	| ExtensionSettings[K] extends number ? { type: 'number', value: number } : never
+	| ExtensionSettings[K] extends string ? { type: 'choices', choices: SettingChoices<ExtensionSettings[K]> } : never
+	| ExtensionSettings[K] extends boolean ? { type: 'boolean' } : never
+	| ExtensionSettings[K] extends number ? { type: 'number' } : never
 
 export type SettingSchemas = {
 	[K in keyof ExtensionSettings]:
@@ -86,12 +86,12 @@ export const SETTING_SCHEMAS: SettingSchemas = {
 	new_tab_position: {
 		i18nKey: 'newTabPositionLabel',
 		type: 'choices',
-		value: TAB_CREATION_POSITION_CHOICES,
+		choices: TAB_CREATION_POSITION_CHOICES,
 	},
 	background_link_position: {
 		i18nKey: 'backgroundTabPositionLabel',
 		type: 'choices',
-		value: TAB_CREATION_POSITION_CHOICES,
+		choices: TAB_CREATION_POSITION_CHOICES,
 	},
 	// foreground_link_position: {
 	// 	i18nKey: 'foregroundTabPositionLabel',
@@ -100,7 +100,7 @@ export const SETTING_SCHEMAS: SettingSchemas = {
 	after_close_activation: {
 		i18nKey: 'afterCloseActivationLabel',
 		type: 'choices',
-		value: TAB_ACTIVATION_POSITION_CHOICES,
+		choices: TAB_ACTIVATION_POSITION_CHOICES,
 	},
 } as const;
 
@@ -125,7 +125,7 @@ export function sanitizeSettings<T extends Partial<Record<SettingKey, any>>>(
 			// 	}
 			// 	break;
 			case 'choices':
-				if (value in setting.value) {
+				if (value in setting.choices) {
 					sanitizedSettings[key] = value;
 					continue;
 				}
