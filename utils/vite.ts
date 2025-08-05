@@ -12,7 +12,6 @@ interface VitePluginOptions {
 	version: string;
 }
 
-
 const DEFAULT_OPTIONS: VitePluginOptions = {
 	entries: [],
 	minify: false,
