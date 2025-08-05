@@ -8,6 +8,8 @@ interface VitePluginOptions {
 	minify: boolean;
 	/** Banner for the output files, should be \/*! ... *\/ */
 	banner: string;
+	/** Version of the extension */
+	version: string;
 }
 
 
@@ -15,6 +17,7 @@ const DEFAULT_OPTIONS: VitePluginOptions = {
 	entries: [],
 	minify: false,
 	banner: '',
+	version: 'v0.0.0.1',
 };
 
 class VitePlugin {
@@ -45,6 +48,7 @@ class VitePlugin {
 			await viteBuild({
 				define: {
 					'api': 'chrome',
+					'VERSION': JSON.stringify(this.options.version),
 					'DEBUG': JSON.stringify(process.env.DEBUG),
 				},
 				build: {

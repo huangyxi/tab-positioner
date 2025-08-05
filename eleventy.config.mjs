@@ -40,6 +40,7 @@ async function eleventySetup(eleventyConfig){
 			`\n * ${manifest.name} ${version_name}` +
 			`\n * Build date: ${datetime.toISOString()}` +
 			`\n */`,
+		version: version_name,
 	});
 }
 

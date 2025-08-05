@@ -4,9 +4,9 @@ import { TabsInfo } from './tabsinfo';
 import { registerTabCreatedListener } from './tabcreation';
 import { registerTabRemovedListener } from './tabactivation';
 
-async function main() {
+function main() {
 	if (DEBUG) {
-		console.log('Tab Positioner background script started');
+		console.log('Tab Positioner background script started', VERSION);
 	}
 
 	const listeners = new Listeners();
