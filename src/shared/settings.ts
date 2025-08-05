@@ -1,5 +1,5 @@
 import { I18nKey } from './i18n';
-// import { errorHandler } from './logging';
+import { errorHandler } from './logging';
 
 const DEFAULT_VALUE = 'default';
 
@@ -10,12 +10,12 @@ export type SettingKey = never
 	| 'after_close_activation'
 	| never;
 
-interface SettingChoice {
+interface SettingText {
 	i18nKey: I18nKey;
 }
 
 type SettingChoices<T extends string> = {
-	[K in T]: SettingChoice;
+	[K in T]: SettingText;
 };
 
 export type TabCreationPosition = typeof DEFAULT_VALUE
@@ -48,15 +48,13 @@ const TAB_ACTIVATION_POSITION_CHOICES: SettingChoices<TabActivationPosition> = {
 	// activation_history: { i18nKey: 'optionActivateActivationHistory' },
 } as const;
 
-type SettingValue = string; // TabCreationPosition | TabActivationPosition;
-
 export const DEFAULT_SETTINGS = {
 	new_tab_position: DEFAULT_VALUE as TabCreationPosition,
 	background_link_position: DEFAULT_VALUE as TabCreationPosition,
 	// foreground_link_position: DEFAULT_VALUE as TabCreationPosition,
 	after_close_activation: DEFAULT_VALUE as TabActivationPosition,
-} satisfies Record<SettingKey, SettingValue>;
-// export interface ExtensionSettings extends Record<SettingKey, SettingValue> {
+} satisfies Record<SettingKey, any>;
+// export interface ExtensionSettings extends Record<SettingKey, ChoiceValue> {
 // 	new_tab_position: TabCreationPosition;
 // 	background_link_position: TabCreationPosition;
 // 	// foreground_link_position: TabCreationPosition;
@@ -74,21 +72,26 @@ type SettingKeys<T extends ExtensionSettings[SettingKey]> = {
 export type TabCreationPositionKey = SettingKeys<TabCreationPosition>;
 export type TabActivationPositionKey = SettingKeys<TabActivationPosition>;
 
+type SettingValue<K extends SettingKey> =
+	| ExtensionSettings[K] extends string ? { type: 'choices', value: SettingChoices<ExtensionSettings[K]> } : never
+	| ExtensionSettings[K] extends boolean ? { type: 'boolean',value: boolean } : never
+	| ExtensionSettings[K] extends number ? { type: 'number', value: number } : never
+
 export type SettingSchemas = {
 	[K in keyof ExtensionSettings]:
-		SettingChoice & {
-		choices: SettingChoices<ExtensionSettings[K]>;
-	};
+		SettingText & SettingValue<K>
 };
 
 export const SETTING_SCHEMAS: SettingSchemas = {
 	new_tab_position: {
 		i18nKey: 'newTabPositionLabel',
-		choices: TAB_CREATION_POSITION_CHOICES,
+		type: 'choices',
+		value: TAB_CREATION_POSITION_CHOICES,
 	},
 	background_link_position: {
 		i18nKey: 'backgroundTabPositionLabel',
-		choices: TAB_CREATION_POSITION_CHOICES,
+		type: 'choices',
+		value: TAB_CREATION_POSITION_CHOICES,
 	},
 	// foreground_link_position: {
 	// 	i18nKey: 'foregroundTabPositionLabel',
@@ -96,37 +99,42 @@ export const SETTING_SCHEMAS: SettingSchemas = {
 	// },
 	after_close_activation: {
 		i18nKey: 'afterCloseActivationLabel',
-		choices: TAB_ACTIVATION_POSITION_CHOICES,
-	}
+		type: 'choices',
+		value: TAB_ACTIVATION_POSITION_CHOICES,
+	},
 } as const;
 
-export function sanitizeSettings<T extends Partial<Record<SettingKey, string>>>(
+export function sanitizeSettings<T extends Partial<Record<SettingKey, any>>>(
 	settings: T,
 	settingName?: string,
-): T extends Record<SettingKey, string> ? ExtensionSettings : Partial<ExtensionSettings> {
-	const sanitizedSettings: Partial<Record<keyof T, string>> = {};
+): T extends Record<SettingKey, any> ? ExtensionSettings : Partial<ExtensionSettings> {
+	const sanitizedSettings: Partial<Record<keyof T, any>> = {};
 	for (const [key, value] of Object.entries(settings) as Array<[SettingKey, string]>) {
-		if (value in SETTING_SCHEMAS[key].choices) {
-			sanitizedSettings[key] = value;
-			continue;
+		const setting = SETTING_SCHEMAS[key];
+		switch (setting.type) {
+			// case 'boolean':
+			// 	if (typeof value === 'boolean') {
+			// 		sanitizedSettings[key] = value;
+			// 		continue;
+			// 	}
+			// 	break;
+			// case 'number':
+			// 	if (typeof value === 'number' && !isNaN(value)) {
+			// 		sanitizedSettings[key] = value;
+			// 		continue;
+			// 	}
+			// 	break;
+			case 'choices':
+				if (value in setting.value) {
+					sanitizedSettings[key] = value;
+					continue;
+				}
+				break;
 		}
-		console.error(
+		errorHandler(
 			`Invalid setting value for ${key}: ${value}${settingName ? ` in '${settingName}'` : ''}`
 		);
 		sanitizedSettings[key] = DEFAULT_SETTINGS[key];
 	}
 	return sanitizedSettings as any;
-}
-
-export function setSettings(
-	settings: ExtensionSettings,
-) {
-	let key: SettingKey;
-	for (key in settings) {
-		CURRENT_SETTINGS[key] = settings[key] as any;
-	}
-}
-
-export function getSettings(): ExtensionSettings {
-	return { ...CURRENT_SETTINGS };
 }
