@@ -1,5 +1,5 @@
 import { errorHandler } from './logging';
-import { STATE_SAVE_DELAY_MS } from './constants';
+// import { STATE_SAVE_DELAY_MS } from './constants';
 
 const storageSession = api.storage.session;
 
@@ -43,7 +43,11 @@ export abstract class SessionSingleton {
 	public static hasLoaded<T extends typeof SessionSingleton>(
 		this: T,
 	): boolean {
-		return this._instances.has(this);
+		if (this === SessionSingleton) {
+			return true;
+		}
+		const superCls = Object.getPrototypeOf(this);
+		return this._instances.has(this) && superCls.hasLoaded();
 	}
 
 	public static getLoadedInstance<T extends typeof SessionSingleton>(
@@ -113,8 +117,7 @@ export abstract class SessionSingleton {
 		const timestamp = DEBUG ? Date.now() : 0;
 		const savePromise = (async () => {
 			try {
-				// delay MAX_BATCH_DELAY_MS
-				await new Promise((resolve) => setTimeout(resolve, STATE_SAVE_DELAY_MS));
+				// await new Promise((resolve) => setTimeout(resolve, STATE_SAVE_DELAY_MS));
 				for (const property of properties) {
 					if (controller.signal.aborted) {
 						if (DEBUG) {
