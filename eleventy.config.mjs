@@ -1,5 +1,5 @@
 import { getGitInfo } from './utils/gitinfo.ts';
-import { tsxCompile } from './utils/tsx.ts';
+import TsxPlugin from './utils/tsx.ts';
 import ManifestPlugin from './utils/manifest.ts';
 import VitePlugin from './utils/vite.ts';
 
@@ -9,15 +9,16 @@ import manifest from './manifest.json' with { type: "json" };
 async function eleventySetup(eleventyConfig){
 	const logger = eleventyConfig.logger;
 	eleventyConfig.setOutputDirectory('./dist');
-	eleventyConfig.setInputDirectory('./src/options'); // Flatten output directory
+	eleventyConfig.setInputDirectory('./src');
 	eleventyConfig.addPassthroughCopy('./_locales/');
 	// eleventyConfig.addPassthroughCopy('**/*.css'); // Handled by Vite
 	eleventyConfig.addWatchTarget('./'); // .gitignore suppresses this
 	eleventyConfig.setWatchJavaScriptDependencies(false); // Allow `eleventy --serve` without occurring an error
-	eleventyConfig.addTemplateFormats('tsx');
-	eleventyConfig.addExtension(['tsx'], {
-		key: '11ty.js',
-		compile: tsxCompile,
+	eleventyConfig.addPlugin(TsxPlugin, {
+		entries: [
+			'./src/options/index.tsx',
+		],
+		ignoreTsxOnly: true,
 	});
 
 	const { version, version_name } = await getGitInfo(logger, 'minor');

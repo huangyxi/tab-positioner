@@ -1,7 +1,8 @@
-import 'jsx-async-runtime';
+// node_modules/jsx-async-runtime/dist/types/jsx/jsx.types.d.ts
+// import 'jsx-async-runtime';
 
-declare module 'react/jsx-runtime' {
-	// Declare an empty namespace so VSCode uses 'jsx-async-runtime' types
-	namespace JSX {
-	}
-}
+// declare module 'react/jsx-runtime' {
+// 	// Declare an empty namespace so VSCode uses 'jsx-async-runtime' types
+// 	namespace JSX {
+// 	}
+// }
