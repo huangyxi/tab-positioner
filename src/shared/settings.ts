@@ -11,7 +11,8 @@ export type SettingKey = never
 	| 'background_link_position'
 	// | 'foreground_link_position'
 	| 'after_close_activation'
-	| '$tab_batch_threshold_ms'
+	| '$tab_batch_creation_threshold_ms'
+	| '$tab_batch_activation_threshold_ms'
 	| '$persistent_background'
 	| '$debug_mode'
 	| never;
@@ -59,7 +60,8 @@ export const DEFAULT_SETTINGS = {
 	background_link_position: DEFAULT_VALUE as TabCreationPosition,
 	// foreground_link_position: DEFAULT_VALUE as TabCreationPosition,
 	after_close_activation: DEFAULT_VALUE as TabActivationPosition,
-	$tab_batch_threshold_ms: C.MAX_BATCH_DELAY_MS,
+	$tab_batch_creation_threshold_ms: C.TAB_BATCH_CREATION_THRESHOLD_MS,
+	$tab_batch_activation_threshold_ms: C.TAB_BATCH_ACTIVATION_THRESHOLD_MS,
 	$debug_mode: false,
 	$persistent_background: false,
 } satisfies Record<SettingKey, any>;
@@ -116,8 +118,14 @@ export const SETTING_SCHEMAS: SettingSchemas = {
 		type: 'choices',
 		choices: TAB_ACTIVATION_POSITION_CHOICES,
 	},
-	$tab_batch_threshold_ms: {
-		i18nKey: 'tabBatchThresholdMsLabel',
+	$tab_batch_creation_threshold_ms: {
+		i18nKey: 'tabBatchCreationThresholdMsLabel',
+		type: 'number',
+		min: 0,
+		max: 1000, // 1 second
+	},
+	$tab_batch_activation_threshold_ms: {
+		i18nKey: 'tabBatchActivationThresholdMsLabel',
 		type: 'number',
 		min: 0,
 		max: 1000, // 1 second

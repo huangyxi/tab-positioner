@@ -43,9 +43,13 @@
 		"message": "After closing a tab, switch to:",
 		"description": "Label for the post-close tab activation behavior."
 	},
-	"tabBatchThresholdMsLabel": {
+	"tabBatchCreationThresholdMsLabel": {
 		"message": "Batch open threshold (ms):",
 		"description": "Input prompt for the time interval threshold for batch opening tabs. Used to preserve tab order and grouping when restoring tabs."
+	},
+	"tabBatchActivationThresholdMsLabel": {
+		"message": "Batch close threshold (ms):",
+		"description": "Input prompt for the time interval threshold for batch activating tabs. Used to accelerate tab closing and switching behavior."
 	},
 	"persistentBackgroundSpan": {
 		"message": "Persistent Extension Worker",

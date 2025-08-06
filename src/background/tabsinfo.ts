@@ -2,6 +2,7 @@ import { DEBUG } from '../shared/debug';
 import { Listeners } from "../shared/listeners";
 import { SessionSingleton } from "../shared/session";
 import { FIRST_ACTIVATION_DELAY_MS } from "../shared/constants";
+import { errorHandler } from '../shared/logging';
 
 type WindowId = number;
 type TabId = number;
@@ -290,9 +291,14 @@ export class TabsInfo extends SessionSingleton {
 			let tab: api.tabs.Tab;
 			try {
 				tab = await apiTabs.get(activeInfo.tabId);
-			} catch (error) {
+			} catch (error: any) {
 				if (DEBUG) {
-					console.log(` tabsInfo: Tab ${activeInfo.tabId} not found`, error);
+					if (error.message.startsWith('No tab with id:')) {
+						console.log(` tabsInfo: Tab ${activeInfo.tabId} not found`);
+					}
+					else {
+						errorHandler(error);
+					}
 				}
 				return;
 			}
@@ -310,18 +316,19 @@ export class TabsInfo extends SessionSingleton {
 			instance.activateTab(activeInfo.windowId, activeInfo.tabId, tab.index);
 		});
 
-		listeners.add(apiTabs.onUpdated, async (_tabId, changeInfo, _tab) => {
+		listeners.add(apiTabs.onUpdated, async (tabId, changeInfo, tab) => {
+			if (changeInfo.pinned === undefined || changeInfo.pinned === false) {
+				return; // Only handle pinned state changes
+			}
 			if (DEBUG) {
-				console.log(' tabsInfo: Tab updated', _tabId, changeInfo);
+				console.log(' tabsInfo: Tab pinned', tabId, changeInfo);
 			}
-			if (changeInfo.pinned === true) {
-				const instance = await this.getInstance();
-				const normalActiveTabs = await apiTabs.query({
-					active: true,
-					windowType: 'normal',
-				});
-				instance.updateRecentTabs(normalActiveTabs);
-			}
+			const instance = await this.getInstance();
+			const normalActiveTabs = await apiTabs.query({
+				active: true,
+				windowType: 'normal',
+			});
+			instance.updateRecentTabs(normalActiveTabs);
 		});
 
 		listeners.add(apiTabs.onMoved, async (tabId, moveInfo) => {

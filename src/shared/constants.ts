@@ -2,7 +2,8 @@ export const NEW_PAGE_URIS = [
 	'chrome://newtab/',
 ];
 
-export const MAX_BATCH_DELAY_MS = 50; // ms
+export const TAB_BATCH_CREATION_THRESHOLD_MS = 20; // ms
+export const TAB_BATCH_ACTIVATION_THRESHOLD_MS = 50; // ms
 // export const STATE_SAVE_DELAY_MS = 50; // ms
 export const FIRST_ACTIVATION_DELAY_MS = 50; // ms
 
