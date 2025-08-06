@@ -1,3 +1,4 @@
+import { DEBUG } from '../shared/debug';
 import type { TabActivationPosition } from '../shared/settings';
 import { MAX_BATCH_DELAY_MS } from '../shared/constants';
 import { Listeners } from '../shared/listeners';

@@ -1,8 +1,10 @@
+import { DEBUG } from '../shared/debug';
 import { Listeners } from '../shared/listeners';
 import { SyncSettings } from './syncsettings';
 import { TabsInfo } from './tabsinfo';
 import { registerTabCreatedListener } from './tabcreation';
 import { registerTabRemovedListener } from './tabactivation';
+
 
 function main() {
 	if (DEBUG) {

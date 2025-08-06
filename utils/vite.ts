@@ -48,7 +48,7 @@ class VitePlugin {
 				define: {
 					'api': 'chrome',
 					'VERSION': JSON.stringify(this.options.version),
-					'DEBUG': JSON.stringify(process.env.DEBUG),
+					// 'DEBUG': JSON.stringify(process.env.DEBUG),
 				},
 				build: {
 					emptyOutDir: false, // Keep Eleventy passthroughed files

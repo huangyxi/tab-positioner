@@ -1,3 +1,4 @@
+import { DEBUG } from '../shared/debug';
 import { Listeners } from "../shared/listeners";
 import { SessionSingleton } from "../shared/session";
 import { FIRST_ACTIVATION_DELAY_MS } from "../shared/constants";

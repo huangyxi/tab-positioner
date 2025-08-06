@@ -1,6 +1,6 @@
 import { I18nKey } from './i18n';
 import { errorHandler } from './logging';
-
+import * as C from './constants';
 const DEFAULT_VALUE = 'default';
 
 /**
@@ -11,7 +11,9 @@ export type SettingKey = never
 	| 'background_link_position'
 	// | 'foreground_link_position'
 	| 'after_close_activation'
+	| '$tab_batch_threshold_ms'
 	| '$persistent_background'
+	| '$debug_mode'
 	| never;
 
 export interface SettingText {
@@ -57,6 +59,8 @@ export const DEFAULT_SETTINGS = {
 	background_link_position: DEFAULT_VALUE as TabCreationPosition,
 	// foreground_link_position: DEFAULT_VALUE as TabCreationPosition,
 	after_close_activation: DEFAULT_VALUE as TabActivationPosition,
+	$tab_batch_threshold_ms: C.MAX_BATCH_DELAY_MS,
+	$debug_mode: false,
 	$persistent_background: false,
 } satisfies Record<SettingKey, any>;
 // export interface ExtensionSettings extends Record<SettingKey, ChoiceValue> {
@@ -79,7 +83,7 @@ export type TabActivationPositionKey = SettingKeys<TabActivationPosition>;
 
 type SettingValue<K extends SettingKey> =
 	| ExtensionSettings[K] extends boolean ? { type: 'boolean' } : never
-	| ExtensionSettings[K] extends number ? {
+	| ExtensionSettings[K] extends number ? { // Integer only
 		type: 'number',
 		min?: number,
 		max?: number,
@@ -112,8 +116,18 @@ export const SETTING_SCHEMAS: SettingSchemas = {
 		type: 'choices',
 		choices: TAB_ACTIVATION_POSITION_CHOICES,
 	},
+	$tab_batch_threshold_ms: {
+		i18nKey: 'tabBatchThresholdMsLabel',
+		type: 'number',
+		min: 0,
+		max: 1000, // 1 second
+	},
 	$persistent_background: {
 		i18nKey: 'persistentBackgroundSpan',
+		type: 'boolean',
+	},
+	$debug_mode: {
+		i18nKey: 'debugModeSpan',
 		type: 'boolean',
 	},
 } as const;
@@ -133,15 +147,15 @@ export function sanitizeSettings<T extends Partial<Record<SettingKey, any>>>(
 					continue;
 				}
 				break;
-			// case 'number':
-			// 	if (typeof value === 'number' && !isNaN(value)) {
-			// 		const { min, max, step } = setting;
-			// 		if (min !== undefined && value < min) break;
-			// 		if (max !== undefined && value > max) break;
-			// 		sanitizedSettings[key] = value;
-			// 		continue;
-			// 	}
-			// 	break;
+			case 'number':
+				if (typeof value === 'number' && !isNaN(value)) {
+					const { min, max, step } = setting;
+					if (min !== undefined && value < min) break;
+					if (max !== undefined && value > max) break;
+					sanitizedSettings[key] = Math.round(value);
+					continue;
+				}
+				break;
 			case 'choices':
 				if (value in setting.choices) {
 					sanitizedSettings[key] = value;

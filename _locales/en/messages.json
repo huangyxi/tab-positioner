@@ -43,9 +43,17 @@
 		"message": "After closing a tab, switch to:",
 		"description": "Label for the post-close tab activation behavior."
 	},
+	"tabBatchThresholdMsLabel": {
+		"message": "Batch open threshold (ms):",
+		"description": "Input prompt for the time interval threshold for batch opening tabs. Used to preserve tab order and grouping when restoring tabs."
+	},
 	"persistentBackgroundSpan": {
 		"message": "Persistent Extension Worker",
 		"description": "Checkbox span (label) for the persistent background setting."
+	},
+	"debugModeSpan": {
+		"message": "Debug Output in Extension Console",
+		"description": "Checkbox span (label) for the debug mode setting, which enables debug output in the extension console."
 	},
 	"optionDefault": {
 		"message": "Use Chrome Default",

@@ -1,3 +1,4 @@
+import { DEBUG } from '../shared/debug';
 import type { TabCreationPosition, TabCreationPositionKey } from '../shared/settings';
 import { NEW_PAGE_URIS, MAX_BATCH_DELAY_MS } from '../shared/constants';
 import { Listeners } from '../shared/listeners';

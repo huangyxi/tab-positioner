@@ -1,13 +1,10 @@
 {
 	"scripts": {
 		"build": "eleventy",
-		"build:debug": "DEBUG=true eleventy",
 		"package": "node scripts/package.ts",
 		"dev": "eleventy --watch",
-		"dev:debug": "DEBUG=true eleventy --watch",
 		"clean": "node scripts/clean.ts",
 		"release": "npm-run-all --continue-on-error clean build \"package -- {@}\" --",
-		"release:debug": "npm-run-all --continue-on-error clean build:debug \"package -- {@}\" --",
 		"lint": "npm-run-all --continue-on-error lint:*",
 		"lint:editorconfig": "editorconfig-checker",
 		"lint:css": "stylelint 'src/**/*.css'",
