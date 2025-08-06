@@ -7,14 +7,19 @@ import { getMessage as _, createI18nAttribute as _a } from '../shared/i18n';
 import type { SettingKey, SettingSchemas, SettingText } from '../shared/settings';
 import { SETTING_SCHEMAS } from '../shared/settings';
 
-function buildBoolean<K extends SettingKey>(
-	settingKey: K,
-	setting: SettingSchemas[K],
-): JSX.Element {
+interface SettingPair<K extends SettingKey> {
+	settingKey: K;
+	setting: SettingSchemas[K];
+}
+
+function BooleanSetting<K extends SettingKey>({
+	settingKey,
+	setting,
+}: SettingPair<K>): JSX.Element {
 	if (setting.type !== 'boolean') {
 		return;
 	}
-	return (
+	return <>
 		<label class="checkbox-group">
 			<input type="checkbox" id={settingKey} />
 			<span class="checkbox-visual"></span>
@@ -28,18 +33,18 @@ function buildBoolean<K extends SettingKey>(
 				{..._a('resetSettingTooltip', 'title')}
 			></button>
 		</label>
-	);
+	</>;
 }
 
-function buildNumber<K extends SettingKey>(
-	settingKey: K,
-	setting: SettingSchemas[K],
-): JSX.Element {
+function NumberSetting<K extends SettingKey>({
+	settingKey,
+	setting,
+}: SettingPair<K>): JSX.Element {
 	if (setting.type !== 'number') {
 		return;
 	}
 	const { min, max, step } = setting;
-	return (
+	return <>
 		<div class="input-group">
 			<input
 				type="number"
@@ -58,24 +63,18 @@ function buildNumber<K extends SettingKey>(
 				{..._a('resetSettingTooltip', 'title')}
 			></button>
 		</div>
-	);
+	</>;
 }
 
-function buildChoices<K extends SettingKey>(
-	settingKey: K,
-	setting: SettingSchemas[K],
-): JSX.Element {
+function ChoicesSetting<K extends SettingKey>({
+	settingKey,
+	setting,
+}: SettingPair<K>): JSX.Element {
 	if (setting.type !== 'choices') {
 		return;
 	}
-	return (
+	return <>
 		<div class="select-group">
-			<label
-				for={settingKey}
-				{..._a(setting.i18nKey)}
-			>
-				{_(setting.i18nKey)}
-			</label>
 			<select id={settingKey}>
 				{(Object.entries(setting.choices) as Array<[string, SettingText]>).map(
 					([choiceKey, choice]) => (
@@ -88,6 +87,9 @@ function buildChoices<K extends SettingKey>(
 					)
 				)}
 			</select>
+			<label for={settingKey} {..._a(setting.i18nKey)}>
+				{_(setting.i18nKey)}
+			</label>
 			<button
 				id={`reset-${settingKey}`}
 				type="button"
@@ -95,25 +97,29 @@ function buildChoices<K extends SettingKey>(
 				{..._a('resetSettingTooltip', 'title')}
 			></button>
 		</div>
-	);
+	</>;
 }
 
-function buildSettings<K extends SettingKey>(
-	advanced: boolean,
-): JSX.Element {
+function Settings<K extends SettingKey>({
+	advanced = false,
+}: {
+	advanced?: boolean;
+}): JSX.Element {
 	const settings = Object.entries(SETTING_SCHEMAS) as Array<[K, SettingSchemas[K]]>;
 	const filteredSettings = advanced
 		? settings.filter(([settingKey, _]) => settingKey.startsWith('$'))
 		: settings.filter(([settingKey, _]) => !settingKey.startsWith('$'));
-	return filteredSettings.map(([settingKey, setting]) => <>
-		{buildBoolean(settingKey, setting)}
-		{buildNumber(settingKey, setting)}
-		{buildChoices(settingKey, setting)}
-	</>);
+	return <>
+		{filteredSettings.map(([settingKey, setting]) => <>
+				<BooleanSetting settingKey={settingKey} setting={setting} />
+				<NumberSetting settingKey={settingKey} setting={setting} />
+				<ChoicesSetting settingKey={settingKey} setting={setting} />
+		</>)}
+	</>;
 }
 
 export default function OptionsPage(): JSX.Element {
-	return (
+	return <>
 		<html lang="en">
 
 			<head>
@@ -134,13 +140,13 @@ export default function OptionsPage(): JSX.Element {
 					</header>
 
 					<main>
-						{buildSettings(false)}
+						<Settings advanced={false} />
 						<details>
 							<summary>
 								{_('advancedSettingsSummary')}
 							</summary>
 							<div class="details-content">
-								{buildSettings(true)}
+								<Settings advanced={true} />
 							</div>
 						</details>
 					</main>
@@ -161,5 +167,5 @@ export default function OptionsPage(): JSX.Element {
 			</body>
 
 		</html>
-	)
+	</>
 };

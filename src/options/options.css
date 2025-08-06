@@ -18,8 +18,6 @@
 	--md-sys-color-error: #b3261e;
 	--md-sys-color-surface-container-high: #e6e0e9;
 	--md-sys-color-surface-container-highest: #e0dae3;
-
-	--background-image-select: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath fill='%2349454F' d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
 }
 
 @media (prefers-color-scheme: dark) {
@@ -36,10 +34,9 @@
 		--md-sys-color-error: #f2b8b5;
 		--md-sys-color-surface-container-high: #36343b;
 		--md-sys-color-surface-container-highest: #403e45;
-
-		--background-image-select: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath fill='%23CAC4D0' d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
 	}
 }
+
 
 /* ==============================================
 	General Body and Layout
@@ -80,6 +77,7 @@ footer {
 	margin-top: 8px;
 }
 
+
 /* ==============================================
 	Typography (MD3 Type Scale)
 ============================================== */
@@ -118,129 +116,21 @@ summary {
 	line-height: 20px;
 }
 
-/* ==============================================
-	Text Input Field & Select Field
-============================================== */
-div.input-group,
-div.select-group {
-	position: relative;
-}
-
-div.input-group label,
-div.select-group label {
-	position: absolute;
-	top: -8px;
-	left: 12px;
-	padding: 0 4px;
-	background-color: var(--md-sys-color-background);
-	color: var(--md-sys-color-on-surface-variant);
-	transition: color 0.1s;
-	pointer-events: none;
-}
-
-/* For when input is inside an open details element */
-details[open] div.input-group, label,
-details[open] div.select-group label {
-	background-color: var(--md-sys-color-surface-container-high);
-}
-
-input[type="number"],
-select {
-	appearance: none;
-	width: 100%;
-	box-sizing: border-box;
-	padding: 15px 52px 15px 12px;
-	outline: 1px solid var(--md-sys-color-outline);
-	border: none;
-	border-radius: 4px;
-	background-color: transparent;
-	color: var(--md-sys-color-on-surface);
-	transition: outline 0.1s;
-}
-
-input[type="number"] {
-	padding: 15px 52px 15px 12px;
-}
-
-select {
-	cursor: pointer;
-	padding: 15px 92px 15px 12px;
-}
-
-/* Add more padding for stepper buttons */
-div.input-group.has-steppers input[type="number"] {
-	padding-right: 124px;
-}
-
-input[type="number"]:hover {
-	outline-width: 2px;
-}
-
-input[type="number"]:focus {
-	outline-width: 2px;
-	outline-color: var(--md-sys-color-primary);
-}
-
-input[type="number"]:focus+label {
+button.reset-all {
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 20px;
 	color: var(--md-sys-color-primary);
 }
 
-input[type="number"]:invalid {
-	outline-color: var(--md-sys-color-error);
-}
-
-input[type="number"]:invalid:focus {
-	outline-color: var(--md-sys-color-error);
-}
-
-input[type="number"]:invalid+label {
-	color: var(--md-sys-color-error);
-}
-
-/* ==============================================
-	Select Field
-============================================== */
-
-/* Custom dropdown arrow for select */
-div.select-group::after {
-	content: '';
-	position: absolute;
-	top: 50%;
-	right: 52px;
-	width: 24px;
-	height: 24px;
-	transform: translateY(-50%) rotate(0deg);
-	background-color: var(--md-sys-color-on-surface-variant);
-	mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath d='M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3e%3c/svg%3e") no-repeat center;
-	mask-size: contain;
-	transition: transform 0.2s ease-in-out;
-
-	/* Make sure it doesn't block clicks */
-	pointer-events: none;
-}
-
-/* Rotate arrow on focus */
-div.select-group:focus-within::after {
-	transform: translateY(-50%) rotate(180deg);
-}
-
-select:hover {
-	outline-width: 2px;
-}
-
-select:focus {
-	outline-width: 2px;
-	outline-color: var(--md-sys-color-primary);
-}
-
-select:focus+label {
+div.status {
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 20px;
+	text-align: center;
 	color: var(--md-sys-color-primary);
 }
 
-option {
-	background-color: var(--md-sys-color-surface);
-	color: var(--md-sys-color-on-surface);
-}
 
 /* ==============================================
 	Checkbox
@@ -264,7 +154,6 @@ label.checkbox-group:not(:has(button.reset:hover)):hover {
 
 label.checkbox-group input[type="checkbox"] {
 	appearance: none;
-	-webkit-appearance: none;
 	position: absolute;
 	opacity: 0;
 	cursor: pointer;
@@ -316,7 +205,90 @@ label.checkbox-group input[type="checkbox"]:focus-visible~.checkbox-visual {
 
 
 /* ==============================================
-	Details & Summary (Accordion)
+	Text Input Field & Select Field
+============================================== */
+div.input-group,
+div.select-group {
+	position: relative;
+}
+
+div.input-group label,
+div.select-group label {
+	position: absolute;
+	top: -8px;
+	left: 12px;
+	padding: 0 4px;
+	background-color: var(--md-sys-color-background);
+	color: var(--md-sys-color-on-surface-variant);
+	transition: color 0.1s;
+	pointer-events: none;
+}
+
+details[open] div.input-group label,
+details[open] div.select-group label {
+	background-color: var(--md-sys-color-surface-container-high);
+}
+
+input[type="number"],
+select {
+	appearance: none;
+	width: 100%;
+	box-sizing: border-box;
+	padding: 15px 52px 15px 12px;
+	outline: 1px solid var(--md-sys-color-outline);
+	border: none;
+	border-radius: 4px;
+	background-color: transparent;
+	color: var(--md-sys-color-on-surface);
+	transition: outline 0.1s;
+}
+
+select {
+	padding-right: 92px;
+	cursor: pointer;
+}
+
+/* Add more padding for stepper buttons */
+div.input-group.has-steppers input[type="number"] {
+	padding-right: 124px;
+}
+
+input[type="number"]:hover,
+select:hover {
+	outline-width: 2px;
+}
+
+input[type="number"]:focus,
+select:focus {
+	outline-width: 2px;
+	outline-color: var(--md-sys-color-primary);
+}
+
+input[type="number"]:focus+label,
+select:focus+label {
+	color: var(--md-sys-color-primary);
+}
+
+input[type="number"]:invalid {
+	outline-color: var(--md-sys-color-error);
+}
+
+input[type="number"]:invalid:focus {
+	outline-color: var(--md-sys-color-error);
+}
+
+input[type="number"]:invalid+label {
+	color: var(--md-sys-color-error);
+}
+
+select option {
+	/** Valid in Chrome on Windows */
+	background-color: var(--md-sys-color-surface);
+}
+
+
+/* ==============================================
+	Dropdown of Select & Details
 ============================================== */
 details {
 	border: 1px solid var(--md-sys-color-outline-variant);
@@ -347,28 +319,37 @@ details[open]>summary {
 	color: var(--md-sys-color-on-surface);
 }
 
-/* Hide for Safari */
-summary::-webkit-details-marker {
+/* summary::-webkit-details-marker {
 	display: none;
-}
+} */
 
 /* Custom dropdown arrow */
+div.select-group::after,
 summary::after {
 	content: '';
 	position: absolute;
 	top: 50%;
-	right: 16px;
+	right: 52px;
 	width: 24px;
 	height: 24px;
 	transform: translateY(-50%) rotate(0deg);
 	background-color: var(--md-sys-color-on-surface-variant);
 	mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath d='M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3e%3c/svg%3e") no-repeat center;
 	mask-size: contain;
+	transition: transform 0.2s ease-in-out;
+}
+
+summary::after {
+	right: 16px;
 	transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
 }
 
+div.select-group:focus-within::after,
 details[open]>summary::after {
 	transform: translateY(-50%) rotate(180deg);
+}
+
+details[open]>summary::after {
 	background-color: var(--md-sys-color-on-surface);
 }
 
@@ -414,13 +395,9 @@ button.reset:hover {
 }
 
 button.reset-all {
-	font-size: 14px;
-	font-weight: 500;
-	line-height: 20px;
 	padding: 10px 24px;
 	border-radius: 100px;
 	border: 1px solid var(--md-sys-color-outline);
-	color: var(--md-sys-color-primary);
 	background-color: transparent;
 	cursor: pointer;
 	transition: background-color 0.2s;
@@ -430,12 +407,14 @@ button.reset-all:hover {
 	background-color: var(--md-sys-color-surface-container-highest);
 }
 
+
 /* ==============================================
-	Stepper Buttons
+	Stepper Buttons (Custom Increment/Decrement for numeric inputs)
 ============================================== */
 button.stepper {
 	position: absolute;
 	top: 50%;
+	right: 52px;
 	transform: translateY(-50%);
 	width: 2.5em;
 	height: 2.5em;
@@ -448,6 +427,11 @@ button.stepper {
 	align-items: center;
 	justify-content: center;
 	transition: background-color 0.2s;
+}
+
+button.stepper.increment+button.stepper.decrement,
+button.stepper.decrement+button.stepper.increment {
+	right: 88px;
 }
 
 button.stepper:hover {
@@ -463,16 +447,8 @@ button.stepper::before {
 	mask-size: 1.5em;
 }
 
-button.stepper.increment {
-	right: 52px;
-}
-
 button.stepper.increment::before {
 	mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/%3e%3c/svg%3e") no-repeat center;
-}
-
-button.stepper.decrement {
-	right: 88px;
 }
 
 button.stepper.decrement::before {
@@ -484,11 +460,6 @@ button.stepper.decrement::before {
 	Status Message
 ============================================== */
 div.status {
-	font-size: 14px;
-	font-weight: 500;
-	line-height: 20px;
-	text-align: center;
-	color: var(--md-sys-color-primary);
 	height: 20px;
 	opacity: 0;
 	transition: opacity 0.5s;
