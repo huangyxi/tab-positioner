@@ -15,7 +15,7 @@
 	--md-sys-color-outline: #79747e;
 	--md-sys-color-outline-variant: #cac4d0;
 	--md-sys-color-shadow: #000000;
-	--md-sys-color-error: #b3261e;
+	--md-sys-color-warning: #b3261e;
 	--md-sys-color-surface-container-high: #e6e0e9;
 	--md-sys-color-surface-container-highest: #e0dae3;
 }
@@ -31,7 +31,7 @@
 		--md-sys-color-on-surface-variant: #cac4d0;
 		--md-sys-color-outline: #938f99;
 		--md-sys-color-outline-variant: #49454f;
-		--md-sys-color-error: #f2b8b5;
+		--md-sys-color-warning: #f2b8b5;
 		--md-sys-color-surface-container-high: #36343b;
 		--md-sys-color-surface-container-highest: #403e45;
 	}
@@ -49,6 +49,9 @@ body {
 	width: 100%;
 	min-width: 350px;
 	max-width: 600px;
+
+	/** Ensure the body has enough height for footer */
+	padding-bottom: 100px;
 }
 
 div.container,
@@ -70,11 +73,18 @@ main {
 }
 
 footer {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	width: 100%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 16px;
-	margin-top: 8px;
+	gap: 8px;
+	padding-top: 16px;
+	padding-bottom: 16px;
+	background-color: color-mix(in srgb, var(--md-sys-color-background) 80%, transparent);
+	backdrop-filter: blur(1px);
 }
 
 
@@ -90,23 +100,26 @@ h1 {
 	text-align: center;
 }
 
-label {
-	font-size: 12px;
-	font-weight: 400;
-	line-height: 16px;
-}
-
-select,
-input[type="number"] {
-	font-size: 16px;
-	font-weight: 400;
-	line-height: 24px;
-}
-
 label.checkbox-group .checkbox-label {
 	font-size: 14px;
 	font-weight: 500;
 	line-height: 20px;
+	color: var(--md-sys-color-on-surface);
+}
+
+div.input-group label
+div.select-group label {
+	font-size: 12px;
+	font-weight: 400;
+	line-height: 16px;
+	color: var(--md-sys-color-on-surface-variant);
+}
+
+div.input-group input[type="number"],
+div.select-group select {
+	font-size: 16px;
+	font-weight: 400;
+	line-height: 24px;
 	color: var(--md-sys-color-on-surface);
 }
 
@@ -120,7 +133,6 @@ button.reset-all {
 	font-size: 14px;
 	font-weight: 500;
 	line-height: 20px;
-	color: var(--md-sys-color-primary);
 }
 
 div.status {
@@ -159,12 +171,12 @@ label.checkbox-group input[type="checkbox"] {
 	cursor: pointer;
 }
 
-label.checkbox-group .checkbox-label {
+label.checkbox-group span.checkbox-label {
 	padding-left: 12px;
 	user-select: none;
 }
 
-label.checkbox-group .checkbox-visual {
+label.checkbox-group span.checkbox-visual {
 	position: relative;
 	width: 18px;
 	height: 18px;
@@ -176,13 +188,13 @@ label.checkbox-group .checkbox-visual {
 	flex-shrink: 0;
 }
 
-label.checkbox-group input[type="checkbox"]:checked~.checkbox-visual {
+label.checkbox-group input[type="checkbox"]:checked~span.checkbox-visual {
 	background-color: var(--md-sys-color-primary);
 	border-color: var(--md-sys-color-primary);
 }
 
 /* The checkmark */
-label.checkbox-group .checkbox-visual::after {
+label.checkbox-group span.checkbox-visual::after {
 	content: "";
 	position: absolute;
 	display: none;
@@ -195,11 +207,11 @@ label.checkbox-group .checkbox-visual::after {
 	transform: rotate(45deg);
 }
 
-label.checkbox-group input[type="checkbox"]:checked~.checkbox-visual::after {
+label.checkbox-group input[type="checkbox"]:checked~span.checkbox-visual::after {
 	display: block;
 }
 
-label.checkbox-group input[type="checkbox"]:focus-visible~.checkbox-visual {
+label.checkbox-group input[type="checkbox"]:focus-visible~span.checkbox-visual {
 	box-shadow: 0 0 0 2px var(--md-sys-color-background), 0 0 0 4px var(--md-sys-color-primary);
 }
 
@@ -219,7 +231,6 @@ div.select-group label {
 	left: 12px;
 	padding: 0 4px;
 	background-color: var(--md-sys-color-background);
-	color: var(--md-sys-color-on-surface-variant);
 	transition: color 0.1s;
 	pointer-events: none;
 }
@@ -229,8 +240,8 @@ details[open] div.select-group label {
 	background-color: var(--md-sys-color-surface-container-high);
 }
 
-input[type="number"],
-select {
+div.input-group input[type="number"],
+div.select-group select {
 	appearance: none;
 	width: 100%;
 	box-sizing: border-box;
@@ -239,11 +250,10 @@ select {
 	border: none;
 	border-radius: 4px;
 	background-color: transparent;
-	color: var(--md-sys-color-on-surface);
 	transition: outline 0.1s;
 }
 
-select {
+div.select-group select {
 	padding-right: 92px;
 	cursor: pointer;
 }
@@ -253,35 +263,35 @@ div.input-group.has-steppers input[type="number"] {
 	padding-right: 124px;
 }
 
-input[type="number"]:hover,
-select:hover {
+div.input-group input[type="number"]:hover,
+div.select-group select:hover {
 	outline-width: 2px;
 }
 
-input[type="number"]:focus,
-select:focus {
+div.input-group input[type="number"]:focus,
+div.select-group select:focus {
 	outline-width: 2px;
 	outline-color: var(--md-sys-color-primary);
 }
 
-input[type="number"]:focus+label,
-select:focus+label {
+div.input-group input[type="number"]:focus+label,
+div.select-group select:focus+label {
 	color: var(--md-sys-color-primary);
 }
 
-input[type="number"]:invalid {
-	outline-color: var(--md-sys-color-error);
+div.input-group input[type="number"]:invalid {
+	outline-color: var(--md-sys-color-warning);
 }
 
-input[type="number"]:invalid:focus {
-	outline-color: var(--md-sys-color-error);
+div.input-group input[type="number"]:invalid:focus {
+	outline-color: var(--md-sys-color-warning);
 }
 
-input[type="number"]:invalid+label {
-	color: var(--md-sys-color-error);
+div.input-group input[type="number"]:invalid+label {
+	color: var(--md-sys-color-warning);
 }
 
-select option {
+div.select-group select option {
 	/** Valid in Chrome on Windows */
 	background-color: var(--md-sys-color-surface);
 }
@@ -390,20 +400,28 @@ button.reset::before {
 	transition: background-color 0.2s;
 }
 
+
 button.reset:hover {
 	background-color: var(--md-sys-color-surface-container-highest);
 }
 
+/** Foreground color on hover */
+button.reset:hover::before {
+	background-color: var(--md-sys-color-warning);
+}
+
 button.reset-all {
+	color: var(--md-sys-color-primary);
 	padding: 10px 24px;
 	border-radius: 100px;
 	border: 1px solid var(--md-sys-color-outline);
-	background-color: transparent;
+	background-color: var(--md-sys-color-background);
 	cursor: pointer;
 	transition: background-color 0.2s;
 }
 
 button.reset-all:hover {
+	color: var(--md-sys-color-warning);
 	background-color: var(--md-sys-color-surface-container-highest);
 }
 
@@ -411,7 +429,7 @@ button.reset-all:hover {
 /* ==============================================
 	Stepper Buttons (Custom Increment/Decrement for numeric inputs)
 ============================================== */
-button.stepper {
+div.input-group button.stepper {
 	position: absolute;
 	top: 50%;
 	right: 52px;
@@ -429,16 +447,16 @@ button.stepper {
 	transition: background-color 0.2s;
 }
 
-button.stepper.increment+button.stepper.decrement,
-button.stepper.decrement+button.stepper.increment {
+div.input-group button.stepper.increment+button.stepper.decrement,
+div.input-group button.stepper.decrement+button.stepper.increment {
 	right: 88px;
 }
 
-button.stepper:hover {
+div.input-group button.stepper:hover {
 	background-color: var(--md-sys-color-surface-container-highest);
 }
 
-button.stepper::before {
+div.input-group button.stepper::before {
 	content: '';
 	display: block;
 	width: 20px;
@@ -447,11 +465,11 @@ button.stepper::before {
 	mask-size: 1.5em;
 }
 
-button.stepper.increment::before {
+div.input-group button.stepper.increment::before {
 	mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/%3e%3c/svg%3e") no-repeat center;
 }
 
-button.stepper.decrement::before {
+div.input-group button.stepper.decrement::before {
 	mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath d='M19 13H5v-2h14v2z'/%3e%3c/svg%3e") no-repeat center;
 }
 
