@@ -119,13 +119,15 @@ summary {
 }
 
 /* ==============================================
-	Text Input Field
+	Text Input Field & Select Field
 ============================================== */
-div.input-group {
+div.input-group,
+div.select-group {
 	position: relative;
 }
 
-div.input-group label {
+div.input-group label,
+div.select-group label {
 	position: absolute;
 	top: -8px;
 	left: 12px;
@@ -133,14 +135,17 @@ div.input-group label {
 	background-color: var(--md-sys-color-background);
 	color: var(--md-sys-color-on-surface-variant);
 	transition: color 0.1s;
+	pointer-events: none;
 }
 
 /* For when input is inside an open details element */
-details[open] div.input-group label {
+details[open] div.input-group, label,
+details[open] div.select-group label {
 	background-color: var(--md-sys-color-surface-container-high);
 }
 
-input[type="number"] {
+input[type="number"],
+select {
 	appearance: none;
 	width: 100%;
 	box-sizing: border-box;
@@ -151,6 +156,15 @@ input[type="number"] {
 	background-color: transparent;
 	color: var(--md-sys-color-on-surface);
 	transition: outline 0.1s;
+}
+
+input[type="number"] {
+	padding: 15px 52px 15px 12px;
+}
+
+select {
+	cursor: pointer;
+	padding: 15px 92px 15px 12px;
 }
 
 /* Add more padding for stepper buttons */
@@ -186,38 +200,6 @@ input[type="number"]:invalid+label {
 /* ==============================================
 	Select Field
 ============================================== */
-div.select-group {
-	position: relative;
-}
-
-div.select-group label {
-	position: absolute;
-	top: -8px;
-	left: 12px;
-	padding: 0 4px;
-	background-color: var(--md-sys-color-background);
-	color: var(--md-sys-color-on-surface-variant);
-}
-
-/* For when select is inside an open details element */
-details[open] div.select-group label {
-	background-color: var(--md-sys-color-surface-container-high);
-}
-
-select {
-	appearance: none;
-	width: 100%;
-	box-sizing: border-box;
-	padding: 15px 92px 15px 12px;
-	outline: 1px solid var(--md-sys-color-outline);
-	border: none;
-	border-radius: 4px;
-	background-color: transparent;
-	color: var(--md-sys-color-on-surface);
-	cursor: pointer;
-	background-image: none;
-	transition: outline 0.1s;
-}
 
 /* Custom dropdown arrow for select */
 div.select-group::after {
