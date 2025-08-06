@@ -2,6 +2,7 @@ import { Listeners } from '../shared/listeners';
 import { SessionSingleton } from '../shared/session';
 import { loadSettings, saveSettings } from '../shared/storage';
 import { DEFAULT_SETTINGS } from '../shared/settings';
+import { KEEP_ALIVE_TIMEOUT_MS } from '../shared/constants';
 
 export class SyncSettings extends SessionSingleton {
 	private settings = DEFAULT_SETTINGS;
@@ -14,17 +15,17 @@ export class SyncSettings extends SessionSingleton {
 	}
 
 	/**
-	 * Users configurable persistent background worker.
+	 * User-configurable persistent background worker.
 	 */
-	private keepAlive() {
+	private keepAlive(apiRuntime: typeof api.runtime) {
 		if (this._keepAlivePromise) return;
 		this._keepAlivePromise = (async () => {
 			while (this.get('$persistent_background')) {
-				await new Promise(resolve => setTimeout(resolve, 20_000));
+				await new Promise(resolve => setTimeout(resolve, KEEP_ALIVE_TIMEOUT_MS));
 				if (DEBUG) {
 					console.log('syncSettings: Keeping alive');
 				}
-				await this.loadState(); // ping API
+				await apiRuntime.getPlatformInfo(); // ping API
 			}
 			this._keepAlivePromise = null;
 		})();
@@ -44,7 +45,7 @@ export class SyncSettings extends SessionSingleton {
 				console.log(' syncSettings: Settings loaded on install:', settings);
 			}
 			await saveSettings(settings);
-			instance.keepAlive();
+			instance.keepAlive(apiRuntime);
 		});
 
 		listeners.add(apiRuntime.onStartup, async () => {
@@ -56,7 +57,7 @@ export class SyncSettings extends SessionSingleton {
 				console.log(' syncSettings: Settings loaded on startup:', settings);
 			}
 			await saveSettings(settings);
-			instance.keepAlive();
+			instance.keepAlive(apiRuntime);
 		});
 
 		listeners.add(apiStorage.onChanged, async (changes, areaName) => {
@@ -71,7 +72,7 @@ export class SyncSettings extends SessionSingleton {
 				console.log(' syncSettings: Settings changed:', changes);
 			}
 			await saveSettings(settings);
-			instance.keepAlive();
+			instance.keepAlive(apiRuntime);
 		});
 	}
 }
