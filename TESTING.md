@@ -8,6 +8,7 @@ This document outlines the key steps for manually testing the application before
 
 * [ ] Verify that all UI elements are responsive and accessible in both the popup and the options page.
 * [ ] Ensure that UI elements are properly styled and functional across all supported operating systems and in both light and dark modes.
+* [ ] Ensure that the `padding-bottom` of the `body` element is set correctly in the options page CSS to accommodate the `footer`.
 
 ### Functionality
 
