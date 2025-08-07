@@ -1,6 +1,6 @@
 import { DEBUG } from './debug';
 import { errorHandler } from './logging';
-// import { STATE_SAVE_DELAY_MS } from './constants';
+import { STATE_SAVE_DELAY_MS } from './constants';
 
 const storageSession = api.storage.session;
 
@@ -34,8 +34,8 @@ async function setSessionState(
 export abstract class SessionSingleton {
 	private static _instances: Map<typeof SessionSingleton, SessionSingleton> = new Map();
 	private static _initializationPromises: Map<typeof SessionSingleton, Promise<SessionSingleton>> = new Map();
-	private static _savePromises: Map<typeof SessionSingleton, Promise<void> | null> = new Map();
-	private static _saveController: Map<typeof SessionSingleton, AbortController> = new Map();
+	private static _saveLocks: Map<typeof SessionSingleton, Promise<void>> = new Map();
+	private static _saveControllers: Map<typeof SessionSingleton, AbortController> = new Map();
 
 	// DO NOT call this constructor directly.
 	// Use `getInstance()` to get the singleton instance.
@@ -105,56 +105,56 @@ export abstract class SessionSingleton {
 		if (properties === undefined) {
 			properties = this.properties() as any[];
 		}
+		if (properties.length === 0) return;
 		const cls = this.constructor as typeof SessionSingleton;
-		const existingController = cls._saveController.get(cls);
-		if (existingController?.signal.aborted) {
-			if (DEBUG) {
-				console.log(`_${this.name}: Skipping duplicated save since controller is aborted`);
-			}
-			return;
-		}
-		existingController?.abort();
-		const ongoing = cls._savePromises.get(cls);
-		if (ongoing) {
-			await ongoing;
-		}
+		cls._saveControllers.get(cls)?.abort();
+		const previousLock = cls._saveLocks.get(cls) ?? Promise.resolve();
 		const controller = new AbortController();
-		cls._saveController.set(cls, controller);
-		if (DEBUG) {
-			console.log(`_${this.name}: Saving state`);
-		}
-		const timestamp = DEBUG ? Date.now() : 0;
-		const savePromise = (async () => {
-			try {
-				// await new Promise((resolve) => setTimeout(resolve, STATE_SAVE_DELAY_MS));
-				for (const property of properties) {
-					if (controller.signal.aborted) {
-						if (DEBUG) {
-							console.log(`_${this.name}: Save aborted since property ${property}`);
-						}
-						return;
-					}
-					if (this.skipProperty(property)) {
-						continue;
-					}
-					const value = (this as any)[property];
-					if (value === undefined) continue;
-					await setSessionState(this.sessionKeyFor(property), JSON.stringify(value));
-				}
-				await this.flagState();
-				if (DEBUG) {
-					console.log(`_${this.name}: State saved in ${Date.now() - timestamp}ms`);
-				}
-			} finally {
-				cls._saveController.delete(cls);
-				cls._savePromises.delete(cls);
+		cls._saveControllers.set(cls, controller);
+		let release: () => void;
+		const currentLock = new Promise<void>((resolve) => {
+			release = resolve;
+		});
+		cls._saveLocks.set(cls, currentLock);
+		const abortException = new Error('saveState aborted');
+		try {
+			await previousLock;
+			if (DEBUG) {
+				console.log(`_${this.name}: Saving state`);
 			}
-		})();
-		cls._savePromises.set(cls, savePromise);
-		await savePromise;
+			const timestamp = DEBUG ? Date.now() : 0;
+			await new Promise((resolve, reject) => {
+				const timeout = setTimeout(resolve, STATE_SAVE_DELAY_MS);
+				controller.signal.addEventListener('abort', () => {
+					clearTimeout(timeout);
+					reject(abortException);
+				}, { once: true });
+			});
+			for (const property of properties) {
+				if (controller.signal.aborted) throw abortException;
+				if (this.skipProperty(property)) continue;
+				const value = (this as any)[property];
+				if (value === undefined) continue;
+				await setSessionState(this.sessionKeyFor(property), JSON.stringify(value));
+			}
+			await this.flagState();
+			if (DEBUG) {
+				console.log(`_${this.name}: State saved in ${Date.now() - timestamp}ms`);
+			}
+		} catch (error) {
+			if (error === abortException) {
+				if (DEBUG) {
+					console.log(`_${this.name}: Save aborted due to a new save request.`);
+				}
+			} else {
+				errorHandler(`_${this.name}: Save error:`, error);
+			}
+		} finally {
+			release!();
+		}
 	}
 
-	protected async loadState() {
+	private async loadState() {
 		if (DEBUG) {
 			console.log(`_${this.name}: Loading state`);
 		}

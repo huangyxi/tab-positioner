@@ -72,9 +72,6 @@ export const DEFAULT_SETTINGS = {
 // 	after_close_activation: TabActivationPosition;
 // }
 export type ExtensionSettings = typeof DEFAULT_SETTINGS;
-const CURRENT_SETTINGS: ExtensionSettings = {
-	...DEFAULT_SETTINGS,
-}
 
 type SettingKeys<T extends ExtensionSettings[SettingKey]> = {
 	[K in SettingKey]: ExtensionSettings[K] extends T ? K : never;

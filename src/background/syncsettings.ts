@@ -2,6 +2,7 @@ import { Listeners } from '../shared/listeners';
 import { SessionSingleton } from '../shared/session';
 import { loadSettings, saveSettings } from '../shared/storage';
 import { DEFAULT_SETTINGS } from '../shared/settings';
+import { errorHandler } from '../shared/logging';
 import { KEEP_ALIVE_TIMEOUT_MS } from '../shared/constants';
 
 export let DEBUG = true;
@@ -13,7 +14,7 @@ api.storage.sync.get(DEFAULT_SETTINGS).then((settings) => {
 
 export class SyncSettings extends SessionSingleton {
 	private settings = DEFAULT_SETTINGS;
-	private _keepAlivePromise: Promise<void> | null = null;
+	private _keepAliveController = new AbortController();
 
 	public get<T extends keyof typeof DEFAULT_SETTINGS>(
 		key: T
@@ -24,18 +25,37 @@ export class SyncSettings extends SessionSingleton {
 	/**
 	 * User-configurable persistent background worker (configured in Advanced Settings).
 	 */
-	public keepAlive(apiRuntime: typeof api.runtime) {
-		if (this._keepAlivePromise) return;
-		this._keepAlivePromise = (async () => {
+	public async keepAlive(apiRuntime: typeof api.runtime) {
+		const abortException = new Error('Keep alive aborted');
+		this._keepAliveController.abort();
+		const controller = new AbortController();
+		this._keepAliveController = controller;
+		let timeout: NodeJS.Timeout;
+		let rejectFn: (reason?: any) => void = () => {};
+		controller.signal.addEventListener('abort', () => {
+			clearTimeout(timeout!);
+			rejectFn(abortException);
+		}, { once: true });
+		try {
 			while (this.get('$persistent_background')) {
-				await new Promise(resolve => setTimeout(resolve, KEEP_ALIVE_TIMEOUT_MS));
 				if (DEBUG) {
 					console.log(' syncSettings: Keeping alive');
 				}
 				await apiRuntime.getPlatformInfo(); // ping API
+				await new Promise((resolve, reject) => {
+					timeout = setTimeout(resolve, KEEP_ALIVE_TIMEOUT_MS);
+					rejectFn = reject;
+				});
 			}
-			this._keepAlivePromise = null;
-		})();
+		} catch (error: any) {
+			if (error === abortException) {
+				if (DEBUG) {
+					console.log(' syncSettings: Keep alive aborted due to a new request');
+				}
+			} else {
+				errorHandler('syncSettings: Keep alive error:', error);
+			}
+		}
 	}
 
 	private setDebugMode() {
@@ -58,6 +78,7 @@ export class SyncSettings extends SessionSingleton {
 				console.log(' syncSettings: Settings loaded on install:', settings);
 			}
 			await saveSettings(settings);
+			instance.keepAlive(apiRuntime);
 		});
 
 		listeners.add(apiRuntime.onStartup, async () => {
@@ -69,6 +90,7 @@ export class SyncSettings extends SessionSingleton {
 				console.log(' syncSettings: Settings loaded on startup:', settings);
 			}
 			await saveSettings(settings);
+			instance.keepAlive(apiRuntime);
 		});
 
 		listeners.add(apiStorage.onChanged, async (changes, areaName) => {
@@ -78,7 +100,8 @@ export class SyncSettings extends SessionSingleton {
 			const instance = await this.getInstance();
 			const settings = await loadSettings();
 			instance.settings = settings;
-			instance.setDebugMode();
+			const debugModeKey: keyof typeof DEFAULT_SETTINGS = '$debug_mode';
+			if (debugModeKey in changes) instance.setDebugMode();
 			instance.saveState();
 			if (DEBUG) {
 				console.log(' syncSettings: Settings changed:', changes);
