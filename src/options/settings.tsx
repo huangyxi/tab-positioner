@@ -50,6 +50,7 @@ function BooleanSetting({
 	if (setting.type !== 'boolean') {
 		return;
 	}
+	const forId = `${settingKey}-checkbox`;
 	return <>
 		<form
 			id={settingKey}
@@ -57,16 +58,20 @@ function BooleanSetting({
 		>
 			<div
 				class="checkbox-group"
-				{..._st(settingKey)}
 			>
-				<label>
+				<label
+					for={forId}
+				>
 					<input
+						id={forId}
 						type="checkbox"
-						id={settingKey}
+						name={settingKey}
 						checked={DEFAULT_SETTINGS[settingKey]}
 					/>
 					{/* <span class="checkbox-visual"></span> */}
-					<span>
+					<span
+						{..._st(settingKey)}
+					>
 						{_(setting.i18nKey)}
 					</span>
 				</label>
@@ -87,6 +92,7 @@ function NumberSetting({
 	if (setting.type !== 'number') {
 		return;
 	}
+	const forId = `${settingKey}-number`;
 	const { min, max, step } = setting;
 	return <>
 		<form
@@ -95,14 +101,18 @@ function NumberSetting({
 		>
 			<div
 				class="input-group"
-				{..._st(settingKey)}
 			>
-				<label for={settingKey}>
+				<label
+					for={forId}
+					{..._a(setting.i18nKey)}
+					{..._st(settingKey)}
+				>
 					{_(setting.i18nKey)}
 				</label>
 				<input
+					id={forId}
 					type="number"
-					id={settingKey}
+					name={settingKey}
 					// set default value
 					value={DEFAULT_SETTINGS[settingKey]}
 					min={min}
@@ -126,6 +136,7 @@ function ChoicesSetting<K extends TypeKey<'choices'>>({
 	if (setting.type !== 'choices') {
 		return;
 	}
+	const forId = `${settingKey}-select`;
 	const defaultChoiceKey = DEFAULT_SETTINGS[settingKey];
 	const defaultChoice: SettingText = setting.choices[defaultChoiceKey];
 	const otherChoices = (Object.entries(setting.choices) as Array<[string, SettingText]>).filter(
@@ -138,15 +149,18 @@ function ChoicesSetting<K extends TypeKey<'choices'>>({
 		>
 			<div
 				class="select-group"
-				{..._st(settingKey)}
 			>
 				<label
-					for={settingKey}
+					for={forId}
 					{..._a(setting.i18nKey)}
+					{..._st(settingKey)}
 				>
 					{_(setting.i18nKey)}
 				</label>
-				<select id={settingKey}>
+				<select
+					id={forId}
+					name={settingKey}
+				>
 					{/* Make sure the default choice is always the first option for resetting */}
 					<option
 						value={defaultChoiceKey}

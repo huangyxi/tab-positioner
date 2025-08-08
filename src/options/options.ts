@@ -10,7 +10,7 @@ function setElementSetting(
 	element: SettingElement,
 	settings: ExtensionSettings = DEFAULT_SETTINGS,
 ) {
-	const settingKey = element.id as SettingKey;
+	const settingKey = element.name as SettingKey;
 	if (!(settingKey in settings)) return;
 	switch (element.type) {
 		case 'checkbox':
@@ -28,7 +28,7 @@ function setElementSetting(
 function getElementSetting(
 	element: SettingElement,
 ): ExtensionSettings[SettingKey] | null | undefined {
-	const settingKey = element.id as SettingKey;
+	const settingKey = element.name as SettingKey;
 	if (!(settingKey in DEFAULT_SETTINGS)) return;
 	switch (element.type) {
 		case 'checkbox':
@@ -85,7 +85,7 @@ async function saveSetting(elements:
 	}
 	const settings: Partial<Record<SettingKey, any>> = {}
 	for (const element of elements) {
-		const settingKey = element.id as SettingKey;
+		const settingKey = element.name as SettingKey;
 		if (!(settingKey in DEFAULT_SETTINGS)) continue;
 		const setting = getElementSetting(element);
 		if (setting === undefined) continue; // Skip if no setting found

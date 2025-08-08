@@ -171,6 +171,15 @@ div.status[data-type="error"] {
 	background-color: var(--md-sys-color-warning);
 }
 
+div.checkbox-group label span[title]::after,
+div.input-group label[title]::after,
+div.select-group label[title]::after {
+	content: " ℹ️ ";
+	font-size: 0.9em;
+	pointer-events: all;
+	cursor: help;
+}
+
 /* ==============================================
 	Checkbox
 ============================================== */
@@ -242,6 +251,7 @@ div.checkbox-group label input[type="checkbox"]:checked::before {
 div.checkbox-group label span {
 	padding-left: 12px;
 	user-select: none;
+	pointer-events: none;
 }
 
 /* ==============================================
@@ -360,8 +370,8 @@ summary:hover {
 } */
 
 /* Custom dropdown arrow */
-div.select-group::after,
-summary::after {
+div.select-group::before,
+summary::before {
 	content: "";
 	position: absolute;
 	top: 50%;
@@ -375,21 +385,21 @@ summary::after {
 	transition: var(--transition-transform), var(--transition-background);
 }
 
-div.select-group::after {
+div.select-group::before {
 	pointer-events: none;
 }
 
-summary::after {
+summary::before {
 	right: 16px;
 }
 
-div.select-group:hover:not(:has(button.reset:hover))::after,
-details>summary:hover::after {
+div.select-group:hover:not(:has(button.reset:hover))::before,
+details>summary:hover::before {
 	background-color: var(--md-sys-color-on-surface);
 }
 
-div.select-group:focus-within:not(:has(button.reset:focus))::after,
-details[open]>summary::after {
+div.select-group:focus-within:not(:has(button.reset:focus))::before,
+details[open]>summary::before {
 	transform: translateY(-50%) rotate(180deg);
 }
 
@@ -417,7 +427,7 @@ button.reset {
 	transition: var(--transition-background);
 }
 
-button.reset::after {
+button.reset::before {
 	content: "";
 	display: block;
 	width: 20px;
@@ -435,7 +445,7 @@ button.reset:hover {
 }
 
 /** Foreground color on hover */
-button.reset:hover::after {
+button.reset:hover::before {
 	background-color: var(--md-sys-color-warning);
 
 	/* animation: var(--animation-rotate-360); */
