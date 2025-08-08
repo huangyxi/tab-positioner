@@ -7,95 +7,133 @@
 		"message": "Choose where tabs appear, and what happens when they disappear.",
 		"description": "The description of the extension."
 	},
-	"settingsTitle": {
+	"title_settings": {
 		"message": "Tab Positioner Settings",
 		"description": "Title for the options page."
 	},
-	"statusSaved": {
+	"status_settings_saved": {
 		"message": "Settings saved successfully.",
 		"description": "Status message shown when settings are saved."
 	},
-	"resetSettingTooltip": {
+	"status_input_invalid": {
+		"message": "Input is invalid.",
+		"description": "Status message shown when a setting input is invalid."
+	},
+	"status_input_invalid_min": {
+		"message": "Input is invalid. Minimum value is $min$.",
+		"description": "Status message shown when a setting input is invalid due to minimum value.",
+		"placeholders": {
+			"min": {
+				"content": "$1",
+				"example": "0"
+			}
+		}
+	},
+	"status_input_invalid_max": {
+		"message": "Input is invalid. Maximum value is $max$.",
+		"description": "Status message shown when a setting input is invalid due to maximum value.",
+		"placeholders": {
+			"max": {
+				"content": "$1",
+				"example": "1000"
+			}
+		}
+	},
+	"status_input_invalid_min_max": {
+		"message": "Input is invalid. Value must be between $min$ and $max$.",
+		"description": "Status message shown when a setting input is invalid due to both minimum and maximum values.",
+		"placeholders": {
+			"min": {
+				"content": "$1",
+				"example": "0"
+			},
+			"max": {
+				"content": "$2",
+				"example": "1000"
+			}
+		}
+	},
+	"botton_reset_setting": {
 		"message": "Reset to Default",
 		"description": "Tooltip for the reset button beside each setting."
 	},
-	"resetAllButton": {
+	"botton_reset_all": {
 		"message": "Reset All to Default",
 		"description": "Button label to reset all settings to their default values."
 	},
-	"advancedSettingsSummary": {
+	"summary_advanced_settings": {
 		"message": "Advanced Settings",
 		"description": "Label for the advanced settings section."
 	},
-	"newTabPositionLabel": {
+	"label_new_tab_position": {
 		"message": "When opening the New Tab page:",
 		"description": "Label for the new chrome://newtab position setting."
 	},
-	"foregroundLinkPositionLabel": {
+	"label_foreground_link_position": {
 		"message": "When opening a link in the foreground:",
 		"description": "Label for the foreground link position setting."
 	},
-	"backgroundTabPositionLabel": {
+	"label_background_link_position": {
 		"message": "When opening a link:",
 		"description": "Label for the background link position setting."
 	},
-	"afterCloseActivationLabel": {
+	"label_after_close_activation": {
 		"message": "After closing a tab, switch to:",
 		"description": "Label for the post-close tab activation behavior."
 	},
-	"tabBatchCreationThresholdMsLabel": {
+	"label_tab_batch_creation_threshold_ms": {
 		"message": "Batch open threshold (ms):",
 		"description": "Input prompt for the time interval threshold for batch opening tabs. Used to preserve tab order and grouping when restoring tabs."
 	},
-	"tabBatchActivationThresholdMsLabel": {
+	"label_tab_batch_activation_threshold_ms": {
 		"message": "Batch close threshold (ms):",
 		"description": "Input prompt for the time interval threshold for batch activating tabs. Used to accelerate tab closing and switching behavior."
 	},
-	"persistentBackgroundSpan": {
+	"span_persistent_background": {
 		"message": "Persistent Extension Worker",
 		"description": "Checkbox span (label) for the persistent background setting."
 	},
-	"debugModeSpan": {
+	"span_debug_mode": {
 		"message": "Debug Output in Extension Console",
 		"description": "Checkbox span (label) for the debug mode setting, which enables debug output in the extension console."
 	},
-	"optionDefault": {
-		"message": "Use Chrome Default",
-		"description": "Option to use Chrome's default behavior."
+	"option_default": {
+		"message": "Default",
+		"description": "Default option for tab creation position."
 	},
-	"optionCreateBeforeActive": {
+	"option_before_active_creation": {
 		"message": "Before the Active Tab (Left)",
 		"description": "Option to open the tab before the currently active tab."
 	},
-	"optionCreateAfterActive": {
+	"option_after_active_creation": {
 		"message": "After the Active Tab (Right)",
 		"description": "Option to open the tab after the currently active tab."
 	},
-	"optionCreateWindowFirst": {
+	"option_window_first_creation": {
 		"message": "As the First",
 		"description": "Option to open the tab as the first in the window."
 	},
-	"optionCreateWindowLast": {
+	"option_window_last_creation": {
 		"message": "At the Last",
 		"description": "Option to open the tab as the last in the window."
 	},
-	"optionActivateBeforeRemoved": {
+	"option_before_removed_activation": {
 		"message": "The Tab to the Left",
 		"description": "Option to activate the tab to the left of the closed tab."
 	},
-	"optionActivateAfterRemoved": {
+	"option_after_removed_activation": {
 		"message": "The Tab to the Right",
 		"description": "Option to activate the tab to the right of the closed tab."
 	},
-	"optionActivateWindowFirst": {
+	"option_window_first_activation": {
 		"message": "The First Tab",
 		"description": "Option to open the first tab after closing a tab."
 	},
-	"optionActivateWindowLast": {
+	"option_window_last_activation": {
 		"message": "The Last Tab",
 		"description": "Option to open the last tab after closing a tab."
 	},
-	"optionActivateActivationHistory": {
+	"option_activation_history_activation": {
 		"message": "The Previously Active Tab",
 		"description": "Option to activate the previously activated tab after closing a tab."
 	}

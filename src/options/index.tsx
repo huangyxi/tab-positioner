@@ -13,7 +13,9 @@ export default function OptionsPage(): JSX.Element {
 			<head>
 				<meta charSet="UTF-8" />
 				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-				<title>{_('settingsTitle')}</title>
+				<title
+					{..._a('title_settings')}
+				>{_('title_settings')}</title>
 				{/* relative to the output directory ('dist/'), preprocessed by Vite in Eleventy */}
 				<link rel="stylesheet" href="./options.css" />
 				{/* relative to the output directory ('dist/'), preprocessed by Vite in Eleventy */}
@@ -24,14 +26,16 @@ export default function OptionsPage(): JSX.Element {
 				<div class="container">
 
 					<header>
-						<h1 {..._a('settingsTitle')}>{_('settingsTitle')}</h1>
+						<h1 {..._a('title_settings')}>{_('title_settings')}</h1>
 					</header>
 
 					<main>
 						<Settings advanced={false} />
 						<details>
-							<summary>
-								{_('advancedSettingsSummary')}
+							<summary
+								{..._a('summary_advanced_settings')}
+							>
+								{_('summary_advanced_settings')}
 							</summary>
 							<div class="details-content">
 								<Settings advanced={true} />
@@ -45,9 +49,9 @@ export default function OptionsPage(): JSX.Element {
 							id="reset-all"
 							type="button"
 							class="reset-all"
-							{..._a('resetAllButton')}
+							{..._a('botton_reset_all')}
 						>
-							{_('resetAllButton')}
+							{_('botton_reset_all')}
 						</button>
 					</footer>
 

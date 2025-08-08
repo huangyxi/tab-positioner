@@ -1,99 +1,172 @@
 
 import { getMessage as _, createI18nAttribute as _a } from '../shared/i18n';
-import type { SettingKey, SettingSchemas, SettingText } from '../shared/settings';
-import { SETTING_SCHEMAS } from '../shared/settings';
+import type { SettingKey, SettingSchemas, SettingText, ExtensionSettings } from '../shared/settings';
+import { SETTING_SCHEMAS, DEFAULT_SETTINGS } from '../shared/settings';
 
-interface SettingPair<K extends SettingKey> {
+function _t(
+	key: Parameters<typeof _a>[0],
+) {
+	const property = 'title';
+	return {
+		[property]: _(key),
+		..._a(key, property),
+	};
+}
+
+type SettingType<K extends SettingKey> = SettingSchemas[K]['type'];
+type TypeKey<
+	T extends SettingType<SettingKey>,
+> = {
+	[K in SettingKey]: SettingType<K> extends T ? K : never
+}[SettingKey];
+
+interface SettingPair<
+	T extends SettingType<SettingKey>,
+	K extends TypeKey<T> = TypeKey<T>,
+> {
 	settingKey: K;
 	setting: SettingSchemas[K];
 }
 
-function BooleanSetting<K extends SettingKey>({
+function BooleanSetting({
 	settingKey,
 	setting,
-}: SettingPair<K>): JSX.Element {
+}: SettingPair<'boolean'>): JSX.Element {
 	if (setting.type !== 'boolean') {
 		return;
 	}
 	return <>
-		<label class="checkbox-group">
-			<input type="checkbox" id={settingKey} />
-			<span class="checkbox-visual"></span>
-			<span class="checkbox-label">
-				{_(setting.i18nKey)}
-			</span>
-			<button
-				id={`reset-${settingKey}`}
-				type="button"
-				class="reset"
-				{..._a('resetSettingTooltip', 'title')}
-			></button>
-		</label>
+		<form
+			id={settingKey}
+			autocomplete='off'
+		>
+			<div class="checkbox-group">
+				<label>
+					<input
+						type="checkbox"
+						id={settingKey}
+						checked={DEFAULT_SETTINGS[settingKey]}
+					/>
+					{/* <span class="checkbox-visual"></span> */}
+					<span>
+						{_(setting.i18nKey)}
+					</span>
+				</label>
+				<button
+					type="reset"
+					class="reset"
+					{..._t('botton_reset_setting')}
+				></button>
+			</div>
+		</form>
 	</>;
 }
 
-function NumberSetting<K extends SettingKey>({
+function NumberSetting({
 	settingKey,
 	setting,
-}: SettingPair<K>): JSX.Element {
+}: SettingPair<'number'>): JSX.Element {
 	if (setting.type !== 'number') {
 		return;
 	}
 	const { min, max, step } = setting;
 	return <>
-		<div class="input-group">
-			<input
-				type="number"
-				id={settingKey}
-				min={min}
-				max={max}
-				step={step}
-			/>
-			<label for={settingKey}>
-				{_(setting.i18nKey)}
-			</label>
-			<button
-				id={`reset-${settingKey}`}
-				type="button"
-				class="reset"
-				{..._a('resetSettingTooltip', 'title')}
-			></button>
-		</div>
+		<form
+			id={settingKey}
+			autocomplete='off'
+		>
+			<div class="input-group">
+				<input
+					type="number"
+					id={settingKey}
+					// set default value
+					value={DEFAULT_SETTINGS[settingKey]}
+					min={min}
+					max={max}
+					step={step}
+				/>
+				<label for={settingKey}>
+					{_(setting.i18nKey)}
+				</label>
+				<button
+					type="reset"
+					class="reset"
+					{..._t('botton_reset_setting')}
+				></button>
+			</div>
+		</form>
 	</>;
 }
 
-function ChoicesSetting<K extends SettingKey>({
+function ChoicesSetting<K extends TypeKey<'choices'>>({
 	settingKey,
 	setting,
-}: SettingPair<K>): JSX.Element {
+}: SettingPair<'choices', K>): JSX.Element {
 	if (setting.type !== 'choices') {
 		return;
 	}
+	const defaultChoiceKey = DEFAULT_SETTINGS[settingKey];
+	const defaultChoice: SettingText = setting.choices[defaultChoiceKey];
+	const otherChoices = (Object.entries(setting.choices) as Array<[string, SettingText]>).filter(
+		([choiceKey, _]) => choiceKey !== defaultChoiceKey
+	);
 	return <>
-		<div class="select-group">
-			<select id={settingKey}>
-				{(Object.entries(setting.choices) as Array<[string, SettingText]>).map(
-					([choiceKey, choice]) => (
-						<option
-							value={choiceKey}
-							{..._a(choice.i18nKey)}
-						>
-							{_(choice.i18nKey)}
-						</option>
-					)
-				)}
-			</select>
-			<label for={settingKey} {..._a(setting.i18nKey)}>
-				{_(setting.i18nKey)}
-			</label>
-			<button
-				id={`reset-${settingKey}`}
-				type="button"
-				class="reset"
-				{..._a('resetSettingTooltip', 'title')}
-			></button>
-		</div>
+		<form
+			id={settingKey}
+			autocomplete='off'
+		>
+			<div class="select-group">
+				<select id={settingKey}>
+					{/* Make sure the default choice is always the first option for resetting */}
+					<option
+						value={defaultChoiceKey}
+						{..._a(defaultChoice.i18nKey)}
+					>
+						{_(defaultChoice.i18nKey)}
+					</option>
+					{otherChoices.map(
+						([choiceKey, choice]) => (
+							<option
+								value={choiceKey}
+								{..._a(choice.i18nKey)}
+							>
+								{_(choice.i18nKey)}
+							</option>
+						)
+					)}
+				</select>
+				<label
+					for={settingKey}
+					{..._a(setting.i18nKey)}
+				>
+					{_(setting.i18nKey)}
+				</label>
+				<button
+					type="reset"
+					class="reset"
+					{..._t('botton_reset_setting')}
+				></button>
+			</div>
+		</form>
 	</>;
+}
+
+function Setting<T extends SettingSchemas[SettingKey]['type']>({
+	settingKey,
+	setting,
+}: SettingPair<T>
+): JSX.Element {
+	const type = setting.type;
+	switch (type) {
+		case 'boolean':
+			return BooleanSetting({settingKey, setting} as SettingPair<'boolean'>);
+		case 'number':
+			return <NumberSetting settingKey={settingKey as any} setting={setting as any} />;
+		case 'choices':
+			return <ChoicesSetting settingKey={settingKey as any} setting={setting as any} />;
+		default:
+			const _exhaustive: never = type;
+	}
 }
 
 export function Settings<K extends SettingKey>({
@@ -107,9 +180,7 @@ export function Settings<K extends SettingKey>({
 		: settings.filter(([settingKey, _]) => !settingKey.startsWith('$'));
 	return <>
 		{filteredSettings.map(([settingKey, setting]) => <>
-				<BooleanSetting settingKey={settingKey} setting={setting} />
-				<NumberSetting settingKey={settingKey} setting={setting} />
-				<ChoicesSetting settingKey={settingKey} setting={setting} />
+				<Setting settingKey={settingKey as any} setting={setting as any} />
 		</>)}
 	</>;
 }

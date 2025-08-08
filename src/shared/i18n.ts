@@ -8,8 +8,8 @@ export function getMessage(key: I18nKey): string {
 }
 
 // Runtime parse for i18n keys
-export function getI18nMessage(key: I18nKey): string {
-	return api.i18n.getMessage(key);
+export function getI18nMessage(key: I18nKey, args?: string[]): string {
+	return api.i18n.getMessage(key, args);
 }
 
 export const I18N_HTML_PROPERTIES = ['textContent', 'title'] as const;

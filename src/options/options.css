@@ -100,7 +100,7 @@ h1 {
 	text-align: center;
 }
 
-label.checkbox-group .checkbox-label {
+div.checkbox-group label span {
 	font-size: 14px;
 	font-weight: 500;
 	line-height: 20px;
@@ -148,8 +148,11 @@ div.status {
 	Checkbox
 ============================================== */
 
-/* Add position: relative and padding for reset button */
-label.checkbox-group {
+div.checkbox-group {
+	position: relative;
+}
+
+div.checkbox-group label {
 	display: flex;
 	align-items: center;
 	cursor: pointer;
@@ -157,27 +160,16 @@ label.checkbox-group {
 	border-radius: 8px;
 	transition: background-color 0.2s;
 	-webkit-tap-highlight-color: transparent;
-	position: relative;
 }
 
-label.checkbox-group:not(:has(button.reset:hover)):hover {
+div.checkbox-group label:hover {
 	background-color: var(--md-sys-color-surface-container-highest);
 }
 
-label.checkbox-group input[type="checkbox"] {
+div.checkbox-group label input[type="checkbox"] {
 	appearance: none;
-	position: absolute;
-	opacity: 0;
-	cursor: pointer;
-}
-
-label.checkbox-group span.checkbox-label {
-	padding-left: 12px;
-	user-select: none;
-}
-
-label.checkbox-group span.checkbox-visual {
 	position: relative;
+	cursor: pointer;
 	width: 18px;
 	height: 18px;
 	border: 2px solid var(--md-sys-color-outline);
@@ -188,18 +180,23 @@ label.checkbox-group span.checkbox-visual {
 	flex-shrink: 0;
 }
 
-label.checkbox-group input[type="checkbox"]:checked~span.checkbox-visual {
+div.checkbox-group label span {
+	padding-left: 12px;
+	user-select: none;
+}
+
+div.checkbox-group label input[type="checkbox"]:checked {
 	background-color: var(--md-sys-color-primary);
 	border-color: var(--md-sys-color-primary);
 }
 
 /* The checkmark */
-label.checkbox-group span.checkbox-visual::after {
+div.checkbox-group label input[type="checkbox"]::after {
 	content: "";
 	position: absolute;
 	display: none;
-	left: 5px;
-	top: 1px;
+	left: 4px;
+	top: 0;
 	width: 5px;
 	height: 10px;
 	border: solid var(--md-sys-color-on-primary);
@@ -207,12 +204,8 @@ label.checkbox-group span.checkbox-visual::after {
 	transform: rotate(45deg);
 }
 
-label.checkbox-group input[type="checkbox"]:checked~span.checkbox-visual::after {
+div.checkbox-group label input[type="checkbox"]:checked::after {
 	display: block;
-}
-
-label.checkbox-group input[type="checkbox"]:focus-visible~span.checkbox-visual {
-	box-shadow: 0 0 0 2px var(--md-sys-color-background), 0 0 0 4px var(--md-sys-color-primary);
 }
 
 
@@ -349,12 +342,16 @@ summary::after {
 	transition: transform 0.2s ease-in-out;
 }
 
+div.select-group::after {
+	pointer-events: none;
+}
+
 summary::after {
 	right: 16px;
 	transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
 }
 
-div.select-group:focus-within::after,
+div.select-group:focus-within:not(:has(button.reset:focus-within))::after,
 details[open]>summary::after {
 	transform: translateY(-50%) rotate(180deg);
 }
@@ -406,7 +403,7 @@ button.reset:hover {
 }
 
 /** Foreground color on hover */
-button.reset:hover::before {
+div.group button.reset:hover::before {
 	background-color: var(--md-sys-color-warning);
 }
 

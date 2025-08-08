@@ -21,8 +21,12 @@ export interface SettingText {
 	i18nKey: I18nKey;
 }
 
+type StripDollar<T extends string> = T extends `$${infer U}` ? U : T;
+
 type SettingChoices<T extends string> = {
-	[K in T]: SettingText;
+	[K in T]: SettingText & {
+		i18nKey: `option_${K}` | `option_${K}_${string}`;
+	};
 };
 
 export type TabCreationPosition = typeof DEFAULT_VALUE
@@ -32,11 +36,11 @@ export type TabCreationPosition = typeof DEFAULT_VALUE
 	| 'window_last'
 	| never;
 const TAB_CREATION_POSITION_CHOICES: SettingChoices<TabCreationPosition> = {
-	[DEFAULT_VALUE]: { i18nKey: 'optionDefault' },
-	before_active: { i18nKey: 'optionCreateBeforeActive' },
-	after_active: { i18nKey: 'optionCreateAfterActive' },
-	window_first: { i18nKey: 'optionCreateWindowFirst' },
-	window_last: { i18nKey: 'optionCreateWindowLast' },
+	[DEFAULT_VALUE]: { i18nKey: 'option_default' },
+	before_active: { i18nKey: 'option_before_active_creation' },
+	after_active: { i18nKey: 'option_after_active_creation' },
+	window_first: { i18nKey: 'option_window_first_creation' },
+	window_last: { i18nKey: 'option_window_last_creation' },
 } as const;
 
 export type TabActivationPosition = typeof DEFAULT_VALUE
@@ -47,12 +51,12 @@ export type TabActivationPosition = typeof DEFAULT_VALUE
 	// | 'activation_history'
 	| never;
 const TAB_ACTIVATION_POSITION_CHOICES: SettingChoices<TabActivationPosition> = {
-	[DEFAULT_VALUE]: { i18nKey: 'optionDefault' },
-	before_removed: { i18nKey: 'optionActivateBeforeRemoved' },
-	after_removed: { i18nKey: 'optionActivateAfterRemoved' },
-	window_first: { i18nKey: 'optionActivateWindowFirst' },
-	window_last: { i18nKey: 'optionActivateWindowLast' },
-	// activation_history: { i18nKey: 'optionActivateActivationHistory' },
+	[DEFAULT_VALUE]: { i18nKey: 'option_default' },
+	before_removed: { i18nKey: 'option_before_removed_activation' },
+	after_removed: { i18nKey: 'option_after_removed_activation' },
+	window_first: { i18nKey: 'option_window_first_activation' },
+	window_last: { i18nKey: 'option_window_last_activation' },
+	// activation_history: { i18nKey: 'option.activation_history.activation' },
 } as const;
 
 export const DEFAULT_SETTINGS = {
@@ -81,14 +85,22 @@ export type TabCreationPositionKey = SettingKeys<TabCreationPosition>;
 export type TabActivationPositionKey = SettingKeys<TabActivationPosition>;
 
 type SettingValue<K extends SettingKey> =
-	| ExtensionSettings[K] extends boolean ? { type: 'boolean' } : never
+	| ExtensionSettings[K] extends boolean ? {
+		i18nKey: `span_${StripDollar<K>}`,
+		type: 'boolean',
+	} : never
 	| ExtensionSettings[K] extends number ? { // Integer only
+		i18nKey: `label_${StripDollar<K>}`,
 		type: 'number',
 		min?: number,
 		max?: number,
 		step?: number,
 	} : never
-	| ExtensionSettings[K] extends string ? { type: 'choices', choices: SettingChoices<ExtensionSettings[K]> } : never
+	| ExtensionSettings[K] extends string ? {
+		i18nKey: `label_${StripDollar<K>}`,
+		type: 'choices',
+		choices: SettingChoices<ExtensionSettings[K]>,
+	} : never
 
 export type SettingSchemas = {
 	[K in keyof ExtensionSettings]:
@@ -97,42 +109,42 @@ export type SettingSchemas = {
 
 export const SETTING_SCHEMAS: SettingSchemas = {
 	new_tab_position: {
-		i18nKey: 'newTabPositionLabel',
-		type: 'choices',
-		choices: TAB_CREATION_POSITION_CHOICES,
-	},
-	background_link_position: {
-		i18nKey: 'backgroundTabPositionLabel',
+		i18nKey: 'label_new_tab_position',
 		type: 'choices',
 		choices: TAB_CREATION_POSITION_CHOICES,
 	},
 	// foreground_link_position: {
-	// 	i18nKey: 'foregroundTabPositionLabel',
+	// 	i18nKey: 'label.foreground_link_position',
 	// 	choices: TAB_CREATION_POSITION_CHOICES,
 	// },
+	background_link_position: {
+		i18nKey: 'label_background_link_position',
+		type: 'choices',
+		choices: TAB_CREATION_POSITION_CHOICES,
+	},
 	after_close_activation: {
-		i18nKey: 'afterCloseActivationLabel',
+		i18nKey: 'label_after_close_activation',
 		type: 'choices',
 		choices: TAB_ACTIVATION_POSITION_CHOICES,
 	},
 	$tab_batch_creation_threshold_ms: {
-		i18nKey: 'tabBatchCreationThresholdMsLabel',
+		i18nKey: 'label_tab_batch_creation_threshold_ms',
 		type: 'number',
 		min: 0,
-		max: 1000, // 1 second
+		max: 1_000, // 1 second
 	},
 	$tab_batch_activation_threshold_ms: {
-		i18nKey: 'tabBatchActivationThresholdMsLabel',
+		i18nKey: 'label_tab_batch_activation_threshold_ms',
 		type: 'number',
 		min: 0,
-		max: 1000, // 1 second
+		max: 1_000, // 1 second
 	},
 	$persistent_background: {
-		i18nKey: 'persistentBackgroundSpan',
+		i18nKey: 'span_persistent_background',
 		type: 'boolean',
 	},
 	$debug_mode: {
-		i18nKey: 'debugModeSpan',
+		i18nKey: 'span_debug_mode',
 		type: 'boolean',
 	},
 } as const;

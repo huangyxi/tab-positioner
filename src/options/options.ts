@@ -1,4 +1,4 @@
-
+// The filename should be different from .tsx for the linter to work correctly
 import { I18nKey, getI18nMessage, getI18nAttribute, I18N_HTML_PROPERTIES } from '../shared/i18n';
 import type { SettingKey, ExtensionSettings } from '../shared/settings';
 import { DEFAULT_SETTINGS, SETTING_SCHEMAS } from '../shared/settings';
@@ -25,19 +25,41 @@ function setElementSetting(
 	}
 }
 
-function showStatus(messageKey: I18nKey) {
+function getElementSetting(
+	element: SettingElement,
+): ExtensionSettings[SettingKey] | null | undefined {
+	const settingKey = element.id as SettingKey;
+	if (!(settingKey in DEFAULT_SETTINGS)) return;
+	switch (element.type) {
+		case 'checkbox':
+			return element.checked as any;
+		case 'number':
+			if (!element.validity.valid) {
+				return null; // Invalid number input
+			}
+			return element.valueAsNumber as any;
+		case 'select-one':
+			return element.value as any;
+		default:
+			return undefined;
+	}
+}
+
+function showStatus(
+	messageKey: I18nKey,
+	delay: number = 1500,
+	args?: string[],
+) {
 	const status = document.getElementById('status');
 	if (!status) return;
-	status.textContent = getI18nMessage(messageKey);
+	status.textContent = getI18nMessage(messageKey, args);
 	status.style.opacity = '1';
 	setTimeout(() => {
 		status.style.opacity = '0';
-	}, 1500);
+	}, delay);
 }
 
 function localizeHtmlPage() {
-	document.title = getI18nMessage('settingsTitle');
-
 	// Localize elements with data-i18n attributes
 	I18N_HTML_PROPERTIES.forEach(property => {
 		const attribute = getI18nAttribute(property);
@@ -50,25 +72,47 @@ function localizeHtmlPage() {
 	});
 }
 
-async function saveSetting(elements: NodeListOf<SettingElement>) {
+function showInputInvalid(element: HTMLInputElement) {
+	const delay = 3000;
+	const min = element.min;
+	const max = element.max;
+	if (min !== '' && max !== '') {
+		showStatus('status_input_invalid_min_max', delay, [min, max]);
+		return;
+	}
+	if (min !== '') {
+		showStatus('status_input_invalid_min', delay, [min]);
+		return;
+	}
+	if (max !== '') {
+		showStatus('status_input_invalid_max', delay, [max]);
+		return;
+	}
+	showStatus('status_input_invalid');
+}
+
+async function saveSetting(elements:
+	| SettingElement
+	| Array<SettingElement>
+	| NodeListOf<SettingElement>
+) {
+	if (elements instanceof HTMLElement) {
+		elements = [elements];
+	}
 	const settings: Partial<Record<SettingKey, any>> = {}
 	for (const element of elements) {
 		const settingKey = element.id as SettingKey;
 		if (!(settingKey in DEFAULT_SETTINGS)) continue;
-		switch (element.type) {
-			case 'checkbox':
-				settings[settingKey] = element.checked;
-				break;
-			case 'number':
-				settings[settingKey] = element.valueAsNumber;
-				break;
-			case 'select-one':
-				settings[settingKey] = element.value;
-				break;
+		const setting = getElementSetting(element);
+		if (setting === undefined) continue; // Skip if no setting found
+		if (setting === null && element.type === 'number') {
+			showInputInvalid(element as HTMLInputElement);
+			return; // Invalid number input
 		}
+		settings[settingKey] = setting;
 	}
 	await saveSettings(settings, true);
-	showStatus('statusSaved');
+	showStatus('status_settings_saved');
 }
 
 async function restoreSettings(elements: NodeListOf<SettingElement>) {
@@ -78,14 +122,11 @@ async function restoreSettings(elements: NodeListOf<SettingElement>) {
 	}
 }
 
-async function resetSetting(settingKey: SettingKey, elements: NodeListOf<SettingElement>) {
-	for (const element of elements) {
-		if (element.id !== settingKey) continue;
-		setElementSetting(element, DEFAULT_SETTINGS);
-		await saveSettings({ [settingKey]: DEFAULT_SETTINGS[settingKey] });
-		showStatus('statusSaved');
-		return;
-	}
+async function resetSetting(form: HTMLFormElement) {
+	const settingKey = form.id as SettingKey;
+	if (!(settingKey in DEFAULT_SETTINGS)) return;
+	await saveSettings({ [settingKey]: DEFAULT_SETTINGS[settingKey] }, true);
+	showStatus('status_settings_saved');
 }
 
 async function resetAllSettings(elements: NodeListOf<SettingElement>) {
@@ -94,27 +135,46 @@ async function resetAllSettings(elements: NodeListOf<SettingElement>) {
 	}
 	await clearSettings();
 	await saveSettings();
-	showStatus('statusSaved');
+	showStatus('status_settings_saved');
 }
+
+function isOptionsPage() {
+	const m = api.runtime.getManifest();
+	const optionsURI = api.runtime.getURL(m.options_page || m.options_ui?.page || 'options.html');
+	const isOptionsPage = window.location.href === optionsURI
+	return isOptionsPage;
+}
+
+function openDetails() {
+	const details = document.querySelector('details');
+	if (!details) return;
+	details.open = true;
+}
+
 
 async function main() {
 	localizeHtmlPage();
 
-	const selectElements = document.querySelectorAll('select');
 	const elements = document.querySelectorAll('select, input[type="checkbox"], input[type="number"]') as NodeListOf<SettingElement>;
+	const forms = document.querySelectorAll('form') as NodeListOf<HTMLFormElement>;
 
 	await restoreSettings(elements);
 
 	elements.forEach(element => {
-		element.addEventListener('change', () => saveSetting(elements));
+		element.addEventListener('change', () => saveSetting(element));
 	});
 
-	document.querySelectorAll('button.reset').forEach(button => {
-		const settingKey = button.id.replace('reset-', '') as SettingKey;
-		button.addEventListener('click', () => resetSetting(settingKey, elements));
+	forms.forEach(form => {
+		form.addEventListener('reset', async (event) => {
+			await resetSetting(form);
+		});
 	});
 
 	document.getElementById('reset-all')?.addEventListener('click', () => resetAllSettings(elements));
+
+	if (isOptionsPage()) {
+		openDetails();
+	}
 }
 
 main();
