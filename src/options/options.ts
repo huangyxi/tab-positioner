@@ -47,12 +47,15 @@ function getElementSetting(
 
 function showStatus(
 	messageKey: I18nKey,
+	// Corresponds to the status types used in the CSS
+	type: 'success' | 'error' = 'success',
 	delay: number = 1500,
 	args?: string[],
 ) {
 	const status = document.getElementById('status');
 	if (!status) return;
 	status.textContent = getI18nMessage(messageKey, args);
+	status.dataset.type = type;
 	status.style.opacity = '1';
 	setTimeout(() => {
 		status.style.opacity = '0';
@@ -87,7 +90,7 @@ async function saveSetting(elements:
 		const setting = getElementSetting(element);
 		if (setting === undefined) continue; // Skip if no setting found
 		if (setting === null && element.type === 'number') {
-			showStatus('status_input_invalid', 3000);
+			showStatus('status_input_invalid', 'error', 3000);
 			return; // Invalid number input
 		}
 		settings[settingKey] = setting;

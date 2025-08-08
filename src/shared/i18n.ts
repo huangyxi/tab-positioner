@@ -4,7 +4,8 @@ export type I18nKey = keyof typeof messages;
 
 // Compile time parse for default i18n keys
 export function getMessage(key: I18nKey): string {
-	return messages[key].message;
+	// '?' allows bypassing TypeScript checks for missing keys
+	return messages[key]?.message;
 }
 
 // Runtime parse for i18n keys

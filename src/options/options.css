@@ -157,10 +157,19 @@ div.status {
 	font-size: 14px;
 	font-weight: 500;
 	line-height: 20px;
+	height: 20px;
 	text-align: center;
 	color: var(--md-sys-color-primary);
 }
 
+div.status[data-type="success"] {
+	color: var(--md-sys-color-primary);
+}
+
+div.status[data-type="error"] {
+	color: var(--md-sys-color-background);
+	background-color: var(--md-sys-color-warning);
+}
 
 /* ==============================================
 	Checkbox
@@ -500,7 +509,7 @@ div.input-group button.stepper.decrement::before {
 	Status Message
 ============================================== */
 div.status {
-	height: 20px;
+	padding: 4px;
 	opacity: 0;
 	transition: var(--transition-opacity);
 }
