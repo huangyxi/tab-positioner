@@ -72,25 +72,6 @@ function localizeHtmlPage() {
 	});
 }
 
-function showInputInvalid(element: HTMLInputElement) {
-	const delay = 3000;
-	const min = element.min;
-	const max = element.max;
-	if (min !== '' && max !== '') {
-		showStatus('status_input_invalid_min_max', delay, [min, max]);
-		return;
-	}
-	if (min !== '') {
-		showStatus('status_input_invalid_min', delay, [min]);
-		return;
-	}
-	if (max !== '') {
-		showStatus('status_input_invalid_max', delay, [max]);
-		return;
-	}
-	showStatus('status_input_invalid');
-}
-
 async function saveSetting(elements:
 	| SettingElement
 	| Array<SettingElement>
@@ -106,7 +87,7 @@ async function saveSetting(elements:
 		const setting = getElementSetting(element);
 		if (setting === undefined) continue; // Skip if no setting found
 		if (setting === null && element.type === 'number') {
-			showInputInvalid(element as HTMLInputElement);
+			showStatus('status_input_invalid', 3000);
 			return; // Invalid number input
 		}
 		settings[settingKey] = setting;

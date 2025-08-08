@@ -19,40 +19,6 @@
 		"message": "Input is invalid.",
 		"description": "Status message shown when a setting input is invalid."
 	},
-	"status_input_invalid_min": {
-		"message": "Input is invalid. Minimum value is $min$.",
-		"description": "Status message shown when a setting input is invalid due to minimum value.",
-		"placeholders": {
-			"min": {
-				"content": "$1",
-				"example": "0"
-			}
-		}
-	},
-	"status_input_invalid_max": {
-		"message": "Input is invalid. Maximum value is $max$.",
-		"description": "Status message shown when a setting input is invalid due to maximum value.",
-		"placeholders": {
-			"max": {
-				"content": "$1",
-				"example": "1000"
-			}
-		}
-	},
-	"status_input_invalid_min_max": {
-		"message": "Input is invalid. Value must be between $min$ and $max$.",
-		"description": "Status message shown when a setting input is invalid due to both minimum and maximum values.",
-		"placeholders": {
-			"min": {
-				"content": "$1",
-				"example": "0"
-			},
-			"max": {
-				"content": "$2",
-				"example": "1000"
-			}
-		}
-	},
 	"botton_reset_setting": {
 		"message": "Reset to Default",
 		"description": "Tooltip for the reset button beside each setting."
