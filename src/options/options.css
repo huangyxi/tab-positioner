@@ -18,6 +18,16 @@
 	--md-sys-color-warning: #b3261e;
 	--md-sys-color-surface-container-high: #e6e0e9;
 	--md-sys-color-surface-container-highest: #e0dae3;
+
+	/* Transition Variables */
+	--transition-background: background-color 0.2s ease-in-out;
+	--transition-color: color 0.2s ease-in-out;
+	--transition-outline: outline 0.1s ease-in-out;
+	--transition-border: border 0.2s ease-in-out;
+	--transition-transform: transform 0.2s ease-in-out;
+	--transition-opacity: opacity 0.5s ease-in-out;
+	--transition-all: all 0.2s ease-in-out;
+	--animation-rotate-360: rotate-360 0.5s linear infinite;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -37,6 +47,15 @@
 	}
 }
 
+@keyframes rotate-360 {
+	from {
+		transform: rotate(0deg);
+	}
+
+	to {
+		transform: rotate(-360deg);
+	}
+}
 
 /* ==============================================
 	General Body and Layout
@@ -56,20 +75,19 @@ body {
 
 div.container,
 div.details-content {
-	display: flex;
-	flex-direction: column;
 	padding: 16px;
-	gap: 16px;
 }
 
 header {
 	padding: 8px 0;
 }
 
-main {
+main,
+div.container,
+div.details-content {
 	display: flex;
 	flex-direction: column;
-	gap: 16px;
+	gap: 20px;
 }
 
 footer {
@@ -119,7 +137,7 @@ div.input-group input[type="number"],
 div.select-group select {
 	font-size: 16px;
 	font-weight: 400;
-	line-height: 24px;
+	line-height: 20px;
 	color: var(--md-sys-color-on-surface);
 }
 
@@ -158,8 +176,9 @@ div.checkbox-group label {
 	cursor: pointer;
 	padding: 8px 52px 8px 8px;
 	border-radius: 8px;
-	transition: background-color 0.2s;
-	-webkit-tap-highlight-color: transparent;
+	transition: var(--transition-background);
+
+	/* -webkit-tap-highlight-color: transparent; */
 }
 
 div.checkbox-group label:hover {
@@ -174,15 +193,10 @@ div.checkbox-group label input[type="checkbox"] {
 	height: 18px;
 	border: 2px solid var(--md-sys-color-outline);
 	border-radius: 2px;
-	transition: all 0.2s;
+	transition: var(--transition-all);
 
 	/* Ensure visual part stays in flow */
 	flex-shrink: 0;
-}
-
-div.checkbox-group label span {
-	padding-left: 12px;
-	user-select: none;
 }
 
 div.checkbox-group label input[type="checkbox"]:checked {
@@ -191,23 +205,35 @@ div.checkbox-group label input[type="checkbox"]:checked {
 }
 
 /* The checkmark */
-div.checkbox-group label input[type="checkbox"]::after {
+div.checkbox-group label input[type="checkbox"]::before {
 	content: "";
-	position: absolute;
-	display: none;
-	left: 4px;
-	top: 0;
-	width: 5px;
-	height: 10px;
-	border: solid var(--md-sys-color-on-primary);
-	border-width: 0 2px 2px 0;
-	transform: rotate(45deg);
-}
-
-div.checkbox-group label input[type="checkbox"]:checked::after {
 	display: block;
+	position: absolute;
+	left: 6px;
+	top: 6px;
+	width: 0;
+	height: 0;
+	border: solid var(--md-sys-color-background);
+	border-width: 0 0 2px 2px;
+	opacity: 0;
+	transform: rotate(45deg);
+	transition: var(--transition-all);
 }
 
+div.checkbox-group label input[type="checkbox"]:checked::before {
+	left: 2px;
+	top: 3px;
+	width: 8px;
+	height: 4px;
+	transform: rotate(-45deg);
+	opacity: 1;
+	transition: var(--transition-all);
+}
+
+div.checkbox-group label span {
+	padding-left: 12px;
+	user-select: none;
+}
 
 /* ==============================================
 	Text Input Field & Select Field
@@ -224,7 +250,7 @@ div.select-group label {
 	left: 12px;
 	padding: 0 4px;
 	background-color: var(--md-sys-color-background);
-	transition: color 0.1s;
+	transition: var(--transition-color);
 	pointer-events: none;
 }
 
@@ -243,7 +269,7 @@ div.select-group select {
 	border: none;
 	border-radius: 4px;
 	background-color: transparent;
-	transition: outline 0.1s;
+	transition: var(--transition-outline);
 }
 
 div.select-group select {
@@ -296,14 +322,11 @@ div.select-group select option {
 details {
 	border: 1px solid var(--md-sys-color-outline-variant);
 	border-radius: 4px;
-	transition: background-color 0.2s;
+	transition: var(--transition-background);
 	overflow: hidden;
 }
 
-details:not([open]):hover {
-	background-color: var(--md-sys-color-surface-container-high);
-}
-
+details:not([open]):hover,
 details[open] {
 	background-color: var(--md-sys-color-surface-container-high);
 }
@@ -315,10 +338,11 @@ summary {
 	cursor: pointer;
 	list-style: none;
 	user-select: none;
-	transition: color 0.2s;
+	transition: var(--transition-color), var(--transition-background);
 }
 
-details[open]>summary {
+summary:hover {
+	background-color: var(--md-sys-color-surface-container-highest);
 	color: var(--md-sys-color-on-surface);
 }
 
@@ -329,7 +353,7 @@ details[open]>summary {
 /* Custom dropdown arrow */
 div.select-group::after,
 summary::after {
-	content: '';
+	content: "";
 	position: absolute;
 	top: 50%;
 	right: 52px;
@@ -339,7 +363,7 @@ summary::after {
 	background-color: var(--md-sys-color-on-surface-variant);
 	mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath d='M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3e%3c/svg%3e") no-repeat center;
 	mask-size: contain;
-	transition: transform 0.2s ease-in-out;
+	transition: var(--transition-transform), var(--transition-background);
 }
 
 div.select-group::after {
@@ -348,16 +372,16 @@ div.select-group::after {
 
 summary::after {
 	right: 16px;
-	transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
 }
 
-div.select-group:focus-within:not(:has(button.reset:focus-within))::after,
+div.select-group:hover:not(:has(button.reset:hover))::after,
+details>summary:hover::after {
+	background-color: var(--md-sys-color-on-surface);
+}
+
+div.select-group:focus-within:not(:has(button.reset:focus))::after,
 details[open]>summary::after {
 	transform: translateY(-50%) rotate(180deg);
-}
-
-details[open]>summary::after {
-	background-color: var(--md-sys-color-on-surface);
 }
 
 
@@ -367,7 +391,7 @@ details[open]>summary::after {
 button.reset {
 	position: absolute;
 	top: 50%;
-	right: 12px;
+	right: 10px;
 	transform: translateY(-50%);
 
 	/* Touch target size */
@@ -381,11 +405,11 @@ button.reset {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	transition: background-color 0.2s;
+	transition: var(--transition-background);
 }
 
-button.reset::before {
-	content: '';
+button.reset::after {
+	content: "";
 	display: block;
 	width: 20px;
 	height: 20px;
@@ -394,17 +418,18 @@ button.reset::before {
 	/* minimum_chrome_version: 120 */
 	mask-size: 1.5em;
 	background-color: var(--md-sys-color-on-surface-variant);
-	transition: background-color 0.2s;
+	transition: var(--transition-background);
 }
-
 
 button.reset:hover {
 	background-color: var(--md-sys-color-surface-container-highest);
 }
 
 /** Foreground color on hover */
-div.group button.reset:hover::before {
+button.reset:hover::after {
 	background-color: var(--md-sys-color-warning);
+
+	/* animation: var(--animation-rotate-360); */
 }
 
 button.reset-all {
@@ -414,7 +439,7 @@ button.reset-all {
 	border: 1px solid var(--md-sys-color-outline);
 	background-color: var(--md-sys-color-background);
 	cursor: pointer;
-	transition: background-color 0.2s;
+	transition: var(--transition-background), var(--transition-color);
 }
 
 button.reset-all:hover {
@@ -441,7 +466,7 @@ div.input-group button.stepper {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	transition: background-color 0.2s;
+	transition: var(--transition-background);
 }
 
 div.input-group button.stepper.increment+button.stepper.decrement,
@@ -454,7 +479,7 @@ div.input-group button.stepper:hover {
 }
 
 div.input-group button.stepper::before {
-	content: '';
+	content: "";
 	display: block;
 	width: 20px;
 	height: 20px;
@@ -477,5 +502,5 @@ div.input-group button.stepper.decrement::before {
 div.status {
 	height: 20px;
 	opacity: 0;
-	transition: opacity 0.5s;
+	transition: var(--transition-opacity);
 }

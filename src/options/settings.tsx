@@ -76,6 +76,9 @@ function NumberSetting({
 			autocomplete='off'
 		>
 			<div class="input-group">
+				<label for={settingKey}>
+					{_(setting.i18nKey)}
+				</label>
 				<input
 					type="number"
 					id={settingKey}
@@ -85,9 +88,6 @@ function NumberSetting({
 					max={max}
 					step={step}
 				/>
-				<label for={settingKey}>
-					{_(setting.i18nKey)}
-				</label>
 				<button
 					type="reset"
 					class="reset"
@@ -116,6 +116,12 @@ function ChoicesSetting<K extends TypeKey<'choices'>>({
 			autocomplete='off'
 		>
 			<div class="select-group">
+				<label
+					for={settingKey}
+					{..._a(setting.i18nKey)}
+				>
+					{_(setting.i18nKey)}
+				</label>
 				<select id={settingKey}>
 					{/* Make sure the default choice is always the first option for resetting */}
 					<option
@@ -135,12 +141,6 @@ function ChoicesSetting<K extends TypeKey<'choices'>>({
 						)
 					)}
 				</select>
-				<label
-					for={settingKey}
-					{..._a(setting.i18nKey)}
-				>
-					{_(setting.i18nKey)}
-				</label>
 				<button
 					type="reset"
 					class="reset"
