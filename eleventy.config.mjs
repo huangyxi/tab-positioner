@@ -32,7 +32,7 @@ async function eleventySetup(eleventyConfig){
 	eleventyConfig.addPlugin(VitePlugin, {
 		entries: {
 			'background': './src/background/main.ts',
-			'options': './src/options/index.ts',
+			'options': './src/options/options.ts',
 			'options.css': './src/options/options.css',
 		},
 		minify: false, // Disable minification for potential faster reviews
