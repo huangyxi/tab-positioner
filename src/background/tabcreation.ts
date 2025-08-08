@@ -22,7 +22,7 @@ async function getTabCreationSetting(
 	return {
 		setting: settings.get(settingKey),
 		settingKey,
-		tabBatchThresholdMs: settings.get('$tab_batch_creation_threshold_ms'),
+		tabBatchThresholdMs: settings.get('_tab_batch_creation_threshold_ms'),
 	}
 }
 

@@ -7,7 +7,7 @@ import { KEEP_ALIVE_TIMEOUT_MS } from '../shared/constants';
 
 export let DEBUG = true;
 api.storage.sync.get(DEFAULT_SETTINGS).then((settings) => {
-	DEBUG = (settings as typeof DEFAULT_SETTINGS)['$debug_mode'] ?? true;
+	DEBUG = (settings as typeof DEFAULT_SETTINGS)['_debug_mode'] ?? true;
 }).catch((error) => {
 	console.error('Failed to get debug mode setting:', error);
 });
@@ -37,7 +37,7 @@ export class SyncSettings extends SessionSingleton {
 			rejectFn(abortException);
 		}, { once: true });
 		try {
-			while (this.get('$persistent_background')) {
+			while (this.get('_persistent_background')) {
 				if (DEBUG) {
 					console.log(' syncSettings: Keeping alive');
 				}
@@ -59,7 +59,7 @@ export class SyncSettings extends SessionSingleton {
 	}
 
 	private setDebugMode() {
-		const debug = this.get('$debug_mode');
+		const debug = this.get('_debug_mode');
 		console.log(' syncSettings: Setting debug mode to', debug);
 		DEBUG = debug;
 	}
@@ -100,7 +100,7 @@ export class SyncSettings extends SessionSingleton {
 			const instance = await this.getInstance();
 			const settings = await loadSettings();
 			instance.settings = settings;
-			const debugModeKey: keyof typeof DEFAULT_SETTINGS = '$debug_mode';
+			const debugModeKey: keyof typeof DEFAULT_SETTINGS = '_debug_mode';
 			if (debugModeKey in changes) instance.setDebugMode();
 			instance.saveState();
 			if (DEBUG) {

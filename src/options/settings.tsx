@@ -13,6 +13,21 @@ function _t(
 	};
 }
 
+function _st(
+	settingKey: SettingKey,
+) {
+	const property = 'title';
+	const titleKey = `${property}_${settingKey}`;
+	const message = _(titleKey as any);
+	if (!message) {
+		return {};
+	}
+	return {
+		[property]: message,
+		..._a(titleKey as any, property),
+	};
+}
+
 type SettingType<K extends SettingKey> = SettingSchemas[K]['type'];
 type TypeKey<
 	T extends SettingType<SettingKey>,
@@ -40,7 +55,10 @@ function BooleanSetting({
 			id={settingKey}
 			autocomplete='off'
 		>
-			<div class="checkbox-group">
+			<div
+				class="checkbox-group"
+				{..._st(settingKey)}
+			>
 				<label>
 					<input
 						type="checkbox"
@@ -75,7 +93,10 @@ function NumberSetting({
 			id={settingKey}
 			autocomplete='off'
 		>
-			<div class="input-group">
+			<div
+				class="input-group"
+				{..._st(settingKey)}
+			>
 				<label for={settingKey}>
 					{_(setting.i18nKey)}
 				</label>
@@ -115,7 +136,10 @@ function ChoicesSetting<K extends TypeKey<'choices'>>({
 			id={settingKey}
 			autocomplete='off'
 		>
-			<div class="select-group">
+			<div
+				class="select-group"
+				{..._st(settingKey)}
+			>
 				<label
 					for={settingKey}
 					{..._a(setting.i18nKey)}
@@ -176,8 +200,8 @@ export function Settings<K extends SettingKey>({
 }): JSX.Element {
 	const settings = Object.entries(SETTING_SCHEMAS) as Array<[K, SettingSchemas[K]]>;
 	const filteredSettings = advanced
-		? settings.filter(([settingKey, _]) => settingKey.startsWith('$'))
-		: settings.filter(([settingKey, _]) => !settingKey.startsWith('$'));
+		? settings.filter(([settingKey, _]) => settingKey.startsWith('_'))
+		: settings.filter(([settingKey, _]) => !settingKey.startsWith('_'));
 	return <>
 		{filteredSettings.map(([settingKey, setting]) => <>
 				<Setting settingKey={settingKey as any} setting={setting as any} />

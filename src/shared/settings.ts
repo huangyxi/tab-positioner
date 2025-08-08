@@ -4,24 +4,24 @@ import * as C from './constants';
 const DEFAULT_VALUE = 'default';
 
 /**
- * @note Advanced settings (collapsed by default) are started with `$`.
+ * @note Advanced settings (collapsed by default) are started with `_`.
  */
 export type SettingKey = never
 	| 'new_tab_position'
 	| 'background_link_position'
 	// | 'foreground_link_position'
 	| 'after_close_activation'
-	| '$tab_batch_creation_threshold_ms'
-	| '$tab_batch_activation_threshold_ms'
-	| '$persistent_background'
-	| '$debug_mode'
+	| '_tab_batch_creation_threshold_ms'
+	| '_tab_batch_activation_threshold_ms'
+	| '_persistent_background'
+	| '_debug_mode'
 	| never;
 
 export interface SettingText {
 	i18nKey: I18nKey;
 }
 
-type StripDollar<T extends string> = T extends `$${infer U}` ? U : T;
+// type NormedKey<T extends string> = T extends `$${infer U}` ? U : T;
 
 type SettingChoices<T extends string> = {
 	[K in T]: SettingText & {
@@ -64,10 +64,10 @@ export const DEFAULT_SETTINGS = {
 	background_link_position: DEFAULT_VALUE as TabCreationPosition,
 	// foreground_link_position: DEFAULT_VALUE as TabCreationPosition,
 	after_close_activation: DEFAULT_VALUE as TabActivationPosition,
-	$tab_batch_creation_threshold_ms: C.TAB_BATCH_CREATION_THRESHOLD_MS,
-	$tab_batch_activation_threshold_ms: C.TAB_BATCH_ACTIVATION_THRESHOLD_MS,
-	$debug_mode: false,
-	$persistent_background: false,
+	_tab_batch_creation_threshold_ms: C.TAB_BATCH_CREATION_THRESHOLD_MS,
+	_tab_batch_activation_threshold_ms: C.TAB_BATCH_ACTIVATION_THRESHOLD_MS,
+	_debug_mode: false,
+	_persistent_background: false,
 } satisfies Record<SettingKey, any>;
 // export interface ExtensionSettings extends Record<SettingKey, ChoiceValue> {
 // 	new_tab_position: TabCreationPosition;
@@ -86,18 +86,18 @@ export type TabActivationPositionKey = SettingKeys<TabActivationPosition>;
 
 type SettingValue<K extends SettingKey> =
 	| ExtensionSettings[K] extends boolean ? {
-		i18nKey: `span_${StripDollar<K>}`,
+		i18nKey: `label_${K}`,
 		type: 'boolean',
 	} : never
 	| ExtensionSettings[K] extends number ? { // Integer only
-		i18nKey: `label_${StripDollar<K>}`,
+		i18nKey: `label_${K}`,
 		type: 'number',
 		min?: number,
 		max?: number,
 		step?: number,
 	} : never
 	| ExtensionSettings[K] extends string ? {
-		i18nKey: `label_${StripDollar<K>}`,
+		i18nKey: `label_${K}`,
 		type: 'choices',
 		choices: SettingChoices<ExtensionSettings[K]>,
 	} : never
@@ -127,24 +127,24 @@ export const SETTING_SCHEMAS: SettingSchemas = {
 		type: 'choices',
 		choices: TAB_ACTIVATION_POSITION_CHOICES,
 	},
-	$tab_batch_creation_threshold_ms: {
-		i18nKey: 'label_tab_batch_creation_threshold_ms',
+	_tab_batch_creation_threshold_ms: {
+		i18nKey: 'label__tab_batch_creation_threshold_ms',
 		type: 'number',
 		min: 0,
 		max: 1_000, // 1 second
 	},
-	$tab_batch_activation_threshold_ms: {
-		i18nKey: 'label_tab_batch_activation_threshold_ms',
+	_tab_batch_activation_threshold_ms: {
+		i18nKey: 'label__tab_batch_activation_threshold_ms',
 		type: 'number',
 		min: 0,
 		max: 1_000, // 1 second
 	},
-	$persistent_background: {
-		i18nKey: 'span_persistent_background',
+	_persistent_background: {
+		i18nKey: 'label__persistent_background',
 		type: 'boolean',
 	},
-	$debug_mode: {
-		i18nKey: 'span_debug_mode',
+	_debug_mode: {
+		i18nKey: 'label__debug_mode',
 		type: 'boolean',
 	},
 } as const;

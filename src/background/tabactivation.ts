@@ -9,7 +9,7 @@ async function getTabActivationSetting() {
 	const settings = (await SyncSettings.getInstance());
 	return {
 		setting: settings.get('after_close_activation'),
-		tabBatchThresholdMs: settings.get('$tab_batch_activation_threshold_ms'),
+		tabBatchThresholdMs: settings.get('_tab_batch_activation_threshold_ms'),
 	};
 }
 
