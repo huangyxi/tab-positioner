@@ -6,43 +6,72 @@ import { loadSettings, saveSettings, clearSettings } from '../shared/storage';
 
 type SettingElement = HTMLSelectElement | HTMLInputElement;
 
-function setElementSetting(
-	element: SettingElement,
+function getFormSetting(form: HTMLFormElement): ExtensionSettings[SettingKey] | null | undefined {
+	const settingKey = form.id;
+	if (!(settingKey in DEFAULT_SETTINGS)) return undefined;
+	const element = form[settingKey] as SettingElement;
+	if (!element) return undefined;
+	switch (element.type) {
+		case 'checkbox':
+			return element.checked;
+		case 'number':
+			if (!element.validity.valid) {
+				return null; // Invalid number input
+			}
+			return element.valueAsNumber;
+		case 'select-one':
+			return element.value as any;
+		default:
+			console.warn(`Unsupported element type: ${element.type} for setting ${settingKey}`);
+			return undefined; // Unsupported type
+	}
+}
+
+function setFormSetting(
+	form: HTMLFormElement,
 	settings: ExtensionSettings = DEFAULT_SETTINGS,
 ) {
-	const settingKey = element.name as SettingKey;
+	const settingKey = form.id as SettingKey;
 	if (!(settingKey in settings)) return;
+	const element = form[settingKey] as SettingElement;
+	if (!element) return;
 	switch (element.type) {
 		case 'checkbox':
 			element.checked = settings[settingKey] as boolean;
 			break;
 		case 'number':
-			element.valueAsNumber = settings[settingKey] as any;
+			element.valueAsNumber = settings[settingKey] as number;
 			break;
 		case 'select-one':
 			element.value = settings[settingKey] as string;
 			break;
+		default:
+			console.warn(`Unsupported element type: ${element.type} for setting ${settingKey}`);
+			return;
 	}
 }
 
-function getElementSetting(
-	element: SettingElement,
-): ExtensionSettings[SettingKey] | null | undefined {
-	const settingKey = element.name as SettingKey;
+function toggleResetButton(
+	form: HTMLFormElement,
+	unchanged: boolean | undefined = undefined,
+) {
+	const settingKey = form.id as SettingKey;
 	if (!(settingKey in DEFAULT_SETTINGS)) return;
-	switch (element.type) {
-		case 'checkbox':
-			return element.checked as any;
-		case 'number':
-			if (!element.validity.valid) {
-				return null; // Invalid number input
-			}
-			return element.valueAsNumber as any;
-		case 'select-one':
-			return element.value as any;
-		default:
-			return undefined;
+	const setting = getFormSetting(form);
+	if (setting === undefined) return;
+	if (unchanged === true) {
+		form.dataset.unchanged = 'true';
+		return;
 	}
+	if (unchanged === false) {
+		delete form.dataset.unchanged;
+		return;
+	}
+	if (setting === DEFAULT_SETTINGS[settingKey]) {
+		form.dataset.unchanged = 'true';
+		return;
+	}
+	delete form.dataset.unchanged;
 }
 
 function showStatus(
@@ -75,23 +104,35 @@ function localizeHtmlPage() {
 	});
 }
 
-async function saveSetting(elements:
-	| SettingElement
-	| Array<SettingElement>
-	| NodeListOf<SettingElement>
+async function restoreFormSettings(forms: NodeListOf<HTMLFormElement>) {
+	const settings = await loadSettings();
+	for (const form of forms) {
+		setFormSetting(form, settings);
+		toggleResetButton(form);
+	}
+}
+
+async function saveFormSettings(forms:
+	| HTMLFormElement
+	| Array<HTMLFormElement>
+	| NodeListOf<HTMLFormElement>,
+	defaultSettings: ExtensionSettings = DEFAULT_SETTINGS,
 ) {
-	if (elements instanceof HTMLElement) {
-		elements = [elements];
+	if (forms instanceof HTMLElement) {
+		forms = [forms];
 	}
 	const settings: Partial<Record<SettingKey, any>> = {}
-	for (const element of elements) {
-		const settingKey = element.name as SettingKey;
-		if (!(settingKey in DEFAULT_SETTINGS)) continue;
-		const setting = getElementSetting(element);
-		if (setting === undefined) continue; // Skip if no setting found
-		if (setting === null && element.type === 'number') {
+	for (const form of forms) {
+		toggleResetButton(form);
+		const settingKey = form.id as SettingKey;
+		if (!(settingKey in defaultSettings)) {
+			return;
+		}
+		const setting = getFormSetting(form);
+		if (setting === undefined) continue;
+		if (setting === null) {
 			showStatus('status_input_invalid', 'error', 3000);
-			return; // Invalid number input
+			return;
 		}
 		settings[settingKey] = setting;
 	}
@@ -99,23 +140,19 @@ async function saveSetting(elements:
 	showStatus('status_settings_saved');
 }
 
-async function restoreSettings(elements: NodeListOf<SettingElement>) {
-	const settings = await loadSettings();
-	for (const element of elements) {
-		setElementSetting(element, settings);
-	}
-}
-
-async function resetSetting(form: HTMLFormElement) {
+async function resetFormSetting(form: HTMLFormElement) {
 	const settingKey = form.id as SettingKey;
 	if (!(settingKey in DEFAULT_SETTINGS)) return;
-	await saveSettings({ [settingKey]: DEFAULT_SETTINGS[settingKey] }, true);
+	toggleResetButton(form, true);
+	const defaultsetting = DEFAULT_SETTINGS[settingKey];
+	await saveSettings({ [settingKey]: defaultsetting }, true);
 	showStatus('status_settings_saved');
 }
 
-async function resetAllSettings(elements: NodeListOf<SettingElement>) {
-	for (const element of elements) {
-		setElementSetting(element, DEFAULT_SETTINGS);
+async function resetFormSettings(forms: NodeListOf<HTMLFormElement>) {
+	for (const form of forms) {
+		setFormSetting(form, DEFAULT_SETTINGS);
+		toggleResetButton(form);
 	}
 	await clearSettings();
 	await saveSettings();
@@ -139,22 +176,23 @@ function openDetails() {
 async function main() {
 	localizeHtmlPage();
 
-	const elements = document.querySelectorAll('select, input[type="checkbox"], input[type="number"]') as NodeListOf<SettingElement>;
 	const forms = document.querySelectorAll('form') as NodeListOf<HTMLFormElement>;
 
-	await restoreSettings(elements);
+	await restoreFormSettings(forms);
 
-	elements.forEach(element => {
-		element.addEventListener('change', () => saveSetting(element));
+	forms.forEach(form => {
+		form.addEventListener('change', async () => await saveFormSettings(form));
 	});
 
 	forms.forEach(form => {
 		form.addEventListener('reset', async (event) => {
-			await resetSetting(form);
+			await resetFormSetting(form);
 		});
 	});
 
-	document.getElementById('reset-all')?.addEventListener('click', () => resetAllSettings(elements));
+	document.getElementById('reset-all')?.addEventListener('click', async () => {
+		await resetFormSettings(forms)
+	});
 
 	if (isOptionsPage()) {
 		openDetails();

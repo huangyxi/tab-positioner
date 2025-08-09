@@ -162,9 +162,9 @@ div.status {
 	color: var(--md-sys-color-primary);
 }
 
-div.status[data-type="success"] {
+/* div.status[data-type="success"] {
 	color: var(--md-sys-color-primary);
-}
+} */
 
 div.status[data-type="error"] {
 	color: var(--md-sys-color-background);
@@ -427,6 +427,11 @@ button.reset {
 	transition: var(--transition-background);
 }
 
+form[data-unchanged="true"] button.reset {
+	background-color: transparent;
+	cursor: not-allowed;
+}
+
 button.reset::before {
 	content: "";
 	display: block;
@@ -438,6 +443,10 @@ button.reset::before {
 	mask-size: 1.5em;
 	background-color: var(--md-sys-color-on-surface-variant);
 	transition: var(--transition-background);
+}
+
+form[data-unchanged="true"] button.reset::before {
+	background-color: var(--md-sys-color-outline);
 }
 
 button.reset:hover {
