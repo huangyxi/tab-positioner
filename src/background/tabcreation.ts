@@ -1,6 +1,6 @@
 import { DEBUG } from '../shared/debug';
 import type { TabCreationPositionKey } from '../shared/settings';
-import { NEW_PAGE_URIS } from '../shared/constants';
+import { NEW_PAGE_URIS, FIRST_ACTIVATION_DELAY_MS } from '../shared/constants';
 import { Listeners } from '../shared/listeners';
 import { errorHandler } from '../shared/logging';
 
@@ -84,13 +84,13 @@ async function createdTabMover(
 	try {
 		await apiTabs.move(tabId, { index: newIndex });
 		if (!hasLoaded) {
-			await new Promise((resolve) => setTimeout(resolve, tabBatchThresholdMs));
+			await new Promise((resolve) => setTimeout(resolve, FIRST_ACTIVATION_DELAY_MS));
 			const [tab] = await apiTabs.query({
 				active: true,
 				windowId: newTab.windowId,
 			});
 			if (tab?.id === tabId) {
-				console.log('  C6. Tab active again');
+				console.log('  C6a. Tab active again');
 				tabsInfo.activateTab(tab.windowId, tabId, newIndex);
 			}
 		}
