@@ -4,47 +4,88 @@
 	Material Design 3 Color & Style System
 ============================================== */
 :root {
-	/* Light Theme Color Roles */
-	--md-sys-color-primary: #6750a4;
-	--md-sys-color-on-primary: #ffffff;
-	--md-sys-color-background: #fdf7ff;
-	--md-sys-color-surface: var(--md-sys-color-background);
-	--md-sys-color-surface-variant: #e7e0ec;
-	--md-sys-color-on-surface: #1d1b20;
-	--md-sys-color-on-surface-variant: #49454f;
-	--md-sys-color-outline: #79747e;
-	--md-sys-color-outline-variant: #cac4d0;
-	--md-sys-color-shadow: #000000;
-	--md-sys-color-warning: #b3261e;
-	--md-sys-color-surface-container-high: #e6e0e9;
-	--md-sys-color-surface-container-highest: #e0dae3;
-
 	/* Transition Variables */
-	--transition-background: background-color 0.2s ease-in-out;
-	--transition-color: color 0.2s ease-in-out;
-	--transition-outline: outline 0.1s ease-in-out;
-	--transition-border: border 0.2s ease-in-out;
+	--transition-background: background-color 0.1s ease-in-out;
+	--transition-color: color 0.1s ease-in-out;
+	--transition-outline: outline-color 0.1s ease-in-out;
 	--transition-transform: transform 0.2s ease-in-out;
 	--transition-opacity: opacity 0.5s ease-in-out;
 	--transition-all: all 0.2s ease-in-out;
 	--animation-rotate-360: rotate-360 0.5s linear infinite;
-	--border-radius: 8px;
+	--border-radius: 4px;
+
+	/* Color Seed Variables */
+	--color-seed-primary: #6750a4;
+	--color-seed-secondary: #625b71;
+	--color-seed-tertiary: #7d5260;
+	--color-seed-neutral: #605d62;
+	--color-seed-error: #b3261e;
+	--color-space: srgb;
+	--color-foreground: black;
+	--color-background: white;
+
+	/* Light Theme Color Roles */
+
+	/* Primary */
+	--color-primary: var(--color-seed-primary);
+	--color-on-primary: var(--color-foreground);
+	--color-primary-container: color-mix(in var(--color-space), var(--color-seed-primary) 20%, var(--color-background));
+	--color-on-primary-container: color-mix(in var(--color-space), var(--color-seed-primary) 90%, var(--color-foreground));
+
+	/* Error */
+	--color-error: var(--color-seed-error);
+	--color-on-error: var(--color-background);
+	--color-error-container: color-mix(in var(--color-space), var(--color-seed-error) 20%, var(--color-background));
+	--color-on-error-container: color-mix(in var(--color-space), var(--color-seed-error) 90%, var(--color-foreground));
+
+	/* Surface & Background */
+	--color-surface: color-mix(in var(--color-space), var(--color-seed-neutral) 2%, var(--color-background));
+	--color-surface-container-lowest: var(--color-background);
+	--color-surface-container-low: color-mix(in var(--color-space), var(--color-seed-neutral) 5%, var(--color-background));
+	--color-surface-container: color-mix(in var(--color-space), var(--color-seed-neutral) 8%, var(--color-background));
+	--color-surface-container-high: color-mix(in var(--color-space), var(--color-seed-neutral) 10%, var(--color-background));
+	--color-surface-container-highest: color-mix(in var(--color-space), var(--color-seed-neutral) 12%, var(--color-background));
+	--color-on-surface: color-mix(in var(--color-space), var(--color-seed-neutral) 30%, var(--color-foreground));
+	--color-on-surface-variant: color-mix(in var(--color-space), var(--color-seed-neutral) 60%, var(--color-foreground));
+
+	/* Outline */
+	--color-outline: color-mix(in var(--color-space), var(--color-seed-neutral) 50%, var(--color-foreground));
+	--color-outline-variant: color-mix(in var(--color-space), var(--color-seed-neutral) 20%, var(--color-background));
 }
+
 
 @media (prefers-color-scheme: dark) {
 	:root {
+		--color-foreground: white;
+		--color-background: black;
+
 		/* Dark Theme Color Roles */
-		--md-sys-color-primary: #d0bcff;
-		--md-sys-color-on-primary: #381e72;
-		--md-sys-color-background: #141218;
-		--md-sys-color-surface: var(--md-sys-color-background);
-		--md-sys-color-on-surface: #e6e1e5;
-		--md-sys-color-on-surface-variant: #cac4d0;
-		--md-sys-color-outline: #938f99;
-		--md-sys-color-outline-variant: #49454f;
-		--md-sys-color-warning: #f2b8b5;
-		--md-sys-color-surface-container-high: #36343b;
-		--md-sys-color-surface-container-highest: #403e45;
+
+		/* Primary */
+		--color-primary: color-mix(in var(--color-space), var(--color-seed-primary) 70%, var(--color-foreground));
+		--color-on-primary: color-mix(in var(--color-space), var(--color-seed-primary) 80%, var(--color-background));
+		--color-primary-container: color-mix(in var(--color-space), var(--color-seed-primary) 40%, var(--color-background));
+		--color-on-primary-container: color-mix(in var(--color-space), var(--color-seed-primary) 30%, var(--color-foreground));
+
+		/* Error */
+		--color-error: color-mix(in var(--color-space), var(--color-seed-error) 70%, var(--color-foreground));
+		--color-on-error: color-mix(in var(--color-space), var(--color-seed-error) 80%, var(--color-background));
+		--color-error-container: color-mix(in var(--color-space), var(--color-seed-error) 40%, var(--color-background));
+		--color-on-error-container: color-mix(in var(--color-space), var(--color-seed-error) 30%, var(--color-foreground));
+
+		/* Surface & Background */
+		--color-surface: color-mix(in var(--color-space), var(--color-seed-neutral) 8%, var(--color-background));
+		--color-surface-container-lowest: color-mix(in var(--color-space), var(--color-seed-neutral) 2%, var(--color-background));
+		--color-surface-container-low: color-mix(in var(--color-space), var(--color-seed-neutral) 10%, var(--color-background));
+		--color-surface-container: color-mix(in var(--color-space), var(--color-seed-neutral) 15%, var(--color-background));
+		--color-surface-container-high: color-mix(in var(--color-space), var(--color-seed-neutral) 20%, var(--color-background));
+		--color-surface-container-highest: color-mix(in var(--color-space), var(--color-seed-neutral) 25%, var(--color-background));
+		--color-on-surface: color-mix(in var(--color-space), var(--color-seed-neutral) 10%, var(--color-foreground));
+		--color-on-surface-variant: color-mix(in var(--color-space), var(--color-seed-neutral) 25%, var(--color-foreground));
+
+		/* Outline */
+		--color-outline: color-mix(in var(--color-space), var(--color-seed-neutral) 40%, var(--color-foreground));
+		--color-outline-variant: color-mix(in var(--color-space), var(--color-seed-neutral) 70%, var(--color-background));
 	}
 }
 
@@ -63,8 +104,8 @@
 ============================================== */
 body {
 	font-family: Roboto, RobotoDraft, Helvetica, Arial, sans-serif;
-	background-color: var(--md-sys-color-background);
-	color: var(--md-sys-color-on-surface);
+	background-color: var(--color-surface);
+	color: var(--color-on-surface);
 	margin: 0 auto;
 	width: 100%;
 	min-width: 380px;
@@ -102,7 +143,7 @@ footer {
 	gap: 8px;
 	padding-top: 16px;
 	padding-bottom: 16px;
-	background-color: color-mix(in srgb, var(--md-sys-color-background) 80%, transparent);
+	background-color: color-mix(in srgb, var(--color-surface) 80%, transparent);
 	backdrop-filter: blur(1px);
 }
 
@@ -115,7 +156,7 @@ h1 {
 	font-weight: 400;
 	line-height: 28px;
 	margin: 0;
-	color: var(--md-sys-color-on-surface);
+	color: var(--color-on-surface);
 	text-align: center;
 }
 
@@ -123,7 +164,7 @@ div.checkbox-group label span {
 	font-size: 14px;
 	font-weight: 500;
 	line-height: 20px;
-	color: var(--md-sys-color-on-surface);
+	color: var(--color-on-surface);
 }
 
 div.input-group label
@@ -131,7 +172,7 @@ div.select-group label {
 	font-size: 12px;
 	font-weight: 400;
 	line-height: 16px;
-	color: var(--md-sys-color-on-surface-variant);
+	color: var(--color-on-surface-variant);
 }
 
 div.input-group input[type="number"],
@@ -139,7 +180,7 @@ div.select-group select {
 	font-size: 16px;
 	font-weight: 400;
 	line-height: 20px;
-	color: var(--md-sys-color-on-surface);
+	color: var(--color-on-surface);
 }
 
 summary {
@@ -160,16 +201,16 @@ div.status {
 	line-height: 20px;
 	height: 20px;
 	text-align: center;
-	color: var(--md-sys-color-primary);
+	color: var(--color-primary);
 }
 
 /* div.status[data-type="success"] {
-	color: var(--md-sys-color-primary);
+	color: var(--color-primary);
 } */
 
 div.status[data-type="error"] {
-	color: var(--md-sys-color-background);
-	background-color: var(--md-sys-color-warning);
+	color: var(--color-on-error-container);
+	background-color: var(--color-error-container);
 }
 
 div.checkbox-group label span[title]::after,
@@ -201,16 +242,16 @@ div.checkbox-group label {
 }
 
 div.checkbox-group label:hover {
-	background-color: var(--md-sys-color-surface-container-highest);
+	background-color: var(--color-surface-container-highest);
 }
 
-div.checkbox-group label input[type="checkbox"] {
+div.checkbox-group input[type="checkbox"] {
 	appearance: none;
 	position: relative;
 	cursor: pointer;
 	width: 18px;
 	height: 18px;
-	border: 2px solid var(--md-sys-color-outline);
+	border: 2px solid var(--color-outline);
 	border-radius: 2px;
 	transition: var(--transition-all);
 
@@ -218,13 +259,13 @@ div.checkbox-group label input[type="checkbox"] {
 	flex-shrink: 0;
 }
 
-div.checkbox-group label input[type="checkbox"]:checked {
-	background-color: var(--md-sys-color-primary);
-	border-color: var(--md-sys-color-primary);
+div.checkbox-group input[type="checkbox"]:checked {
+	background-color: var(--color-primary);
+	border-color: var(--color-primary);
 }
 
 /* The checkmark */
-div.checkbox-group label input[type="checkbox"]::before {
+div.checkbox-group input[type="checkbox"]::before {
 	content: "";
 	display: block;
 	position: absolute;
@@ -232,14 +273,14 @@ div.checkbox-group label input[type="checkbox"]::before {
 	top: 6px;
 	width: 0;
 	height: 0;
-	border: solid var(--md-sys-color-background);
+	border: solid var(--color-surface);
 	border-width: 0 0 2px 2px;
 	opacity: 0;
 	transform: rotate(45deg);
 	transition: var(--transition-all);
 }
 
-div.checkbox-group label input[type="checkbox"]:checked::before {
+div.checkbox-group input[type="checkbox"]:checked::before {
 	left: 2px;
 	top: 3px;
 	width: 8px;
@@ -269,14 +310,14 @@ div.select-group label {
 	top: -8px;
 	left: 8px;
 	padding: 0 4px;
-	background-color: var(--md-sys-color-background);
+	background-color: var(--color-surface);
 	transition: var(--transition-color);
 	pointer-events: none;
 }
 
-details[open] div.input-group label,
-details[open] div.select-group label {
-	background-color: var(--md-sys-color-surface-container-high);
+details div.input-group label,
+details div.select-group label {
+	background-color: var(--color-surface-container-low);
 }
 
 div.input-group input[type="number"],
@@ -285,7 +326,7 @@ div.select-group select {
 	width: 100%;
 	box-sizing: border-box;
 	padding: 15px 52px 15px 12px;
-	outline: 1px solid var(--md-sys-color-outline);
+	outline: 1px solid var(--color-outline);
 	border: none;
 	border-radius: var(--border-radius);
 	background-color: transparent;
@@ -310,29 +351,25 @@ div.select-group select:hover {
 div.input-group input[type="number"]:focus,
 div.select-group select:focus {
 	outline-width: 2px;
-	outline-color: var(--md-sys-color-primary);
+	outline-color: var(--color-primary);
 }
 
-div.input-group input[type="number"]:focus+label,
-div.select-group select:focus+label {
-	color: var(--md-sys-color-primary);
+div.input-group:has(input[type="number"]:focus) label,
+div.select-group:has(select:focus) label {
+	color: var(--color-primary);
 }
 
 div.input-group input[type="number"]:invalid {
-	outline-color: var(--md-sys-color-warning);
+	outline-color: var(--color-error);
 }
 
-div.input-group input[type="number"]:invalid:focus {
-	outline-color: var(--md-sys-color-warning);
-}
-
-div.input-group input[type="number"]:invalid+label {
-	color: var(--md-sys-color-warning);
+div.input-group:has(input[type="number"]:invalid) label {
+	color: var(--color-error);
 }
 
 div.select-group select option {
 	/** Valid in Chrome on Windows */
-	background-color: var(--md-sys-color-surface);
+	background-color: var(--color-surface);
 }
 
 
@@ -340,7 +377,7 @@ div.select-group select option {
 	Dropdown of Select & Details
 ============================================== */
 details {
-	outline: 1px solid var(--md-sys-color-outline-variant);
+	outline: 1px solid var(--color-outline-variant);
 	border: none;
 	border-radius: var(--border-radius);
 	transition: var(--transition-background);
@@ -348,11 +385,11 @@ details {
 
 details:not([open]):hover,
 details[open] {
-	background-color: var(--md-sys-color-surface-container-high);
+	background-color: var(--color-surface-container-low);
 }
 
 details:not([open]):has(input:invalid) {
-	outline-color: var(--md-sys-color-warning);
+	outline-color: var(--color-error);
 }
 
 details:not([open]):has(input:invalid):hover {
@@ -364,7 +401,7 @@ summary {
 	border-radius: var(--border-radius);
 	position: relative;
 	padding: 16px 48px 16px 16px;
-	color: var(--md-sys-color-on-surface-variant);
+	color: var(--color-on-surface-variant);
 	cursor: pointer;
 	list-style: none;
 	user-select: none;
@@ -372,8 +409,8 @@ summary {
 }
 
 summary:hover {
-	background-color: var(--md-sys-color-surface-container-highest);
-	color: var(--md-sys-color-on-surface);
+	background-color: var(--color-surface-container-highest);
+	color: var(--color-on-surface);
 }
 
 /* summary::-webkit-details-marker {
@@ -390,7 +427,7 @@ summary::before {
 	width: 24px;
 	height: 24px;
 	transform: translateY(-50%) rotate(0deg);
-	background-color: var(--md-sys-color-on-surface-variant);
+	background-color: var(--color-on-surface-variant);
 	mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath d='M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3e%3c/svg%3e") no-repeat center;
 	mask-size: contain;
 	transition: var(--transition-transform), var(--transition-background);
@@ -406,7 +443,7 @@ summary::before {
 
 div.select-group:hover:not(:has(button.reset:hover))::before,
 details>summary:hover::before {
-	background-color: var(--md-sys-color-on-surface);
+	background-color: var(--color-on-surface);
 }
 
 div.select-group:focus-within:not(:has(button.reset:focus))::before,
@@ -452,39 +489,39 @@ button.reset::before {
 
 	/* minimum_chrome_version: 120 */
 	mask-size: 1.5em;
-	background-color: var(--md-sys-color-on-surface-variant);
+	background-color: var(--color-on-surface-variant);
 	transition: var(--transition-background);
 }
 
 form[data-unchanged="true"] button.reset::before {
-	background-color: var(--md-sys-color-outline);
+	background-color: var(--color-outline-variant);
 }
 
 button.reset:hover {
-	background-color: var(--md-sys-color-surface-container-highest);
+	background-color: var(--color-surface-container-highest);
 }
 
 /** Foreground color on hover */
 button.reset:hover::before {
-	background-color: var(--md-sys-color-warning);
+	background-color: var(--color-error);
 
 	/* animation: var(--animation-rotate-360); */
 }
 
 button.reset-all {
-	color: var(--md-sys-color-primary);
+	color: var(--color-primary);
 	padding: 10px 24px;
-	outline: 1px solid var(--md-sys-color-outline);
+	outline: 1px solid var(--color-outline);
 	border: none;
 	border-radius: 100px;
-	background-color: var(--md-sys-color-background);
+	background-color: var(--color-surface);
 	cursor: pointer;
 	transition: var(--transition-background), var(--transition-color);
 }
 
 button.reset-all:hover {
-	color: var(--md-sys-color-warning);
-	background-color: var(--md-sys-color-surface-container-highest);
+	color: var(--color-error);
+	background-color: var(--color-surface-container-highest);
 }
 
 
@@ -515,7 +552,7 @@ div.input-group button.stepper.decrement+button.stepper.increment {
 }
 
 div.input-group button.stepper:hover {
-	background-color: var(--md-sys-color-surface-container-highest);
+	background-color: var(--color-surface-container-highest);
 }
 
 div.input-group button.stepper::before {
@@ -523,7 +560,7 @@ div.input-group button.stepper::before {
 	display: block;
 	width: 20px;
 	height: 20px;
-	background-color: var(--md-sys-color-on-surface-variant);
+	background-color: var(--color-on-surface-variant);
 	mask-size: 1.5em;
 }
 
@@ -541,6 +578,7 @@ div.input-group button.stepper.decrement::before {
 ============================================== */
 div.status {
 	padding: 4px;
+	width: 100%;
 	opacity: 0;
 	transition: var(--transition-opacity);
 }
