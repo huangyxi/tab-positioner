@@ -28,6 +28,7 @@
 	--transition-opacity: opacity 0.5s ease-in-out;
 	--transition-all: all 0.2s ease-in-out;
 	--animation-rotate-360: rotate-360 0.5s linear infinite;
+	--border-radius: 8px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -193,7 +194,7 @@ div.checkbox-group label {
 	align-items: center;
 	cursor: pointer;
 	padding: 8px 52px 8px 8px;
-	border-radius: 8px;
+	border-radius: var(--border-radius);
 	transition: var(--transition-background);
 
 	/* -webkit-tap-highlight-color: transparent; */
@@ -266,7 +267,7 @@ div.input-group label,
 div.select-group label {
 	position: absolute;
 	top: -8px;
-	left: 12px;
+	left: 8px;
 	padding: 0 4px;
 	background-color: var(--md-sys-color-background);
 	transition: var(--transition-color);
@@ -286,7 +287,7 @@ div.select-group select {
 	padding: 15px 52px 15px 12px;
 	outline: 1px solid var(--md-sys-color-outline);
 	border: none;
-	border-radius: 4px;
+	border-radius: var(--border-radius);
 	background-color: transparent;
 	transition: var(--transition-outline);
 }
@@ -339,10 +340,10 @@ div.select-group select option {
 	Dropdown of Select & Details
 ============================================== */
 details {
-	border: 1px solid var(--md-sys-color-outline-variant);
-	border-radius: 4px;
+	outline: 1px solid var(--md-sys-color-outline-variant);
+	border: none;
+	border-radius: var(--border-radius);
 	transition: var(--transition-background);
-	overflow: hidden;
 }
 
 details:not([open]):hover,
@@ -350,7 +351,17 @@ details[open] {
 	background-color: var(--md-sys-color-surface-container-high);
 }
 
+details:not([open]):has(input:invalid) {
+	outline-color: var(--md-sys-color-warning);
+}
+
+details:not([open]):has(input:invalid):hover {
+	outline-width: 2px;
+}
+
 summary {
+	border: none;
+	border-radius: var(--border-radius);
 	position: relative;
 	padding: 16px 48px 16px 16px;
 	color: var(--md-sys-color-on-surface-variant);
@@ -463,8 +474,9 @@ button.reset:hover::before {
 button.reset-all {
 	color: var(--md-sys-color-primary);
 	padding: 10px 24px;
+	outline: 1px solid var(--md-sys-color-outline);
+	border: none;
 	border-radius: 100px;
-	border: 1px solid var(--md-sys-color-outline);
 	background-color: var(--md-sys-color-background);
 	cursor: pointer;
 	transition: var(--transition-background), var(--transition-color);

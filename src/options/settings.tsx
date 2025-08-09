@@ -113,7 +113,6 @@ function NumberSetting({
 					id={forId}
 					type="number"
 					name={settingKey}
-					// set default value
 					value={DEFAULT_SETTINGS[settingKey]}
 					min={min}
 					max={max}
