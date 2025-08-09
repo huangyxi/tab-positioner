@@ -33,7 +33,7 @@ async function eleventySetup(eleventyConfig){
 		entries: {
 			'background': './src/background/main.ts',
 			'options': './src/options/options.ts',
-			'options.css': './src/options/options.css',
+			'options.css': './src/options/options.scss',
 		},
 		minify: false, // Disable minification for potential faster reviews
 		banner: `/*!`+

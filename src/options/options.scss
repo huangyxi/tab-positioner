@@ -1,0 +1,536 @@
+@use "sass:color";
+
+// --- Variables ---
+
+// Transitions & Animations
+$transition-background: background-color 0.1s ease-in-out;
+$transition-color: color 0.1s ease-in-out;
+$transition-outline: outline-color 0.1s ease-in-out;
+$transition-transform: transform 0.2s ease-in-out;
+$transition-opacity: opacity 0.5s ease-in-out;
+$transition-all: all 0.2s ease-in-out;
+$animation-rotate-360: rotate-360 0.5s linear infinite;
+$border-radius: 4px;
+
+// Color Seeds
+$color-seed-primary: #6750a4;
+$color-seed-secondary: #625b71;
+$color-seed-tertiary: #7d5260;
+$color-seed-neutral: #605d62;
+$color-seed-error: #b3261e;
+$color-foreground-light: #000000;
+$color-foreground-dark: #ffffff;
+$color-background-light: #ffffff;
+$color-background-dark: #000000;
+
+// --- Mixins ---
+@mixin dropdown-arrow($right-position: 16px) {
+	&::before {
+		content: "";
+		position: absolute;
+		top: 50%;
+		right: $right-position;
+		width: 24px;
+		height: 24px;
+		transform: translateY(-50%) rotate(0deg);
+		background-color: var(--color-on-surface-variant);
+		mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath d='M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3e%3c/svg%3e") no-repeat center;
+		mask-size: contain;
+		transition: $transition-transform, $transition-background;
+	}
+}
+
+// --- Themes ---
+
+:root {
+	// Primary
+	--color-primary: #{$color-seed-primary};
+	--color-on-primary: #{$color-foreground-light};
+	--color-primary-container: #{color.mix($color-seed-primary, $color-background-light, 20%)};
+	--color-on-primary-container: #{color.mix($color-seed-primary, $color-foreground-light, 90%)};
+
+	// Error
+	--color-error: #{$color-seed-error};
+	--color-on-error: #{$color-foreground-light};
+	--color-error-container: #{color.mix($color-seed-error, $color-background-light, 20%)};
+	--color-on-error-container: #{color.mix($color-seed-error, $color-foreground-light, 90%)};
+
+	// Surface & Background
+	--color-surface: #{color.mix($color-seed-neutral, $color-background-light, 2%)};
+	--color-surface-container-lowest: #{$color-background-light};
+	--color-surface-container-low: #{color.mix($color-seed-neutral, $color-background-light, 5%)};
+	--color-surface-container: #{color.mix($color-seed-neutral, $color-background-light, 8%)};
+	--color-surface-container-high: #{color.mix($color-seed-neutral, $color-background-light, 10%)};
+	--color-surface-container-highest: #{color.mix($color-seed-neutral, $color-background-light, 12%)};
+	--color-on-surface: #{color.mix($color-seed-neutral, $color-foreground-light, 30%)};
+	--color-on-surface-variant: #{color.mix($color-seed-neutral, $color-foreground-light, 60%)};
+
+	// Outline
+	--color-outline: #{color.mix($color-seed-neutral, $color-foreground-light, 50%)};
+	--color-outline-variant: #{color.mix($color-seed-neutral, $color-background-light, 20%)};
+
+	// Media Query for Dark Theme
+	@media (prefers-color-scheme: dark) {
+		// Primary
+		--color-primary: #{color.mix($color-seed-primary, $color-foreground-dark, 70%)};
+		--color-on-primary: #{color.mix($color-seed-primary, $color-background-dark, 80%)};
+		--color-primary-container: #{color.mix($color-seed-primary, $color-background-dark, 40%)};
+		--color-on-primary-container: #{color.mix($color-seed-primary, $color-foreground-dark, 30%)};
+
+		// Error
+		--color-error: #{color.mix($color-seed-error, $color-foreground-dark, 70%)};
+		--color-on-error: #{color.mix($color-seed-error, $color-background-dark, 80%)};
+		--color-error-container: #{color.mix($color-seed-error, $color-background-dark, 40%)};
+		--color-on-error-container: #{color.mix($color-seed-error, $color-foreground-dark, 30%)};
+
+		// Surface & Background
+		--color-surface: #{color.mix($color-seed-neutral, $color-background-dark, 8%)};
+		--color-surface-container-lowest: #{color.mix($color-seed-neutral, $color-background-dark, 2%)};
+		--color-surface-container-low: #{color.mix($color-seed-neutral, $color-background-dark, 10%)};
+		--color-surface-container: #{color.mix($color-seed-neutral, $color-background-dark, 15%)};
+		--color-surface-container-high: #{color.mix($color-seed-neutral, $color-background-dark, 20%)};
+		--color-surface-container-highest: #{color.mix($color-seed-neutral, $color-background-dark, 25%)};
+		--color-on-surface: #{color.mix($color-seed-neutral, $color-foreground-dark, 10%)};
+		--color-on-surface-variant: #{color.mix($color-seed-neutral, $color-foreground-dark, 25%)};
+
+		// Outline
+		--color-outline: #{color.mix($color-seed-neutral, $color-foreground-dark, 40%)};
+		--color-outline-variant: #{color.mix($color-seed-neutral, $color-background-dark, 70%)};
+	}
+}
+
+@keyframes rotate-360 {
+	from { transform: rotate(0deg); }
+	to { transform: rotate(-360deg); }
+}
+
+// ==============================================
+//	General Body and Layout
+// ==============================================
+body {
+	font-family: Roboto, RobotoDraft, Helvetica, Arial, sans-serif;
+	background-color: var(--color-surface);
+	color: var(--color-on-surface);
+	margin: 0 auto;
+	width: 100%;
+	min-width: 380px;
+	max-width: 600px;
+	padding-bottom: 100px; // Ensure the body has enough height for footer
+}
+
+div.container,
+div.details-content {
+	padding: 16px;
+}
+
+header {
+	padding: 8px 0;
+}
+
+main,
+div.container,
+div.details-content {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+footer {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	padding: 16px 0;
+	background-color: color-mix(in srgb, var(--color-surface) 80%, transparent);
+	backdrop-filter: blur(1px);
+}
+
+// ==============================================
+//	Typography
+// ==============================================
+h1 {
+	font-size: 22px;
+	font-weight: 400;
+	line-height: 28px;
+	margin: 0;
+	color: var(--color-on-surface);
+	text-align: center;
+}
+
+summary,
+button.reset-all,
+div.status {
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 20px;
+}
+
+// ==============================================
+//	Component Groups
+// ==============================================
+
+// --- Checkbox ---
+div.checkbox-group {
+	position: relative;
+
+	label {
+		display: flex;
+		align-items: center;
+		cursor: pointer;
+		padding: 8px 52px 8px 8px;
+		border-radius: $border-radius;
+		transition: $transition-background;
+
+		&:hover {
+			background-color: var(--color-surface-container-highest);
+		}
+
+		span {
+			font-size: 14px;
+			font-weight: 500;
+			line-height: 20px;
+			color: var(--color-on-surface);
+			padding-left: 12px;
+			user-select: none;
+			pointer-events: none;
+
+			&[title]::after {
+				content: " ℹ️ ";
+				font-size: 0.9em;
+				pointer-events: all;
+				cursor: help;
+			}
+		}
+	}
+
+	input[type="checkbox"] {
+		appearance: none;
+		position: relative;
+		cursor: pointer;
+		width: 18px;
+		height: 18px;
+		border: 2px solid var(--color-outline);
+		border-radius: 2px;
+		transition: $transition-all;
+		flex-shrink: 0;
+
+		&::before {
+			content: "";
+			display: block;
+			position: absolute;
+			left: 6px;
+			top: 6px;
+			width: 0;
+			height: 0;
+			border: solid var(--color-surface);
+			border-width: 0 0 2px 2px;
+			opacity: 0;
+			transform: rotate(45deg);
+			transition: $transition-all;
+		}
+
+		&:checked {
+			background-color: var(--color-primary);
+			border-color: var(--color-primary);
+
+			&::before {
+				left: 2px;
+				top: 3px;
+				width: 8px;
+				height: 4px;
+				transform: rotate(-45deg);
+				opacity: 1;
+			}
+		}
+	}
+}
+
+// --- Input & Select Fields ---
+div.input-group,
+div.select-group {
+	position: relative;
+
+	label {
+		position: absolute;
+		top: -8px;
+		left: 8px;
+		padding: 0 4px;
+		background-color: var(--color-surface);
+		transition: $transition-color;
+		pointer-events: none;
+		font-size: 12px;
+		font-weight: 400;
+		line-height: 16px;
+		color: var(--color-on-surface-variant);
+
+		&[title]::after {
+			content: " ℹ️ ";
+			font-size: 0.9em;
+			pointer-events: all;
+			cursor: help;
+		}
+	}
+
+	input[type="number"],
+	select {
+		appearance: none;
+		width: 100%;
+		box-sizing: border-box;
+		padding: 15px 52px 15px 12px;
+		outline: 1px solid var(--color-outline);
+		border: none;
+		border-radius: $border-radius;
+		background-color: transparent;
+		transition: $transition-outline;
+		font-size: 16px;
+		font-weight: 400;
+		line-height: 20px;
+		color: var(--color-on-surface);
+
+		&:hover {
+			outline-width: 2px;
+		}
+
+		&:focus {
+			outline-width: 2px;
+			outline-color: var(--color-primary);
+		}
+	}
+
+	// Focus state for labels
+	&:has(input[type="number"]:focus),
+	&:has(select:focus) {
+		label {
+			color: var(--color-primary);
+		}
+	}
+
+	// Invalid state for inputs
+	input[type="number"]:invalid {
+		outline-color: var(--color-error);
+	}
+
+	&:has(input[type="number"]:invalid) {
+		label {
+			color: var(--color-error);
+		}
+	}
+}
+
+
+// --- Select Specifics ---
+div.select-group {
+	@include dropdown-arrow(52px);
+
+	select {
+		padding-right: 92px;
+		cursor: pointer;
+
+		option {
+			background-color: var(--color-surface);
+		}
+	}
+
+	&::before {
+		pointer-events: none;
+	}
+
+	&:hover:not(:has(button.reset:hover))::before {
+		background-color: var(--color-on-surface);
+	}
+
+	&:focus-within:not(:has(button.reset:focus))::before {
+		transform: translateY(-50%) rotate(180deg);
+	}
+}
+
+
+// --- Input Specifics (Steppers) ---
+div.input-group {
+	&.has-steppers input[type="number"] {
+		padding-right: 124px;
+	}
+
+	button.stepper {
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 2.5em;
+		height: 2.5em;
+		padding: 0;
+		border: none;
+		border-radius: 50%;
+		background-color: transparent;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: $transition-background;
+		right: 52px;
+
+		&.increment + &.decrement,
+		&.decrement + &.increment {
+			right: 88px;
+		}
+
+		&:hover {
+			background-color: var(--color-surface-container-highest);
+		}
+
+		&::before {
+			content: "";
+			display: block;
+			width: 20px;
+			height: 20px;
+			background-color: var(--color-on-surface-variant);
+			mask-size: 1.5em;
+		}
+
+		&.increment::before {
+			mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath d='M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'/%3e%3c/svg%3e") no-repeat center;
+		}
+
+		&.decrement::before {
+			mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath d='M19 13H5v-2h14v2z'/%3e%3c/svg%3e") no-repeat center;
+		}
+	}
+}
+
+
+// --- Details & Summary (Dropdowns) ---
+details {
+	outline: 1px solid var(--color-outline-variant);
+	border: none;
+	border-radius: $border-radius;
+	transition: $transition-background;
+
+	&:not([open]):hover,
+	&[open] {
+		background-color: var(--color-surface-container-low);
+	}
+
+	&:not([open]):has(input:invalid) {
+		outline-color: var(--color-error);
+
+		&:hover {
+			outline-width: 2px;
+		}
+	}
+
+	div.input-group label,
+	div.select-group label {
+		background-color: var(--color-surface-container-low);
+	}
+
+	summary {
+		@include dropdown-arrow(16px);
+
+		border: none;
+		border-radius: $border-radius;
+		position: relative;
+		padding: 16px 48px 16px 16px;
+		color: var(--color-on-surface-variant);
+		cursor: pointer;
+		list-style: none;
+		user-select: none;
+		transition: $transition-color, $transition-background;
+
+		&:hover {
+			background-color: var(--color-surface-container-highest);
+			color: var(--color-on-surface);
+
+			&::before {
+				background-color: var(--color-on-surface);
+			}
+		}
+	}
+
+	&[open] > summary::before {
+		transform: translateY(-50%) rotate(180deg);
+	}
+}
+
+// --- Buttons ---
+button.reset {
+	position: absolute;
+	top: 50%;
+	right: 10px;
+	transform: translateY(-50%);
+	width: 3em;
+	height: 3em;
+	padding: 0;
+	border: none;
+	border-radius: 50%;
+	background-color: transparent;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: $transition-background;
+
+	&::before {
+		content: "";
+		display: block;
+		width: 20px;
+		height: 20px;
+		mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath d='M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z'/%3e%3c/svg%3e") no-repeat center;
+		mask-size: 1.5em;
+		background-color: var(--color-on-surface-variant);
+		transition: $transition-background;
+	}
+
+	&:hover {
+		background-color: var(--color-surface-container-highest);
+
+		&::before {
+			background-color: var(--color-error);
+		}
+	}
+}
+
+form[data-unchanged="true"] button.reset {
+	background-color: transparent;
+	cursor: not-allowed;
+
+	&::before {
+		background-color: var(--color-outline-variant);
+	}
+}
+
+button.reset-all {
+	color: var(--color-primary);
+	padding: 10px 24px;
+	outline: 1px solid var(--color-outline);
+	border: none;
+	border-radius: 100px;
+	background-color: var(--color-surface);
+	cursor: pointer;
+	transition: $transition-background, $transition-color;
+
+	&:hover {
+		color: var(--color-error);
+		background-color: var(--color-surface-container-highest);
+	}
+}
+
+
+// --- Status Message ---
+div.status {
+	padding: 4px;
+	width: 100%;
+	opacity: 0;
+	transition: $transition-opacity;
+	height: 20px;
+	text-align: center;
+	color: var(--color-on-primary-container);
+	background-color: var(--color-primary-container);
+
+	&[data-type="error"] {
+		color: var(--color-on-error-container);
+		background-color: var(--color-error-container);
+	}
+}
