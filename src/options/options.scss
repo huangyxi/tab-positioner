@@ -57,7 +57,7 @@ $color-background-dark: #000000;
 @mixin tooltip($selector: "&") {
 	#{$selector}[title]::after {
 		content: " ℹ️ ";
-		font-size: 0.9em;
+		font-size: max(12px, 0.8em);
 		pointer-events: all;
 		cursor: help;
 	}
