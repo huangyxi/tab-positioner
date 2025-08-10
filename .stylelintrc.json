@@ -2,6 +2,8 @@
 	"extends": "stylelint-config-standard-scss",
 	"rules": {
 		"color-hex-length": null,
-		"no-descending-specificity": null
+		"no-descending-specificity": null,
+		"declaration-property-value-no-unknown": true,
+		"no-unknown-custom-properties": true
 	}
 }

@@ -1,4 +1,4 @@
-@use "sass:color";
+@use "sass:color" as color;
 
 // --- Variables ---
 
@@ -24,19 +24,42 @@ $color-background-light: #ffffff;
 $color-background-dark: #000000;
 
 // --- Mixins ---
-@mixin dropdown-arrow($right-position: 16px) {
-	&::before {
+@mixin dropdown-arrow(
+	$right-position: 16px,
+	$transform-selector: "&:focus",
+	$hover-selector: "&:hover",
+	$selector: "&",
+) {
+	#{$selector}::before {
 		content: "";
 		position: absolute;
 		top: 50%;
 		right: $right-position;
 		width: 24px;
 		height: 24px;
+		pointer-events: none;
 		transform: translateY(-50%) rotate(0deg);
 		background-color: var(--color-on-surface-variant);
 		mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath d='M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3e%3c/svg%3e") no-repeat center;
 		mask-size: contain;
 		transition: $transition-transform, $transition-background;
+	}
+
+	#{$transform-selector}::before {
+		transform: translateY(-50%) rotate(180deg);
+	}
+
+	#{$hover-selector}::before {
+		background-color: var(--color-on-surface);
+	}
+}
+
+@mixin tooltip($selector: "&") {
+	#{$selector}[title]::after {
+		content: " ℹ️ ";
+		font-size: 0.9em;
+		pointer-events: all;
+		cursor: help;
 	}
 }
 
@@ -56,18 +79,18 @@ $color-background-dark: #000000;
 	--color-on-error-container: #{color.mix($color-seed-error, $color-foreground-light, 90%)};
 
 	// Surface & Background
-	--color-surface: #{color.mix($color-seed-neutral, $color-background-light, 2%)};
+	--color-surface: #{color.mix($color-seed-primary, $color-background-light, 8%)};
 	--color-surface-container-lowest: #{$color-background-light};
-	--color-surface-container-low: #{color.mix($color-seed-neutral, $color-background-light, 5%)};
-	--color-surface-container: #{color.mix($color-seed-neutral, $color-background-light, 8%)};
-	--color-surface-container-high: #{color.mix($color-seed-neutral, $color-background-light, 10%)};
-	--color-surface-container-highest: #{color.mix($color-seed-neutral, $color-background-light, 12%)};
+	--color-surface-container-low: #{color.mix($color-seed-primary, $color-background-light, 11%)};
+	--color-surface-container: #{color.mix($color-seed-primary, $color-background-light, 14%)};
+	--color-surface-container-high: #{color.mix($color-seed-primary, $color-background-light, 17%)};
+	--color-surface-container-highest: #{color.mix($color-seed-primary, $color-background-light, 20%)};
 	--color-on-surface: #{color.mix($color-seed-neutral, $color-foreground-light, 30%)};
 	--color-on-surface-variant: #{color.mix($color-seed-neutral, $color-foreground-light, 60%)};
 
 	// Outline
 	--color-outline: #{color.mix($color-seed-neutral, $color-foreground-light, 50%)};
-	--color-outline-variant: #{color.mix($color-seed-neutral, $color-background-light, 20%)};
+	--color-outline-variant: #{color.mix($color-seed-neutral, $color-background-light, 30%)};
 
 	// Media Query for Dark Theme
 	@media (prefers-color-scheme: dark) {
@@ -111,6 +134,7 @@ body {
 	font-family: Roboto, RobotoDraft, Helvetica, Arial, sans-serif;
 	background-color: var(--color-surface);
 	color: var(--color-on-surface);
+	user-select: none;
 	margin: 0 auto;
 	width: 100%;
 	min-width: 380px;
@@ -159,6 +183,7 @@ h1 {
 	margin: 0;
 	color: var(--color-on-surface);
 	text-align: center;
+	cursor: default;
 }
 
 summary,
@@ -189,62 +214,56 @@ div.checkbox-group {
 			background-color: var(--color-surface-container-highest);
 		}
 
+		input[type="checkbox"] {
+			appearance: none;
+			position: relative;
+			cursor: pointer;
+			width: 18px;
+			height: 18px;
+			border: 2px solid var(--color-outline);
+			border-radius: 2px;
+			transition: $transition-all;
+			flex-shrink: 0;
+
+			&::before {
+				content: "";
+				display: block;
+				position: absolute;
+				left: 6px;
+				top: 6px;
+				width: 0;
+				height: 0;
+				border: solid var(--color-surface);
+				border-width: 0 0 2px 2px;
+				opacity: 0;
+				transform: rotate(45deg);
+				transition: $transition-all;
+			}
+
+			&:checked {
+				background-color: var(--color-primary);
+				border-color: var(--color-primary);
+
+				&::before {
+					left: 2px;
+					top: 3px;
+					width: 8px;
+					height: 4px;
+					transform: rotate(-45deg);
+					opacity: 1;
+				}
+			}
+		}
+
 		span {
 			font-size: 14px;
 			font-weight: 500;
 			line-height: 20px;
 			color: var(--color-on-surface);
 			padding-left: 12px;
-			user-select: none;
 			pointer-events: none;
 
-			&[title]::after {
-				content: " ℹ️ ";
-				font-size: 0.9em;
-				pointer-events: all;
-				cursor: help;
-			}
-		}
-	}
-
-	input[type="checkbox"] {
-		appearance: none;
-		position: relative;
-		cursor: pointer;
-		width: 18px;
-		height: 18px;
-		border: 2px solid var(--color-outline);
-		border-radius: 2px;
-		transition: $transition-all;
-		flex-shrink: 0;
-
-		&::before {
-			content: "";
-			display: block;
-			position: absolute;
-			left: 6px;
-			top: 6px;
-			width: 0;
-			height: 0;
-			border: solid var(--color-surface);
-			border-width: 0 0 2px 2px;
-			opacity: 0;
-			transform: rotate(45deg);
-			transition: $transition-all;
-		}
-
-		&:checked {
-			background-color: var(--color-primary);
-			border-color: var(--color-primary);
-
-			&::before {
-				left: 2px;
-				top: 3px;
-				width: 8px;
-				height: 4px;
-				transform: rotate(-45deg);
-				opacity: 1;
-			}
+			@include tooltip;
 		}
 	}
 }
@@ -267,12 +286,7 @@ div.select-group {
 		line-height: 16px;
 		color: var(--color-on-surface-variant);
 
-		&[title]::after {
-			content: " ℹ️ ";
-			font-size: 0.9em;
-			pointer-events: all;
-			cursor: help;
-		}
+		@include tooltip;
 	}
 
 	input[type="number"],
@@ -324,7 +338,11 @@ div.select-group {
 
 // --- Select Specifics ---
 div.select-group {
-	@include dropdown-arrow(52px);
+	@include dropdown-arrow(
+		52px,
+		"&:focus-within:not(:has(button.reset:focus))",
+		"&:hover:not(:has(button.reset:hover))",
+	);
 
 	select {
 		padding-right: 92px;
@@ -333,18 +351,6 @@ div.select-group {
 		option {
 			background-color: var(--color-surface);
 		}
-	}
-
-	&::before {
-		pointer-events: none;
-	}
-
-	&:hover:not(:has(button.reset:hover))::before {
-		background-color: var(--color-on-surface);
-	}
-
-	&:focus-within:not(:has(button.reset:focus))::before {
-		transform: translateY(-50%) rotate(180deg);
 	}
 }
 
@@ -426,9 +432,14 @@ details {
 		background-color: var(--color-surface-container-low);
 	}
 
-	summary {
-		@include dropdown-arrow(16px);
+	@include dropdown-arrow(
+		16px,
+		"&[open]>summary",
+		"summary:hover",
+		"summary"
+	);
 
+	summary {
 		border: none;
 		border-radius: $border-radius;
 		position: relative;
@@ -436,21 +447,12 @@ details {
 		color: var(--color-on-surface-variant);
 		cursor: pointer;
 		list-style: none;
-		user-select: none;
 		transition: $transition-color, $transition-background;
 
 		&:hover {
 			background-color: var(--color-surface-container-highest);
 			color: var(--color-on-surface);
-
-			&::before {
-				background-color: var(--color-on-surface);
-			}
 		}
-	}
-
-	&[open] > summary::before {
-		transform: translateY(-50%) rotate(180deg);
 	}
 }
 

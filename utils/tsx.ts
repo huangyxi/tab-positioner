@@ -4,27 +4,19 @@ import { Merge } from '@11ty/eleventy-utils';
 import 'tsx/esm';
 import { jsxToString } from 'jsx-async-runtime';
 
-function tsxCompile(inputContent: any, inputPath: any) {
-	return async function (
-		this: { defaultRenderer: (input: any) => Promise<any> },
-		data: any,
-	) {
-		const content = await this.defaultRenderer(inputContent);
-		const result = await jsxToString(content);
-		return `<!DOCTYPE html>\n${result}`;
-	};
-}
-
 interface TsxPluginOptions {
 	/** Entry points for the TSX build */
 	entries: string[];
-	/** Whether to ignore TSX files that are not entry points */
-	ignoreTsxOnly: boolean;
+	/** Banner for the output files, should be <!-- ... --> */
+	banner: string;
+	/** Whether to ignore files other than TSX that are not entry points */
+	ignoreOthers: boolean;
 }
 
 const DEFAULT_OPTIONS: TsxPluginOptions = {
 	entries: [],
-	ignoreTsxOnly: true,
+	banner: '',
+	ignoreOthers: false,
 };
 
 class TsxPlugin {
@@ -38,7 +30,8 @@ class TsxPlugin {
 
 	entries: string[];
 	inputDir: string;
-	ignoreTsxOnly: boolean;
+	banner: string;
+	ignoreOthers: boolean;
 
 	constructor(
 		elventyConfig: {
@@ -52,7 +45,8 @@ class TsxPlugin {
 		options = Merge({}, DEFAULT_OPTIONS, options);
 		this.entries = this.normalizeEntries(options.entries);
 		this.inputDir = this.getInputDirectory();
-		this.ignoreTsxOnly = options.ignoreTsxOnly;
+		this.banner = options.banner ? `${options.banner}\n` : '';
+		this.ignoreOthers = options.ignoreOthers;
 	}
 
 	private normalizeEntries(entries: string[]) {
@@ -117,10 +111,22 @@ class TsxPlugin {
 		const files = await this.walkDirectory(this.inputDir);
 		const ignores = files.filter(file => {
 			return !this.entries.includes(file)
-				&& (!this.ignoreTsxOnly || path.extname(file) === '.tsx');
+				&& (this.ignoreOthers || path.extname(file) === '.tsx');
 		});
 		return ignores;
 	}
+
+	public tsxCompile(inputContent: any, inputPath: any) {
+		const banner = this.banner;
+		return async function (
+			this: { defaultRenderer: (input: any) => Promise<any> },
+			data: any,
+		) {
+			const content = await this.defaultRenderer(inputContent);
+			const result = await jsxToString(content);
+			return `${banner}<!DOCTYPE html>\n${result}`;
+		};
+	};
 }
 
 /**
@@ -143,7 +149,7 @@ export default async function (
 	elventyConfig.addTemplateFormats('tsx');
 	elventyConfig.addExtension('tsx', {
 		key: '11ty.js',
-		compile: tsxCompile,
+		compile: plugin.tsxCompile.bind(plugin),
 	});
 	const ignores = await plugin.getIgnores();
 	for (const ignore of ignores) {

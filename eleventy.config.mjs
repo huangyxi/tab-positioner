@@ -1,4 +1,5 @@
 import { getGitInfo } from './utils/gitinfo.ts';
+import { docComments, xmlComments } from './utils/comments.ts';
 import TsxPlugin from './utils/tsx.ts';
 import ManifestPlugin from './utils/manifest.ts';
 import VitePlugin from './utils/vite.ts';
@@ -14,14 +15,18 @@ async function eleventySetup(eleventyConfig){
 	// eleventyConfig.addPassthroughCopy('**/*.css'); // Handled by Vite
 	eleventyConfig.addWatchTarget('./'); // .gitignore suppresses this
 	eleventyConfig.setWatchJavaScriptDependencies(false); // Allow `eleventy --serve` without occurring an error
+	const { version, version_name } = await getGitInfo(logger, 'minor');
+	const comments = [
+		`MIT License. ${manifest.homepage_url}`,
+		`${manifest.name} ${version_name}`,
+		`Build date: ${new Date().toISOString()}`,
+	]
 	eleventyConfig.addPlugin(TsxPlugin, {
 		entries: [
 			'./src/options/index.tsx',
 		],
-		ignoreTsxOnly: true,
+		banner: xmlComments(comments),
 	});
-
-	const { version, version_name } = await getGitInfo(logger, 'minor');
 	eleventyConfig.addPlugin(ManifestPlugin, {
 		iconInPath: './icon.svg',
 		manifestInPath: './manifest.json',
@@ -36,11 +41,7 @@ async function eleventySetup(eleventyConfig){
 			'options.css': './src/options/options.scss',
 		},
 		minify: false, // Disable minification for potential faster reviews
-		banner: `/*!`+
-			`\n * MIT License. ${manifest.homepage_url}` +
-			`\n * ${manifest.name} ${version_name}` +
-			`\n * Build date: ${datetime.toISOString()}` +
-			`\n */`,
+		banner: docComments(comments),
 		version: version_name,
 	});
 }

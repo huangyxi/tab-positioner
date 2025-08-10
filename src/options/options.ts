@@ -54,7 +54,7 @@ function setFormSetting(
 function toggleResetButton(
 	form: HTMLFormElement,
 	unchanged: boolean | undefined = undefined,
-) {
+): void {
 	const settingKey = form.id as SettingKey;
 	if (!(settingKey in DEFAULT_SETTINGS)) return;
 	const setting = getFormSetting(form);
@@ -72,6 +72,7 @@ function toggleResetButton(
 		return;
 	}
 	delete form.dataset.unchanged;
+	return;
 }
 
 function showStatus(

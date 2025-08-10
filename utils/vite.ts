@@ -1,5 +1,6 @@
 import { Merge } from '@11ty/eleventy-utils';
 import { build as viteBuild } from 'vite';
+import banner from 'vite-plugin-banner';
 
 interface VitePluginOptions {
 	/** Entry points for the Vite build */
@@ -59,10 +60,12 @@ class VitePlugin {
 							entryFileNames: '[name].js',
 							assetFileNames: '[name][extname]',
 							chunkFileNames: 'asset-[hash].js',
-							banner: this.options.banner,
 						},
 					},
 				},
+				plugins: [
+					banner(this.options.banner),
+				],
 			});
 			this.logger.logWithOptions({
 				prefix: VitePlugin.LOGGER_PREFIX,
