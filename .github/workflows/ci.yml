@@ -51,11 +51,11 @@ jobs:
       run: pnpm install
     - name: Build project
       run: |
-        pnpm run build -- --output ${{ vars.OUTDIR }}
+        pnpm run build --output ${{ vars.OUTDIR }}
     - name: Package extension
       continue-on-error: true
       run: |
-        pnpm run package -- --verbose --output ${{ vars.EXTENSION_FILENAME }} ${{ vars.OUTDIR }}
+        pnpm run package --verbose --output ${{ vars.EXTENSION_FILENAME }} ${{ vars.OUTDIR }}
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:

@@ -52,6 +52,7 @@ class VitePlugin {
 					// 'DEBUG': JSON.stringify(process.env.DEBUG),
 				},
 				build: {
+					outDir: this.directories.output,
 					emptyOutDir: false, // Keep Eleventy passthroughed files
 					minify: this.options.minify, // Disable minification for potential faster reviews
 					rollupOptions: {
