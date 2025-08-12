@@ -37,11 +37,11 @@
 	},
 	"label_foreground_link_position": {
 		"message": "When opening a link in the foreground, place it:",
-		"description": "Label for the foreground link position setting. Should match the context of option_xxx_creation. Not available in the current version."
+		"description": "Label for the setting that controls where links opened in the foreground are placed. Should match the context of option_xxx_creation."
 	},
 	"label_background_link_position": {
-		"message": "When opening a link in a new tab, place it:",
-		"description": "Label for the setting that controls where links opened in a new tab are placed, both in the foreground and background in the current version. Should match the context of option_xxx_creation."
+		"message": "When opening a link in the background, place it:",
+		"description": "Label for the setting that controls where links opened in the background are placed. Should match the context of option_xxx_creation."
 	},
 	"label_after_close_activation": {
 		"message": "After closing a tab, focus on:",

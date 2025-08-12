@@ -16,7 +16,11 @@ async function getTabCreationSetting(
 	if (isNewTabPage) {
 		settingKey = 'new_tab_position';
 	} else {
-		settingKey = 'background_link_position';
+		if (newTab.active) {
+			settingKey = 'foreground_link_position';
+		} else {
+			settingKey = 'background_link_position';
+		}
 	}
 	const settings = await SyncSettings.getInstance();
 	return {

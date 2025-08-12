@@ -8,8 +8,8 @@ const DEFAULT_VALUE = 'default';
  */
 export type SettingKey = never
 	| 'new_tab_position'
+	| 'foreground_link_position'
 	| 'background_link_position'
-	// | 'foreground_link_position'
 	| 'after_close_activation'
 	| '_tab_batch_creation_threshold_ms'
 	| '_tab_batch_activation_threshold_ms'
@@ -61,8 +61,8 @@ const TAB_ACTIVATION_POSITION_CHOICES: SettingChoices<TabActivationPosition> = {
 
 export const DEFAULT_SETTINGS = {
 	new_tab_position: DEFAULT_VALUE as TabCreationPosition,
+	foreground_link_position: DEFAULT_VALUE as TabCreationPosition,
 	background_link_position: DEFAULT_VALUE as TabCreationPosition,
-	// foreground_link_position: DEFAULT_VALUE as TabCreationPosition,
 	after_close_activation: DEFAULT_VALUE as TabActivationPosition,
 	_tab_batch_creation_threshold_ms: C.TAB_BATCH_CREATION_THRESHOLD_MS,
 	_tab_batch_activation_threshold_ms: C.TAB_BATCH_ACTIVATION_THRESHOLD_MS,
@@ -113,10 +113,11 @@ export const SETTING_SCHEMAS: SettingSchemas = {
 		type: 'choices',
 		choices: TAB_CREATION_POSITION_CHOICES,
 	},
-	// foreground_link_position: {
-	// 	i18nKey: 'label.foreground_link_position',
-	// 	choices: TAB_CREATION_POSITION_CHOICES,
-	// },
+	foreground_link_position: {
+		i18nKey: 'label_foreground_link_position',
+		type: 'choices',
+		choices: TAB_CREATION_POSITION_CHOICES,
+	},
 	background_link_position: {
 		i18nKey: 'label_background_link_position',
 		type: 'choices',
