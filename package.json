@@ -25,7 +25,7 @@
 		"sharp": "^0.34.3",
 		"stylelint": "^16.22.0",
 		"stylelint-config-standard-scss": "^15.0.1",
-		"tsx": "^4.20.3",
+		"tsx": "^4.20.4",
 		"typescript": "^5.8.3",
 		"vite": "^7.0.5",
 		"vite-plugin-banner": "^0.8.1"
