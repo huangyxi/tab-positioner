@@ -1,0 +1,89 @@
+{
+	"extensionName": {
+		"message": "Tab Positioner"
+	},
+	"extensionDescription": {
+		"message": "Elija dónde aparecen las pestañas y qué pestaña se enfoca cuando otras desaparecen."
+	},
+	"title_settings": {
+		"message": "Configuración de Tab Positioner"
+	},
+	"status_settings_saved": {
+		"message": "Configuración guardada correctamente."
+	},
+	"status_input_invalid": {
+		"message": "Entrada no válida."
+	},
+	"botton_reset_setting": {
+		"message": "Restablecer a defecto"
+	},
+	"botton_reset_all": {
+		"message": "Restablecer todo a valores predeterminados"
+	},
+	"summary_advanced_settings": {
+		"message": "Configuración avanzada"
+	},
+	"label_new_tab_position": {
+		"message": "Colocar nueva pestaña:"
+	},
+	"label_foreground_link_position": {
+		"message": "Colocar enlace en primer plano:"
+	},
+	"label_background_link_position": {
+		"message": "Colocar enlace en segundo plano:"
+	},
+	"label_after_close_activation": {
+		"message": "Después de cerrar, enfocar en:"
+	},
+	"label__tab_batch_creation_threshold_ms": {
+		"message": "Umbral para apertura en lote de pestañas (ms):"
+	},
+	"title__tab_batch_creation_threshold_ms": {
+		"message": "Define una ventana de tiempo (milisegundos) para agrupar la creación de pestañas. Las pestañas abiertas dentro de esta ventana se tratan como un solo lote, preservando el orden y los grupos (por ejemplo, al restaurar una sesión). Aumente este valor en sistemas más lentos si se presentan problemas de orden."
+	},
+	"label__tab_batch_activation_threshold_ms": {
+		"message": "Umbral para cierre en lote de pestañas (ms):"
+	},
+	"title__tab_batch_activation_threshold_ms": {
+		"message": "Define una ventana de tiempo (milisegundos) para agrupar el cierre de pestañas. Las pestañas cerradas dentro de esta ventana se tratan como un solo lote, evitando acciones redundantes y mejorando el rendimiento. Aumente este valor en sistemas más lentos si es necesario."
+	},
+	"label__persistent_background": {
+		"message": "Mantener activo el Service Worker en segundo plano"
+	},
+	"title__persistent_background": {
+		"message": "Evita que el navegador suspenda el service worker de la extensión tras inactividad (≈30 segundos), asegurando que las reglas de posicionamiento de pestañas se apliquen de forma constante. Actívelo si experimenta problemas con el posicionamiento de pestañas después de un tiempo."
+	},
+	"label__debug_mode": {
+		"message": "Habilitar salida de depuración en la consola de la extensión"
+	},
+	"option_default": {
+		"message": "Predeterminado"
+	},
+	"option_before_active_creation": {
+		"message": "Antes de la pestaña activa"
+	},
+	"option_after_active_creation": {
+		"message": "Después de la pestaña activa"
+	},
+	"option_window_first_creation": {
+		"message": "Al principio"
+	},
+	"option_window_last_creation": {
+		"message": "Al final"
+	},
+	"option_before_removed_activation": {
+		"message": "La pestaña de la izquierda"
+	},
+	"option_after_removed_activation": {
+		"message": "La pestaña de la derecha"
+	},
+	"option_window_first_activation": {
+		"message": "La primera pestaña"
+	},
+	"option_window_last_activation": {
+		"message": "La última pestaña"
+	},
+	"option_activation_history_activation": {
+		"message": "La pestaña enfocada previamente"
+	}
+}

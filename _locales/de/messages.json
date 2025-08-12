@@ -1,0 +1,89 @@
+{
+	"extensionName": {
+		"message": "Tab Positioner"
+	},
+	"extensionDescription": {
+		"message": "Wählen Sie, wo Registerkarten erscheinen, und welche Registerkarte fokussiert wird, wenn andere verschwinden."
+	},
+	"title_settings": {
+		"message": "Tab Positioner Einstellungen"
+	},
+	"status_settings_saved": {
+		"message": "Einstellungen erfolgreich gespeichert."
+	},
+	"status_input_invalid": {
+		"message": "Ungültige Eingabe."
+	},
+	"botton_reset_setting": {
+		"message": "Auf Standard zurücksetzen"
+	},
+	"botton_reset_all": {
+		"message": "Alle auf Standard zurücksetzen"
+	},
+	"summary_advanced_settings": {
+		"message": "Erweiterte Einstellungen"
+	},
+	"label_new_tab_position": {
+		"message": "Neue Tab-Seite platzieren:"
+	},
+	"label_foreground_link_position": {
+		"message": "Link im Vordergrund platzieren:"
+	},
+	"label_background_link_position": {
+		"message": "Link im Hintergrund platzieren:"
+	},
+	"label_after_close_activation": {
+		"message": "Nach Schließen, Fokus auf:"
+	},
+	"label__tab_batch_creation_threshold_ms": {
+		"message": "Schwellenwert für Tab-Stapelerstellung (ms):"
+	},
+	"title__tab_batch_creation_threshold_ms": {
+		"message": "Definiert ein Zeitfenster (Millisekunden) für das Stapeln der Tab-Erstellung. Innerhalb dieses Zeitfensters geöffnete Tabs werden als eine Gruppe behandelt, wodurch Reihenfolge und Gruppen beibehalten werden (z. B. beim Sitzungswiederherstellen). Erhöhen Sie diesen Wert auf langsameren Systemen, wenn Reihenfolgeprobleme auftreten."
+	},
+	"label__tab_batch_activation_threshold_ms": {
+		"message": "Schwellenwert für Tab-Stapelschließen (ms):"
+	},
+	"title__tab_batch_activation_threshold_ms": {
+		"message": "Definiert ein Zeitfenster (Millisekunden) für das Stapeln von Tab-Schließungen. Innerhalb dieses Zeitfensters geschlossene Tabs werden als eine Gruppe behandelt, um unnötige Aktionen zu vermeiden und die Leistung zu verbessern. Erhöhen Sie diesen Wert bei Bedarf auf langsameren Systemen."
+	},
+	"label__persistent_background": {
+		"message": "Hintergrund-Service-Worker aktiv halten"
+	},
+	"title__persistent_background": {
+		"message": "Verhindert, dass der Browser den Service-Worker der Erweiterung nach Inaktivität (≈30 Sekunden) anhält, um sicherzustellen, dass Tab-Positionierungsregeln konsistent angewendet werden. Aktivieren Sie dies, wenn Probleme mit der Tab-Positionierung nach einiger Zeit auftreten."
+	},
+	"label__debug_mode": {
+		"message": "Debug-Ausgabe in der Erweiterungskonsole aktivieren"
+	},
+	"option_default": {
+		"message": "Standardverhalten"
+	},
+	"option_before_active_creation": {
+		"message": "Vor dem aktuellen Tab (links)"
+	},
+	"option_after_active_creation": {
+		"message": "Nach dem aktuellen Tab (rechts)"
+	},
+	"option_window_first_creation": {
+		"message": "Am Anfang"
+	},
+	"option_window_last_creation": {
+		"message": "Am Ende"
+	},
+	"option_before_removed_activation": {
+		"message": "Den Tab links"
+	},
+	"option_after_removed_activation": {
+		"message": "Den Tab rechts"
+	},
+	"option_window_first_activation": {
+		"message": "Den ersten Tab"
+	},
+	"option_window_last_activation": {
+		"message": "Den letzten Tab"
+	},
+	"option_activation_history_activation": {
+		"message": "Den zuvor fokussierten Tab"
+	}
+}

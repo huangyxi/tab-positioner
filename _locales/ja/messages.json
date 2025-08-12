@@ -1,0 +1,89 @@
+{
+	"extensionName": {
+		"message": "Tab Positioner"
+	},
+	"extensionDescription": {
+		"message": "タブの表示位置と、他のタブが閉じられたときにフォーカスされるタブを選択します。"
+	},
+	"title_settings": {
+		"message": "Tab Positioner 設定"
+	},
+	"status_settings_saved": {
+		"message": "設定を保存しました。"
+	},
+	"status_input_invalid": {
+		"message": "無効な入力です。"
+	},
+	"botton_reset_setting": {
+		"message": "デフォルトに戻す"
+	},
+	"botton_reset_all": {
+		"message": "すべてデフォルトに戻す"
+	},
+	"summary_advanced_settings": {
+		"message": "詳細設定"
+	},
+	"label_new_tab_position": {
+		"message": "新しいタブページを開くときの位置："
+	},
+	"label_foreground_link_position": {
+		"message": "リンクを前面で開くときの位置："
+	},
+	"label_background_link_position": {
+		"message": "リンクを背面で開くときの位置："
+	},
+	"label_after_close_activation": {
+		"message": "タブを閉じた後にフォーカスする場所："
+	},
+	"label__tab_batch_creation_threshold_ms": {
+		"message": "タブ一括作成のしきい値 (ms)："
+	},
+	"title__tab_batch_creation_threshold_ms": {
+		"message": "タブ作成を一括処理する時間枠（ミリ秒）を定義します。この時間内に開かれたタブは1つのグループとして扱われ、順序やグループが保持されます（例：セッション復元時）。順序の問題が発生する場合は、動作の遅いシステムでこの値を増やしてください。"
+	},
+	"label__tab_batch_activation_threshold_ms": {
+		"message": "タブ一括閉鎖のしきい値 (ms)："
+	},
+	"title__tab_batch_activation_threshold_ms": {
+		"message": "タブ閉鎖を一括処理する時間枠（ミリ秒）を定義します。この時間内に閉じられたタブは1つのグループとして扱われ、不要な処理を防ぎ、パフォーマンスを向上させます。必要に応じて、動作の遅いシステムでこの値を増やしてください。"
+	},
+	"label__persistent_background": {
+		"message": "バックグラウンド Service Worker を有効に保つ"
+	},
+	"title__persistent_background": {
+		"message": "拡張機能のサービスワーカーが非アクティブ状態（約30秒）でブラウザにより停止されるのを防ぎ、タブ位置のルールが一貫して適用されるようにします。しばらく経ってからタブ位置が正しく適用されない場合は有効にしてください。"
+	},
+	"label__debug_mode": {
+		"message": "拡張機能コンソールでデバッグ出力を有効化"
+	},
+	"option_default": {
+		"message": "デフォルトの動作"
+	},
+	"option_before_active_creation": {
+		"message": "現在のタブの前（左）"
+	},
+	"option_after_active_creation": {
+		"message": "現在のタブの後（右）"
+	},
+	"option_window_first_creation": {
+		"message": "先頭"
+	},
+	"option_window_last_creation": {
+		"message": "末尾"
+	},
+	"option_before_removed_activation": {
+		"message": "左のタブ"
+	},
+	"option_after_removed_activation": {
+		"message": "右のタブ"
+	},
+	"option_window_first_activation": {
+		"message": "最初のタブ"
+	},
+	"option_window_last_activation": {
+		"message": "最後のタブ"
+	},
+	"option_activation_history_activation": {
+		"message": "以前フォーカスしていたタブ"
+	}
+}

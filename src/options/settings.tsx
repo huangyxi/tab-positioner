@@ -70,6 +70,7 @@ function BooleanSetting({
 					/>
 					{/* <span class="checkbox-visual"></span> */}
 					<span
+						{..._a(setting.i18nKey)}
 						{..._st(settingKey)}
 					>
 						{_(setting.i18nKey)}

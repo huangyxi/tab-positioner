@@ -1,0 +1,89 @@
+{
+	"extensionName": {
+		"message": "Tab Positioner"
+	},
+	"extensionDescription": {
+		"message": "Choisissez où les onglets apparaissent et quel onglet est sélectionné lorsque d'autres disparaissent."
+	},
+	"title_settings": {
+		"message": "Paramètres de Tab Positioner"
+	},
+	"status_settings_saved": {
+		"message": "Paramètres enregistrés avec succès."
+	},
+	"status_input_invalid": {
+		"message": "Entrée invalide."
+	},
+	"botton_reset_setting": {
+		"message": "Réinitialiser par défaut"
+	},
+	"botton_reset_all": {
+		"message": "Tout réinitialiser par défaut"
+	},
+	"summary_advanced_settings": {
+		"message": "Paramètres avancés"
+	},
+	"label_new_tab_position": {
+		"message": "Nouvel onglet placé :"
+	},
+	"label_foreground_link_position": {
+		"message": "Lien au premier plan placé :"
+	},
+	"label_background_link_position": {
+		"message": "Lien ouvert en arrière-plan placé :"
+	},
+	"label_after_close_activation": {
+		"message": "Après fermeture, focus sur :"
+	},
+	"label__tab_batch_creation_threshold_ms": {
+		"message": "Seuil d'ouverture groupée d'onglets (ms) :"
+	},
+	"title__tab_batch_creation_threshold_ms": {
+		"message": "Définit une fenêtre temporelle (en millisecondes) pour regrouper les créations d'onglets. Les onglets ouverts dans cette fenêtre sont traités comme un seul groupe, préservant l'ordre et les ensembles (par exemple, lors de la restauration de session). Augmentez cette valeur sur les systèmes plus lents si des problèmes d'ordre surviennent."
+	},
+	"label__tab_batch_activation_threshold_ms": {
+		"message": "Seuil de fermeture groupée d'onglets (ms) :"
+	},
+	"title__tab_batch_activation_threshold_ms": {
+		"message": "Définit une fenêtre temporelle (en millisecondes) pour regrouper les fermetures d'onglets. Les onglets fermés dans cette fenêtre sont traités comme un seul groupe, évitant les actions redondantes et améliorant les performances. Augmentez cette valeur sur les systèmes plus lents si nécessaire."
+	},
+	"label__persistent_background": {
+		"message": "Maintenir le service worker en arrière-plan actif"
+	},
+	"title__persistent_background": {
+		"message": "Empêche le navigateur de suspendre le service worker de l’extension après une inactivité (≈30 secondes), garantissant que les règles de positionnement des onglets soient appliquées de manière constante. Activez cette option si vous rencontrez des problèmes de positionnement des onglets après un certain temps."
+	},
+	"label__debug_mode": {
+		"message": "Activer la sortie de débogage dans la console de l’extension"
+	},
+	"option_default": {
+		"message": "Par défaut"
+	},
+	"option_before_active_creation": {
+		"message": "Avant onglet actif (gauche)"
+	},
+	"option_after_active_creation": {
+		"message": "Après onglet actif (droite)"
+	},
+	"option_window_first_creation": {
+		"message": "Au début"
+	},
+	"option_window_last_creation": {
+		"message": "À la fin"
+	},
+	"option_before_removed_activation": {
+		"message": "L’onglet de gauche"
+	},
+	"option_after_removed_activation": {
+		"message": "L’onglet de droite"
+	},
+	"option_window_first_activation": {
+		"message": "Le premier onglet"
+	},
+	"option_window_last_activation": {
+		"message": "Le dernier onglet"
+	},
+	"option_activation_history_activation": {
+		"message": "L’onglet précédemment sélectionné"
+	}
+}

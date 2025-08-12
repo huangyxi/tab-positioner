@@ -1,0 +1,89 @@
+{
+	"extensionName": {
+		"message": "Tab Positioner"
+	},
+	"extensionDescription": {
+		"message": "Scegli dove appaiono le schede e quale scheda viene messa a fuoco quando le altre scompaiono."
+	},
+	"title_settings": {
+		"message": "Impostazioni di Tab Positioner"
+	},
+	"status_settings_saved": {
+		"message": "Impostazioni salvate correttamente."
+	},
+	"status_input_invalid": {
+		"message": "Input non valido."
+	},
+	"botton_reset_setting": {
+		"message": "Ripristina predefinito"
+	},
+	"botton_reset_all": {
+		"message": "Ripristina predefiniti"
+	},
+	"summary_advanced_settings": {
+		"message": "Impostazioni avanzate"
+	},
+	"label_new_tab_position": {
+		"message": "Posizionare nuova scheda:"
+	},
+	"label_foreground_link_position": {
+		"message": "Posizionare link in primo piano:"
+	},
+	"label_background_link_position": {
+		"message": "Posizionare link in secondo piano:"
+	},
+	"label_after_close_activation": {
+		"message": "Dopo chiusura, focus su:"
+	},
+	"label__tab_batch_creation_threshold_ms": {
+		"message": "Soglia per apertura in batch di schede (ms):"
+	},
+	"title__tab_batch_creation_threshold_ms": {
+		"message": "Definisce una finestra temporale (millisecondi) per raggruppare le aperture di schede. Le schede aperte entro questa finestra vengono trattate come un unico gruppo, preservando ordine e gruppi (ad es. durante il ripristino della sessione). Aumentare questo valore su sistemi più lenti se si verificano problemi di ordinamento."
+	},
+	"label__tab_batch_activation_threshold_ms": {
+		"message": "Soglia per chiusura in batch di schede (ms):"
+	},
+	"title__tab_batch_activation_threshold_ms": {
+		"message": "Definisce una finestra temporale (millisecondi) per raggruppare le chiusure di schede. Le schede chiuse entro questa finestra vengono trattate come un unico gruppo, evitando azioni ridondanti e migliorando le prestazioni. Aumentare questo valore su sistemi più lenti se necessario."
+	},
+	"label__persistent_background": {
+		"message": "Mantieni attivo il service worker in background"
+	},
+	"title__persistent_background": {
+		"message": "Impedisce al browser di sospendere il service worker dell'estensione dopo inattività (≈30 secondi), garantendo che le regole di posizionamento delle schede vengano applicate in modo coerente. Abilitare se si riscontrano problemi di posizionamento dopo un po’ di tempo."
+	},
+	"label__debug_mode": {
+		"message": "Abilita output di debug nella console dell'estensione"
+	},
+	"option_default": {
+		"message": "Predefinito"
+	},
+	"option_before_active_creation": {
+		"message": "Prima della scheda attiva"
+	},
+	"option_after_active_creation": {
+		"message": "Dopo la scheda attiva"
+	},
+	"option_window_first_creation": {
+		"message": "All'inizio"
+	},
+	"option_window_last_creation": {
+		"message": "Alla fine"
+	},
+	"option_before_removed_activation": {
+		"message": "La scheda a sinistra"
+	},
+	"option_after_removed_activation": {
+		"message": "La scheda a destra"
+	},
+	"option_window_first_activation": {
+		"message": "La prima scheda"
+	},
+	"option_window_last_activation": {
+		"message": "L'ultima scheda"
+	},
+	"option_activation_history_activation": {
+		"message": "La scheda precedentemente messa a fuoco"
+	}
+}

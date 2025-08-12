@@ -1,22 +1,22 @@
 {
 	"extensionName": {
 		"message": "Tab Positioner",
-		"description": "The name of the extension."
+		"description": "The name of the extension. Should not be localized, as it is a proper noun. This applies to all other message keys as well."
 	},
 	"extensionDescription": {
-		"message": "Choose where tabs appear, and what happens when they disappear.",
+		"message": "Choose where tabs appear, and which tab is focused when others disappear.",
 		"description": "The description of the extension."
 	},
 	"title_settings": {
 		"message": "Tab Positioner Settings",
-		"description": "Title for the options page."
+		"description": "Title for both the popup and the options page."
 	},
 	"status_settings_saved": {
 		"message": "Settings saved successfully.",
 		"description": "Status message shown when settings are saved."
 	},
 	"status_input_invalid": {
-		"message": "Input is invalid.",
+		"message": "Invalid input.",
 		"description": "Status message shown when a setting input is invalid."
 	},
 	"botton_reset_setting": {
@@ -32,60 +32,60 @@
 		"description": "Label for the advanced settings section."
 	},
 	"label_new_tab_position": {
-		"message": "When opening the 'New Tab' page, place it:",
-		"description": "Label for the setting that controls where chrome://newtab pages are opened. Should match the context of option_xxx_creation."
+		"message": "When opening the New Tab page, place it:",
+		"description": "Label for the setting that controls where chrome://newtab pages are opened. Should match the context of option_xxx_creation. As short as possible, but still clear."
 	},
 	"label_foreground_link_position": {
 		"message": "When opening a link in the foreground, place it:",
-		"description": "Label for the setting that controls where links opened in the foreground are placed. Should match the context of option_xxx_creation."
+		"description": "Label for the setting that controls where links opened in the foreground are placed. Should match the context of option_xxx_creation. As short as possible, but still clear."
 	},
 	"label_background_link_position": {
 		"message": "When opening a link in the background, place it:",
-		"description": "Label for the setting that controls where links opened in the background are placed. Should match the context of option_xxx_creation."
+		"description": "Label for the setting that controls where links opened in the background are placed. Should match the context of option_xxx_creation. As short as possible, but still clear."
 	},
 	"label_after_close_activation": {
 		"message": "After closing a tab, focus on:",
-		"description": "Label for the setting that controls which tab receives focus after another is closed. Should match the context of option_xxx_activation."
+		"description": "Label for the setting that controls which tab receives focus after another is closed. Should match the context of option_xxx_activation. As short as possible, but still clear."
 	},
 	"label__tab_batch_creation_threshold_ms": {
-		"message": "Batch open threshold (ms):",
-		"description": "Input prompt for the time interval threshold for batch opening tabs."
+		"message": "Batch tab open threshold (ms):",
+		"description": "Input prompt for the time interval (in milliseconds) used to group newly opened tabs. As short as possible, but still clear."
 	},
 	"title__tab_batch_creation_threshold_ms": {
-		"message": "Defines a time window (ms) for grouping new tabs. Tabs opened within this window are treated as a single batch, preserving their order (e.g., when restoring a session). A larger value may be needed on slower systems.",
+		"message": "Defines a time window (milliseconds) for batching tab creation. Tabs opened within this time window are treated as one batch, preserving order and groups (e.g., during session restore). Increase this value on slower systems if ordering issues occur.",
 		"description": "Tooltip for the tab batch creation threshold setting."
 	},
 	"label__tab_batch_activation_threshold_ms": {
-		"message": "Batch close threshold (ms):",
-		"description": "Input prompt for the time interval threshold for batch closing tabs."
+		"message": "Batch tab close threshold (ms):",
+		"description": "Input prompt for the time interval (in milliseconds) used to group tab closures. As short as possible, but still clear."
 	},
 	"title__tab_batch_activation_threshold_ms": {
-		"message": "Defines a time window (ms) for grouping tab closures. Closing multiple tabs within this window is treated as a single action, improving performance. A larger value may be needed on slower systems.",
+		"message": "Defines a time window (milliseconds) for batching tab closures. Tabs closed within this time window are treated as one batch, preventing redundant actions and improving performance. Increase this value on slower systems if needed.",
 		"description": "Tooltip for the tab batch closing threshold setting."
 	},
 	"label__persistent_background": {
-		"message": "Persistent Extension Worker",
-		"description": "Checkbox span (label) for the persistent background setting."
+		"message": "Keep Background Service Worker Active",
+		"description": "Checkbox label for the persistent background setting."
 	},
 	"title__persistent_background": {
-		"message": "Keeps the extension's service worker active. This prevents the browser from suspending it after inactivity (30 seconds), ensuring tab positioning rules are always applied correctly.",
+		"message": "Prevents the browser from suspending the extension's service worker after inactivity (≈30 seconds), ensuring tab positioning rules are applied consistently. Enable this if you experience issues with tab positioning not applying correctly after some time.",
 		"description": "Tooltip for the persistent background setting."
 	},
 	"label__debug_mode": {
-		"message": "Debug Output in Extension Console",
-		"description": "Checkbox span (label) for the debug mode setting, which enables debug output in the extension console."
+		"message": "Enable Debug Output in Extension Console",
+		"description": "Checkbox label for the debug mode setting, which enables debug output in the extension console."
 	},
 	"option_default": {
 		"message": "Default Behavior",
-		"description": "Option to use the browser's default behavior."
+		"description": "Option to use the browser's default behavior, or the default behavior of this extension."
 	},
 	"option_before_active_creation": {
 		"message": "Before the Current Tab (Left)",
-		"description": "Option to place a new tab to the left of the currently active tab."
+		"description": "Option to place a new tab immediately before the current tab (left in a horizontal tab strip)."
 	},
 	"option_after_active_creation": {
 		"message": "After the Current Tab (Right)",
-		"description": "Option to place a new tab to the right of the currently active tab."
+		"description": "Option to place a new tab immediately after the current tab (right in a horizontal tab strip)."
 	},
 	"option_window_first_creation": {
 		"message": "At the Beginning",
@@ -97,11 +97,11 @@
 	},
 	"option_before_removed_activation": {
 		"message": "The Tab to the Left",
-		"description": "Option to focus the tab to the left of the one that was just closed."
+		"description": "Option to focus the tab immediately before the one that was closed (left in a horizontal tab strip)."
 	},
 	"option_after_removed_activation": {
 		"message": "The Tab to the Right",
-		"description": "Option to focus the tab to the right of the one that was just closed."
+		"description": "Option to focus the tab immediately after the one that was closed (right in a horizontal tab strip)."
 	},
 	"option_window_first_activation": {
 		"message": "The First Tab",

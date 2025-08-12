@@ -277,14 +277,18 @@ div.select-group {
 		position: absolute;
 		top: -8px;
 		left: 8px;
+		max-width: calc(100% - 24px);
+		height: 1.5em;
 		padding: 0 4px;
+		text-wrap: nowrap;
 		background-color: var(--color-surface);
 		transition: $transition-color;
 		pointer-events: none;
 		font-size: 12px;
 		font-weight: 400;
-		line-height: 16px;
 		color: var(--color-on-surface-variant);
+		overflow: hidden;
+		text-overflow: ellipsis;
 
 		@include tooltip;
 	}
@@ -347,6 +351,8 @@ div.select-group {
 	select {
 		padding-right: 92px;
 		cursor: pointer;
+		overflow: hidden;
+		text-overflow: ellipsis;
 
 		option {
 			background-color: var(--color-surface);

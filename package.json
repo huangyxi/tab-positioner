@@ -8,7 +8,8 @@
 		"lint": "npm-run-all --continue-on-error lint:*",
 		"lint:editorconfig": "editorconfig-checker",
 		"lint:css": "stylelint 'src/**/*.scss'",
-		"lint:ts": "tsc --noEmit"
+		"lint:ts": "tsc --noEmit",
+		"lint:locales": "node scripts/locales.ts"
 	},
 	"type": "module",
 	"devDependencies": {

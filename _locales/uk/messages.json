@@ -1,0 +1,89 @@
+{
+	"extensionName": {
+		"message": "Tab Positioner"
+	},
+	"extensionDescription": {
+		"message": "Виберіть, де відображаються вкладки та яка вкладка активується, коли інші зникають."
+	},
+	"title_settings": {
+		"message": "Налаштування Tab Positioner"
+	},
+	"status_settings_saved": {
+		"message": "Налаштування успішно збережено."
+	},
+	"status_input_invalid": {
+		"message": "Неприпустимий ввід."
+	},
+	"botton_reset_setting": {
+		"message": "Скинути до стандартних"
+	},
+	"botton_reset_all": {
+		"message": "Скинути всі до стандартних"
+	},
+	"summary_advanced_settings": {
+		"message": "Розширені налаштування"
+	},
+	"label_new_tab_position": {
+		"message": "Розміщувати нову вкладку:"
+	},
+	"label_foreground_link_position": {
+		"message": "Розміщувати посилання (передній план):"
+	},
+	"label_background_link_position": {
+		"message": "Розміщувати посилання (фон):"
+	},
+	"label_after_close_activation": {
+		"message": "Після закриття фокус на:"
+	},
+	"label__tab_batch_creation_threshold_ms": {
+		"message": "Поріг групового відкриття вкладок (мс):"
+	},
+	"title__tab_batch_creation_threshold_ms": {
+		"message": "Визначає часовий проміжок (мілісекунди) для групування відкриття вкладок. Вкладки, відкриті в цей проміжок, вважаються однією групою, зберігаючи порядок і групи (наприклад, при відновленні сесії). Збільшуйте це значення на повільних системах, якщо виникають проблеми з порядком."
+	},
+	"label__tab_batch_activation_threshold_ms": {
+		"message": "Поріг групового закриття вкладок (мс):"
+	},
+	"title__tab_batch_activation_threshold_ms": {
+		"message": "Визначає часовий проміжок (мілісекунди) для групування закриття вкладок. Вкладки, закриті в цей проміжок, вважаються однією групою, що запобігає зайвим діям і покращує продуктивність. За потреби збільшуйте це значення на повільних системах."
+	},
+	"label__persistent_background": {
+		"message": "Зберігати активність фонового сервісного процесу"
+	},
+	"title__persistent_background": {
+		"message": "Запобігає призупиненню браузером сервісного процесу розширення після періоду бездіяльності (≈30 секунд), забезпечуючи послідовне застосування правил позиціонування вкладок. Увімкніть, якщо виникають проблеми з правильним застосуванням позицій вкладок після деякого часу."
+	},
+	"label__debug_mode": {
+		"message": "Увімкнути вивід відлагоджувальної інформації в консолі розширення"
+	},
+	"option_default": {
+		"message": "За замовчуванням"
+	},
+	"option_before_active_creation": {
+		"message": "Перед активною вкладкою"
+	},
+	"option_after_active_creation": {
+		"message": "Після активної вкладки"
+	},
+	"option_window_first_creation": {
+		"message": "На початку"
+	},
+	"option_window_last_creation": {
+		"message": "В кінці"
+	},
+	"option_before_removed_activation": {
+		"message": "Вкладка зліва"
+	},
+	"option_after_removed_activation": {
+		"message": "Вкладка справа"
+	},
+	"option_window_first_activation": {
+		"message": "Перша вкладка"
+	},
+	"option_window_last_activation": {
+		"message": "Остання вкладка"
+	},
+	"option_activation_history_activation": {
+		"message": "Раніше активна вкладка"
+	}
+}

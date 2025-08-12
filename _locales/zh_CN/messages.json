@@ -1,0 +1,89 @@
+{
+	"extensionName": {
+		"message": "Tab Positioner"
+	},
+	"extensionDescription": {
+		"message": "选择标签页出现的位置，以及当其他标签页消失时聚焦哪个标签页。"
+	},
+	"title_settings": {
+		"message": "Tab Positioner 设置"
+	},
+	"status_settings_saved": {
+		"message": "设置已成功保存。"
+	},
+	"status_input_invalid": {
+		"message": "输入无效。"
+	},
+	"botton_reset_setting": {
+		"message": "重置为默认"
+	},
+	"botton_reset_all": {
+		"message": "全部重置为默认"
+	},
+	"summary_advanced_settings": {
+		"message": "高级设置"
+	},
+	"label_new_tab_position": {
+		"message": "打开新标签页时，放置在："
+	},
+	"label_foreground_link_position": {
+		"message": "在前台打开链接时，放置在："
+	},
+	"label_background_link_position": {
+		"message": "在后台打开链接时，放置在："
+	},
+	"label_after_close_activation": {
+		"message": "关闭标签页后，聚焦于："
+	},
+	"label__tab_batch_creation_threshold_ms": {
+		"message": "批量打开标签页阈值（毫秒）："
+	},
+	"title__tab_batch_creation_threshold_ms": {
+		"message": "定义批量创建标签页的时间窗口（毫秒）。在此时间内打开的标签页被视为一批，保持顺序和分组（例如，恢复会话时）。如果在慢速系统上出现顺序问题，请增加此值。"
+	},
+	"label__tab_batch_activation_threshold_ms": {
+		"message": "批量关闭标签页阈值（毫秒）："
+	},
+	"title__tab_batch_activation_threshold_ms": {
+		"message": "定义批量关闭标签页的时间窗口（毫秒）。在此时间内关闭的标签页被视为一批，避免冗余操作并提升性能。需要时请在慢速系统上增加此值。"
+	},
+	"label__persistent_background": {
+		"message": "保持后台服务工作者活动"
+	},
+	"title__persistent_background": {
+		"message": "防止浏览器在扩展程序服务工作者闲置约30秒后挂起，确保标签页定位规则始终生效。如遇标签页定位规则长时间未正确应用，请启用此项。"
+	},
+	"label__debug_mode": {
+		"message": "在扩展程序控制台启用调试输出"
+	},
+	"option_default": {
+		"message": "默认行为"
+	},
+	"option_before_active_creation": {
+		"message": "当前标签页前（左侧）"
+	},
+	"option_after_active_creation": {
+		"message": "当前标签页后（右侧）"
+	},
+	"option_window_first_creation": {
+		"message": "最前面"
+	},
+	"option_window_last_creation": {
+		"message": "最后面"
+	},
+	"option_before_removed_activation": {
+		"message": "左侧标签页"
+	},
+	"option_after_removed_activation": {
+		"message": "右侧标签页"
+	},
+	"option_window_first_activation": {
+		"message": "第一个标签页"
+	},
+	"option_window_last_activation": {
+		"message": "最后一个标签页"
+	},
+	"option_activation_history_activation": {
+		"message": "之前聚焦的标签页"
+	}
+}

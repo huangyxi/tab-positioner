@@ -1,0 +1,89 @@
+{
+	"extensionName": {
+		"message": "Tab Positioner"
+	},
+	"extensionDescription": {
+		"message": "選擇分頁出現的位置，以及當其他分頁消失時聚焦哪一個分頁。"
+	},
+	"title_settings": {
+		"message": "Tab Positioner 設定"
+	},
+	"status_settings_saved": {
+		"message": "設定已成功儲存。"
+	},
+	"status_input_invalid": {
+		"message": "輸入無效。"
+	},
+	"botton_reset_setting": {
+		"message": "重設為預設值"
+	},
+	"botton_reset_all": {
+		"message": "全部重設為預設值"
+	},
+	"summary_advanced_settings": {
+		"message": "進階設定"
+	},
+	"label_new_tab_position": {
+		"message": "開啟新分頁時，放置於："
+	},
+	"label_foreground_link_position": {
+		"message": "在前景開啟連結時，放置於："
+	},
+	"label_background_link_position": {
+		"message": "在背景開啟連結時，放置於："
+	},
+	"label_after_close_activation": {
+		"message": "關閉分頁後，焦點移至："
+	},
+	"label__tab_batch_creation_threshold_ms": {
+		"message": "分頁批次開啟閾值（毫秒）："
+	},
+	"title__tab_batch_creation_threshold_ms": {
+		"message": "定義分頁批次開啟的時間視窗（毫秒）。在此時間內開啟的分頁視為同一批次，保持順序和群組（例如，會話還原時）。若在較慢系統上發生順序問題，請增加此值。"
+	},
+	"label__tab_batch_activation_threshold_ms": {
+		"message": "分頁批次關閉閾值（毫秒）："
+	},
+	"title__tab_batch_activation_threshold_ms": {
+		"message": "定義分頁批次關閉的時間視窗（毫秒）。在此時間內關閉的分頁視為同一批次，可避免冗餘操作並提升效能。必要時於較慢系統增加此值。"
+	},
+	"label__persistent_background": {
+		"message": "保持背景服務工作者活躍"
+	},
+	"title__persistent_background": {
+		"message": "防止瀏覽器在擴充功能服務工作者閒置約30秒後掛起，確保分頁定位規則持續生效。若遇分頁定位規則無法正確應用，請啟用此項。"
+	},
+	"label__debug_mode": {
+		"message": "於擴充功能主控台啟用除錯輸出"
+	},
+	"option_default": {
+		"message": "預設行為"
+	},
+	"option_before_active_creation": {
+		"message": "在目前分頁前（左側）"
+	},
+	"option_after_active_creation": {
+		"message": "在目前分頁後（右側）"
+	},
+	"option_window_first_creation": {
+		"message": "最前方"
+	},
+	"option_window_last_creation": {
+		"message": "最後方"
+	},
+	"option_before_removed_activation": {
+		"message": "左側分頁"
+	},
+	"option_after_removed_activation": {
+		"message": "右側分頁"
+	},
+	"option_window_first_activation": {
+		"message": "第一個分頁"
+	},
+	"option_window_last_activation": {
+		"message": "最後一個分頁"
+	},
+	"option_activation_history_activation": {
+		"message": "先前焦點分頁"
+	}
+}
