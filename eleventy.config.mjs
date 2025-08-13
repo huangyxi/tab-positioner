@@ -22,6 +22,13 @@ async function eleventySetup(eleventyConfig){
 		`${manifest.name} ${version_name}`,
 		`Build date: ${datetime}`,
 	]
+	if (true
+		&& process.env.GITHUB_SERVER_URL
+		&& process.env.GITHUB_REPOSITORY
+		&& process.env.GITHUB_RUN_ID
+	) {
+		comments.push(`GitHub Actions Build URI: ${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`);
+	}
 	eleventyConfig.addPlugin(TsxPlugin, {
 		entries: [
 			'./src/options/index.tsx',
