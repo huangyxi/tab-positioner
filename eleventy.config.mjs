@@ -16,10 +16,11 @@ async function eleventySetup(eleventyConfig){
 	eleventyConfig.addWatchTarget('./'); // .gitignore suppresses this
 	eleventyConfig.setWatchJavaScriptDependencies(false); // Allow `eleventy --serve` without occurring an error
 	const { version, version_name } = await getGitInfo(logger, 'minor');
+	const datetime = new Date().toISOString();
 	const comments = [
 		`MIT License. ${manifest.homepage_url}`,
 		`${manifest.name} ${version_name}`,
-		`Build date: ${new Date().toISOString()}`,
+		`Build date: ${datetime}`,
 	]
 	eleventyConfig.addPlugin(TsxPlugin, {
 		entries: [
@@ -33,7 +34,6 @@ async function eleventySetup(eleventyConfig){
 		version: version,
 		version_name: version_name,
 	});
-	const datetime = new Date();
 	eleventyConfig.addPlugin(VitePlugin, {
 		entries: {
 			'background': './src/background/main.ts',
