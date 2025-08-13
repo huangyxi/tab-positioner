@@ -48,10 +48,10 @@
 		"message": "定义批量关闭标签页的时间窗口（毫秒）。在此时间内关闭的标签页被视为一批，避免冗余操作并提升性能。需要时请在慢速系统上增加此值。"
 	},
 	"label__persistent_background": {
-		"message": "保持后台服务工作者活动"
+		"message": "保持后台 Service Worker 活动"
 	},
 	"title__persistent_background": {
-		"message": "防止浏览器在扩展程序服务工作者闲置约30秒后挂起，确保标签页定位规则始终生效。如遇标签页定位规则长时间未正确应用，请启用此项。"
+		"message": "防止浏览器在约30秒无操作后暂停扩展程序的 Service Worker，确保标签页定位规则始终生效。如果在一段时间后遇到延迟或定位问题，请尝试启用此设置。"
 	},
 	"label__debug_mode": {
 		"message": "在扩展程序控制台启用调试输出"

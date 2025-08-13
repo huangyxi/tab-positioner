@@ -48,10 +48,10 @@
 		"message": "Definiert ein Zeitfenster (Millisekunden) für das Stapeln von Tab-Schließungen. Innerhalb dieses Zeitfensters geschlossene Tabs werden als eine Gruppe behandelt, um unnötige Aktionen zu vermeiden und die Leistung zu verbessern. Erhöhen Sie diesen Wert bei Bedarf auf langsameren Systemen."
 	},
 	"label__persistent_background": {
-		"message": "Hintergrund-Service-Worker aktiv halten"
+		"message": "Hintergrund-Service Worker aktiv halten"
 	},
 	"title__persistent_background": {
-		"message": "Verhindert, dass der Browser den Service-Worker der Erweiterung nach Inaktivität (≈30 Sekunden) anhält, um sicherzustellen, dass Tab-Positionierungsregeln konsistent angewendet werden. Aktivieren Sie dies, wenn Probleme mit der Tab-Positionierung nach einiger Zeit auftreten."
+		"message": "Verhindert, dass der Browser den Service Worker der Erweiterung nach etwa 30 Sekunden Inaktivität anhält, um sicherzustellen, dass Tab-Positionierungsregeln immer angewendet werden. Aktivieren Sie diese Einstellung, wenn Sie Verzögerungen oder Probleme mit der Tab-Positionierung nach einiger Zeit feststellen."
 	},
 	"label__debug_mode": {
 		"message": "Debug-Ausgabe in der Erweiterungskonsole aktivieren"

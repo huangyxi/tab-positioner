@@ -48,10 +48,10 @@
 		"message": "定義分頁批次關閉的時間視窗（毫秒）。在此時間內關閉的分頁視為同一批次，可避免冗餘操作並提升效能。必要時於較慢系統增加此值。"
 	},
 	"label__persistent_background": {
-		"message": "保持背景服務工作者活躍"
+		"message": "保持背景 Service Worker 活動"
 	},
 	"title__persistent_background": {
-		"message": "防止瀏覽器在擴充功能服務工作者閒置約30秒後掛起，確保分頁定位規則持續生效。若遇分頁定位規則無法正確應用，請啟用此項。"
+		"message": "防止瀏覽器在約30秒無操作後暫停擴充功能的 Service Worker，確保分頁定位規則始終生效。若在一段時間後出現延遲或定位問題，請嘗試啟用此設定。"
 	},
 	"label__debug_mode": {
 		"message": "於擴充功能主控台啟用除錯輸出"

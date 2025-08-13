@@ -51,7 +51,7 @@
 		"message": "Mantener activo el Service Worker en segundo plano"
 	},
 	"title__persistent_background": {
-		"message": "Evita que el navegador suspenda el service worker de la extensión tras inactividad (≈30 segundos), asegurando que las reglas de posicionamiento de pestañas se apliquen de forma constante. Actívelo si experimenta problemas con el posicionamiento de pestañas después de un tiempo."
+		"message": "Evita que el navegador suspenda el Service Worker de la extensión tras unos 30 segundos de inactividad, asegurando que las reglas de posicionamiento de pestañas se apliquen siempre. Activa esta opción si experimentas retrasos o problemas con el posicionamiento de pestañas después de un tiempo."
 	},
 	"label__debug_mode": {
 		"message": "Habilitar salida de depuración en la consola de la extensión"

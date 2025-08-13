@@ -64,15 +64,15 @@
 		"description": "Tooltip for the tab batch closing threshold setting."
 	},
 	"label__persistent_background": {
-		"message": "Keep Background Service Worker Active",
-		"description": "Checkbox label for the persistent background setting."
+		"message": "Keep background Service Worker active",
+		"description": "Checkbox label for the persistent background setting. Service Worker is a technical term that should not be localized, as it refers to a specific feature of the extension."
 	},
 	"title__persistent_background": {
-		"message": "Prevents the browser from suspending the extension's service worker after inactivity (≈30 seconds), ensuring tab positioning rules are applied consistently. Enable this if you experience issues with tab positioning not applying correctly after some time.",
-		"description": "Tooltip for the persistent background setting."
+		"message": "Prevents the browser from suspending the extension's Service Worker after about 30 seconds of inactivity, ensuring tab positioning rules are always applied. Try enabling this setting if you experience delays or issues with tab positioning after some time.",
+		"description": "Tooltip for the persistent background setting. After about 30 seconds of extension inactivity (i.e., no tab event listeners are triggered), the browser suspends the extension's Service Worker to save resources. This clears all in-memory tab data. The next time a tab event occurs, the extension must restore its state, which can cause a delay or race condition that prevents tab positioning rules from being applied correctly."
 	},
 	"label__debug_mode": {
-		"message": "Enable Debug Output in Extension Console",
+		"message": "Enable debug output in the extension console",
 		"description": "Checkbox label for the debug mode setting, which enables debug output in the extension console."
 	},
 	"option_default": {
@@ -89,11 +89,11 @@
 	},
 	"option_window_first_creation": {
 		"message": "At the Beginning",
-		"description": "Option to place a new tab at the beginning of the tab strip."
+		"description": "Option to place a new tab at the beginning of the tab strip in the current window."
 	},
 	"option_window_last_creation": {
 		"message": "At the End",
-		"description": "Option to place a new tab at the end of the tab strip."
+		"description": "Option to place a new tab at the end of the tab strip in the current window."
 	},
 	"option_before_removed_activation": {
 		"message": "The Tab to the Left",
