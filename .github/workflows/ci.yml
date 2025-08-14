@@ -29,6 +29,12 @@ jobs:
         cache: 'pnpm'
     - name: Install dependencies
       run: pnpm install
+    - name: Cache editorconfig-checker binary
+      uses: actions/cache@v4
+      with:
+        key: ec-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+        path: |
+          node_modules/editorconfig-checker/bin/latest
     - name: Lint files
       run: |
         pnpm run lint
