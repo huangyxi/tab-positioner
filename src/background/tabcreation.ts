@@ -94,7 +94,9 @@ async function createdTabMover(
 				windowId: newTab.windowId,
 			});
 			if (tab?.id === tabId) {
-				console.log('  C6a. Tab active again');
+				if (DEBUG) {
+					console.log('  C6a. Tab active again');
+				}
 				tabsInfo.activateTab(tab.windowId, tabId, newIndex);
 			}
 		}

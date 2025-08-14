@@ -6,11 +6,6 @@ import { errorHandler } from '../shared/logging';
 import { KEEP_ALIVE_TIMEOUT_MS } from '../shared/constants';
 
 export let DEBUG = true;
-api.storage.sync.get(DEFAULT_SETTINGS).then((settings) => {
-	DEBUG = (settings as typeof DEFAULT_SETTINGS)['_debug_mode'] ?? true;
-}).catch((error) => {
-	console.error('Failed to get debug mode setting:', error);
-});
 
 export class SyncSettings extends SessionSingleton {
 	private settings = DEFAULT_SETTINGS;
@@ -58,12 +53,6 @@ export class SyncSettings extends SessionSingleton {
 		}
 	}
 
-	private setDebugMode() {
-		const debug = this.get('_debug_mode');
-		console.log(' syncSettings: Setting debug mode to', debug);
-		DEBUG = debug;
-	}
-
 	private async saveSettings() {
 		const settings = await loadSettings();
 		this.settings = settings;
@@ -74,11 +63,20 @@ export class SyncSettings extends SessionSingleton {
 		await saveSettings(settings);
 	}
 
+	public static async setDebugMode(debugMode?: boolean) {
+		if (debugMode === undefined) {
+			const settings = await loadSettings();
+			debugMode = settings['_debug_mode'];
+		}
+		DEBUG = debugMode;
+	}
+
 	/**
 	 * Ensures initialization after the background script starts,
 	 * when api.runtime.onStartup and api.runtime.onInstalled events are not fired after restoring from suspension or being disabled.
 	 */
 	public static async startup(apiRuntime: typeof api.runtime) {
+		this.setDebugMode();
 		const instance = await this.getInstance();
 		if (DEBUG) {
 			console.log(' syncSettings: Instance created at startup');
@@ -98,7 +96,7 @@ export class SyncSettings extends SessionSingleton {
 			}
 			const instance = await this.getInstance();
 			const debugModeKey: keyof typeof DEFAULT_SETTINGS = '_debug_mode';
-			if (debugModeKey in changes) instance.setDebugMode();
+			if (debugModeKey in changes) await this.setDebugMode(changes[debugModeKey].newValue);
 			if (DEBUG) {
 				console.log(' syncSettings: Settings changed:', changes);
 			}

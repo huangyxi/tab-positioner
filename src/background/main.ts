@@ -17,11 +17,11 @@ async function main() {
 	const apiStorage = api.storage;
 	const apiTabs = api.tabs;
 
-	SyncSettings.registerListeners(listeners, apiRuntime, apiStorage);
 	await SyncSettings.startup(apiRuntime);
+	SyncSettings.registerListeners(listeners, apiRuntime, apiStorage);
 
-	TabsInfo.registerListeners(listeners, apiRuntime, apiTabs);
 	await TabsInfo.startup(apiTabs);
+	TabsInfo.registerListeners(listeners, apiRuntime, apiTabs);
 
 	// In right order to ensure the listeners in TabsInfo are registered before others.
 	// Subsequent events may fire before earlier ones finish processing if the earlier ones take too long.
