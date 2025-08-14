@@ -31,7 +31,7 @@ export class SyncSettings extends SessionSingleton {
 		const controller = new AbortController();
 		this._keepAliveController = controller;
 		let timeout: NodeJS.Timeout;
-		let rejectFn: (reason?: any) => void = () => {};
+		let rejectFn: (reason?: any) => void = () => { };
 		controller.signal.addEventListener('abort', () => {
 			clearTimeout(timeout!);
 			rejectFn(abortException);
@@ -64,62 +64,46 @@ export class SyncSettings extends SessionSingleton {
 		DEBUG = debug;
 	}
 
+	private async saveSettings() {
+		const settings = await loadSettings();
+		this.settings = settings;
+		if (DEBUG) {
+			console.log(' syncSettings: Settings saved:', settings);
+		}
+		this.saveState();
+		await saveSettings(settings);
+	}
+
+	/**
+	 * Ensures initialization after the background script starts,
+	 * when api.runtime.onStartup and api.runtime.onInstalled events are not fired after restoring from suspension or being disabled.
+	 */
+	public static async startup(apiRuntime: typeof api.runtime) {
+		const instance = await this.getInstance();
+		if (DEBUG) {
+			console.log(' syncSettings: Instance created at startup');
+		}
+		await instance.saveSettings();
+		await instance.keepAlive(apiRuntime);
+	}
+
 	public static registerListeners(
 		listeners: Listeners,
 		apiRuntime: typeof api.runtime,
 		apiStorage: typeof api.storage,
 	) {
-		listeners.add(apiRuntime.onInstalled, async () => {
-			const instance = await this.getInstance();
-			const settings = await loadSettings();
-			instance.settings = settings;
-			instance.saveState();
-			if (DEBUG) {
-				console.log(' syncSettings: Settings loaded on install:', settings);
-			}
-			await saveSettings(settings);
-			instance.keepAlive(apiRuntime);
-		});
-
-		listeners.add(apiRuntime.onStartup, async () => {
-			const instance = await this.getInstance();
-			const settings = await loadSettings();
-			instance.settings = settings;
-			instance.saveState();
-			if (DEBUG) {
-				console.log(' syncSettings: Settings loaded on startup:', settings);
-			}
-			await saveSettings(settings);
-			instance.keepAlive(apiRuntime);
-		});
-
 		listeners.add(apiStorage.onChanged, async (changes, areaName) => {
 			if (areaName !== 'sync') {
 				return;
 			}
 			const instance = await this.getInstance();
-			const settings = await loadSettings();
-			instance.settings = settings;
 			const debugModeKey: keyof typeof DEFAULT_SETTINGS = '_debug_mode';
 			if (debugModeKey in changes) instance.setDebugMode();
-			instance.saveState();
 			if (DEBUG) {
 				console.log(' syncSettings: Settings changed:', changes);
 			}
-			await saveSettings(settings);
+			await instance.saveSettings();
 			instance.keepAlive(apiRuntime);
 		});
 	}
 }
-
-/**
- * Run in the top-level scope to ensure execution after restoring from idle.
- */
-SyncSettings.getInstance().then(instance => {
-	if (DEBUG) {
-		console.log(' syncSettings: Instance created');
-	}
-	instance.keepAlive(api.runtime);
-}).catch(error => {
-	console.error(' syncSettings: Failed to create instance:', error);
-});

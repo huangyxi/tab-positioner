@@ -234,6 +234,21 @@ export class TabsInfo extends SessionSingleton {
 		this.saveState();
 	}
 
+	/**
+	 * Ensures initialization after the background script starts,
+	 * when api.runtime.onStartup and api.runtime.onInstalled events are not fired after restoring from suspension or being disabled.
+	 */
+	public static async startup(
+		apiTabs: typeof api.tabs,
+	) {
+		const instance = await this.getInstance();
+		if (DEBUG) {
+			console.log(' tabsInfo: Instance created at startup');
+		}
+		const normalTabs = await apiTabs.query({ windowType: 'normal' });
+		await instance.initialize(normalTabs);
+	}
+
 	public static registerListeners(
 		listeners: Listeners,
 		apiRuntime: typeof api.runtime,
@@ -341,4 +356,5 @@ export class TabsInfo extends SessionSingleton {
 			await instance.initialize(normalTabs);
 		});
 	}
+
 }

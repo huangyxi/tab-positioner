@@ -6,7 +6,7 @@ import { registerTabCreatedListener } from './tabcreation';
 import { registerTabRemovedListener } from './tabactivation';
 
 
-function main() {
+async function main() {
 	if (DEBUG) {
 		console.log('Tab Positioner background script started', VERSION);
 	}
@@ -18,8 +18,10 @@ function main() {
 	const apiTabs = api.tabs;
 
 	SyncSettings.registerListeners(listeners, apiRuntime, apiStorage);
+	await SyncSettings.startup(apiRuntime);
 
 	TabsInfo.registerListeners(listeners, apiRuntime, apiTabs);
+	await TabsInfo.startup(apiTabs);
 
 	// In right order to ensure the listeners in TabsInfo are registered before others.
 	// Subsequent events may fire before earlier ones finish processing if the earlier ones take too long.
