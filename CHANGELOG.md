@@ -1,0 +1,21 @@
+- v0.4.1: Improved robustness when re-enabling the extension after it has been disabled, and refined i18n text on the settings page.
+- v0.4.0: Added support for a new setting to control foreground link position, and multiple languages including German, Spanish, French, Italian, Japanese, Korean, Ukrainian, and Chinese (Simplified/Traditional).
+- v0.3.7: Fixed an issue by adjusting the tooltip font size for better readability.
+- v0.3.6: Refined the user interface by updating CSS colors to align with Material Design specifications.
+- v0.3.5: Corrected a bug related to tab creation when the background service worker was restored from an inactive state.
+- v0.3.4: Enhanced the user experience with clearer UI text and new optional tooltips for settings.
+- v0.3.3: Introduced the ability to configure tab batch processing thresholds at runtime.
+- v0.3.2: Improved extension reliability by enabling a persistent background service worker.
+- v0.3.1: Added an internal version variable for better debugging and release management.
+- v0.3.0: Boosted performance by caching tab information and settings in the background worker.
+- v0.2.7: Updated the extension description and various in-app messages for improved clarity.
+- v0.2.6: Improved the logic for updating the index of recently used tabs.
+- v0.2.5: Refactored internal code for more stable and reliable settings synchronization.
+- v0.2.4: Fixed several critical bugs related to using the extension across multiple browser windows.
+- v0.2.3: Corrected an issue with loading the extension's configuration on browser startup.
+- v0.2.2: Internal improvements to the release process.
+- v0.2.1: Deployed a hotfix to correct the positioning of newly created tabs.
+- v0.2.0: Added initial support for intelligently activating the correct tab after another one is closed.
+- v0.1.2: Refactored the core tab-moving logic to be more robust and prevent errors.
+- v0.1.1: Fixed a bug related to internal variable context.
+- v0.1.0: Initial public release.
