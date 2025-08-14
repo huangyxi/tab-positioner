@@ -254,20 +254,6 @@ export class TabsInfo extends SessionSingleton {
 		apiRuntime: typeof api.runtime,
 		apiTabs: typeof api.tabs,
 	) {
-		listeners.add(apiRuntime.onInstalled, async () => {
-			const instance = await this.getInstance();
-			instance._hasTabActivated = true;
-			const normalTabs = await apiTabs.query({ windowType: 'normal' });
-			await instance.initialize(normalTabs);
-		});
-
-		listeners.add(apiRuntime.onStartup, async () => {
-			const instance = await this.getInstance();
-			instance._hasTabActivated = true;
-			const normalTabs = await apiTabs.query({ windowType: 'normal' });
-			await instance.initialize(normalTabs);
-		});
-
 		listeners.add(apiTabs.onCreated, async (tab) => {
 			if (false
 				|| tab.id === undefined
