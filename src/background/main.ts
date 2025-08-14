@@ -21,7 +21,7 @@ async function main() {
 	SyncSettings.registerListeners(listeners, apiRuntime, apiStorage);
 
 	await TabsInfo.startup(apiTabs);
-	TabsInfo.registerListeners(listeners, apiRuntime, apiTabs);
+	TabsInfo.registerListeners(listeners, apiTabs);
 
 	// In right order to ensure the listeners in TabsInfo are registered before others.
 	// Subsequent events may fire before earlier ones finish processing if the earlier ones take too long.

@@ -251,7 +251,6 @@ export class TabsInfo extends SessionSingleton {
 
 	public static registerListeners(
 		listeners: Listeners,
-		apiRuntime: typeof api.runtime,
 		apiTabs: typeof api.tabs,
 	) {
 		listeners.add(apiTabs.onCreated, async (tab) => {
