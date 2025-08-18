@@ -27,8 +27,8 @@ importers:
         specifier: ^6.1.0
         version: 6.1.0
       jsx-async-runtime:
-        specifier: ^1.0.3
-        version: 1.0.3
+        specifier: ^1.0.4
+        version: 1.0.4
       npm-run-all2:
         specifier: ^8.0.4
         version: 8.0.4
@@ -1117,8 +1117,8 @@ packages:
   json-schema-traverse@1.0.0:
     resolution: {integrity: sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug==}
 
-  jsx-async-runtime@1.0.3:
-    resolution: {integrity: sha512-VaykRhIYLWlX0Vra6gJjQCremJfjG6bjryzmQ3Az/4ERPLcmN5fUEo15R7DFPt0FJr+GFSY2+DboUaidsIwkkQ==}
+  jsx-async-runtime@1.0.4:
+    resolution: {integrity: sha512-advawyL6BfDRSuyzcegdaWSLbYBbLT+WwYDBPY4/5NuMo0gHC9jJjjcj8seHFbuEf1ku+OImtDPx2hgSjtNwaA==}
 
   junk@3.1.0:
     resolution: {integrity: sha512-pBxcB3LFc8QVgdggvZWyeys+hnrNWg4OcZIU/1X59k5jQdLBlCsYGRQaz234SqoRLTCgMH00fY0xRJH+F9METQ==}
@@ -2572,7 +2572,7 @@ snapshots:
 
   json-schema-traverse@1.0.0: {}
 
-  jsx-async-runtime@1.0.3: {}
+  jsx-async-runtime@1.0.4: {}
 
   junk@3.1.0: {}
 
