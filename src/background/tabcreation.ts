@@ -1,5 +1,5 @@
 import { DEBUG } from '../shared/debug';
-import type { TabCreationPositionKey } from '../shared/settings';
+import type { TabCreationPositionKey, TabCreationPosition } from '../shared/settings';
 import { NEW_PAGE_URIS, FIRST_ACTIVATION_DELAY_MS } from '../shared/constants';
 import { Listeners } from '../shared/listeners';
 import { errorHandler } from '../shared/logging';
@@ -11,7 +11,7 @@ import { TabsInfo } from './tabsinfo';
 async function getTabCreationSetting(
 	newTab: api.tabs.Tab,
 ) {
-	const isNewTabPage = NEW_PAGE_URIS.includes(newTab.pendingUrl || newTab.url || '');
+	const isNewTabPage = NEW_PAGE_URIS.includes(newTab.pendingUrl ?? newTab.url ?? '');
 	let settingKey: TabCreationPositionKey;
 	if (isNewTabPage) {
 		settingKey = 'new_tab_position';
@@ -28,6 +28,62 @@ async function getTabCreationSetting(
 		settingKey,
 		tabBatchThresholdMs: settings.get('_tab_batch_creation_threshold_ms'),
 	}
+}
+
+export async function tabMover(
+	apiTabs: typeof api.tabs,
+	tabsInfo: TabsInfo,
+	tabId: number,
+	windowId: number,
+	setting: TabCreationPosition,
+	index?: number,
+	hasLoaded: boolean = true,
+) {
+	DEBUG && console.log('  c0. Tab mover called');
+	let newIndex: number = -1;
+	const currentTab = tabsInfo.getRecentTab(windowId);
+	const currentIndex = currentTab.index;
+	switch (setting) {
+		case 'default':
+			return;
+		case 'before_active':
+			newIndex = currentIndex;
+			break;
+		case 'after_active':
+			newIndex = currentIndex + 1;
+			break;
+		case 'window_first':
+			newIndex = 0;
+			break;
+		case 'window_last':
+			newIndex = -1; // Last position
+			break;
+		default:
+			const _exhaustive: never = setting;
+	}
+	DEBUG && console.log(`  c1. New index: ${newIndex}`);
+	if (newIndex === index) return;
+	DEBUG && console.log('  c2. Moving tab');
+	try {
+		await apiTabs.move(tabId, {
+			index: newIndex,
+			windowId: windowId,
+		});
+		if (!hasLoaded) {
+			await new Promise((resolve) => setTimeout(resolve, FIRST_ACTIVATION_DELAY_MS));
+			const [tab] = await apiTabs.query({
+				active: true,
+				windowId: windowId,
+			});
+			if (tab?.id === tabId) {
+				DEBUG && console.log('  c2a. Tab active again');
+				tabsInfo.activateTab(windowId, tabId, newIndex);
+			}
+		}
+	} catch (error: any) {
+		errorHandler(error);
+	}
+	DEBUG && console.log('  c3. Tab moved');
 }
 
 async function createdTabMover(
@@ -52,60 +108,20 @@ async function createdTabMover(
 	if (delay < tabBatchThresholdMs) {
 		return;
 	}
-	const currentTab = tabsInfo.getRecent(newTab.windowId);
-	const currentIndex = currentTab.index;
 	const tabId = newTab.id;
 	if (DEBUG) {
 		console.log('  C4. Tab ID:', tabId);
 	}
 	if (!tabId || tabId === -1) return; // api.tabs.TAB_ID_NONE
-	let newIndex: number = -1; // Default to 'last'
-	switch (setting) {
-		case 'before_active':
-			newIndex = currentIndex;
-			break;
-		case 'after_active':
-			newIndex = currentIndex + 1;
-			break;
-		case 'window_first':
-			newIndex = 0;
-			break;
-		case 'window_last':
-			newIndex = -1;
-			break;
-		default:
-			const _exhaustive: never = setting;
-	}
-	if (DEBUG) {
-		console.log(`  C5. New index: ${newIndex}`);
-	}
-	if (newIndex == newTab.index) {
-		return;
-	}
-	if (DEBUG) {
-		console.log('  C6. Moving tab');
-	}
-	try {
-		await apiTabs.move(tabId, { index: newIndex });
-		if (!hasLoaded) {
-			await new Promise((resolve) => setTimeout(resolve, FIRST_ACTIVATION_DELAY_MS));
-			const [tab] = await apiTabs.query({
-				active: true,
-				windowId: newTab.windowId,
-			});
-			if (tab?.id === tabId) {
-				if (DEBUG) {
-					console.log('  C6a. Tab active again');
-				}
-				tabsInfo.activateTab(tab.windowId, tabId, newIndex);
-			}
-		}
-	} catch (error: any) {
-		errorHandler(error);
-	}
-	if (DEBUG) {
-		console.log('  C7. Tab moved');
-	}
+	await tabMover(
+		apiTabs,
+		tabsInfo,
+		tabId,
+		newTab.windowId,
+		setting,
+		newTab.index,
+		hasLoaded,
+	);
 }
 
 export async function registerTabCreatedListener(

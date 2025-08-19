@@ -33,18 +33,18 @@ async function tabRemovedActivater(
 	if (delay < tabBatchThresholdMs) {
 		return;
 	}
-	const removedTab = tabsInfo.getRemoved();
+	const removedTab = tabsInfo.getRemovedTab();
 	if (DEBUG) {
 		console.log('  R4. Removed tab:', removedTab);
 	}
 	if (tabId !== removedTab.id) return;
 	const windowId = removedTab.windowId;
-	const recentTab = tabsInfo.getRecent(windowId);
+	const recentTab = tabsInfo.getRecentTab(windowId);
 	if (DEBUG) {
 		console.log('  R5. Recent tab:', recentTab);
 	}
 	if (removedTab.id !== recentTab.id) return;
-	const currentTabs = tabsInfo.getCurrents(windowId);
+	const currentTabs = tabsInfo.getCurrentTabs(windowId);
 	if (DEBUG) {
 		console.log('  R6. Get current tabs');
 	}

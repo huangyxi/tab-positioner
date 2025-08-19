@@ -3,6 +3,7 @@ import { Listeners } from '../shared/listeners';
 import { SyncSettings } from './syncsettings';
 import { TabsInfo } from './tabsinfo';
 import { registerTabCreatedListener } from './tabcreation';
+import { registerPopupCreatedListener } from './popupcreation';
 import { registerTabRemovedListener } from './tabactivation';
 
 
@@ -17,12 +18,13 @@ function main() {
 	const apiRuntime = api.runtime;
 	const apiStorage = api.storage;
 	const apiTabs = api.tabs;
+	const apiWindows = api.windows;
 
 	SyncSettings.startup(apiRuntime); // no await here
 	SyncSettings.registerListeners(listeners, apiRuntime, apiStorage);
 
-	TabsInfo.startup(apiTabs); // no await here
-	TabsInfo.registerListeners(listeners, apiTabs);
+	TabsInfo.startup(apiTabs, apiWindows); // no await here
+	TabsInfo.registerListeners(listeners, apiTabs, apiWindows);
 
 	// In right order to ensure the listeners in TabsInfo are registered before others.
 	// Subsequent events may fire before earlier ones finish processing if the earlier ones take too long.
@@ -31,6 +33,7 @@ function main() {
 	// - Move between Windows: 1.onDetached -> 2.onDetached ( -> 1.onActivated -> 2.onActivated )
 	//   -> 1.onAttached -> 2.onAttached -> 1.onActivated -> 2.onActivated
 	registerTabCreatedListener(listeners, apiTabs);
+	registerPopupCreatedListener(listeners, apiWindows, apiTabs);
 	registerTabRemovedListener(listeners, apiTabs);
 
 	listeners.resolve();

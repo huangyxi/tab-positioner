@@ -35,6 +35,9 @@
 	"label_popup_position": {
 		"message": "Posizionare popup:"
 	},
+	"title_popup_position": {
+		"message": "⚠️ Funzione sperimentale. I popup si apriranno seguendo le stesse regole dei link, secondo l’opzione selezionata."
+	},
 	"label_after_close_activation": {
 		"message": "Dopo chiusura, focus su:"
 	},
