@@ -32,6 +32,9 @@
 	"label_background_link_position": {
 		"message": "Posizionare link in secondo piano:"
 	},
+	"label_popup_position": {
+		"message": "Posizionare popup:"
+	},
 	"label_after_close_activation": {
 		"message": "Dopo chiusura, focus su:"
 	},
@@ -70,6 +73,15 @@
 	},
 	"option_window_last_creation": {
 		"message": "Alla fine"
+	},
+	"option_new_foreground_tab_popup": {
+		"message": "Nuova scheda in primo piano"
+	},
+	"option_new_background_tab_popup": {
+		"message": "Nuova scheda in secondo piano"
+	},
+	"option_new_window_popup": {
+		"message": "Nuova finestra"
 	},
 	"option_before_removed_activation": {
 		"message": "La scheda a sinistra"

@@ -32,6 +32,9 @@
 	"label_background_link_position": {
 		"message": "Colocar enlace en segundo plano:"
 	},
+	"label_popup_position": {
+		"message": "Colocar al abrir popup:"
+	},
 	"label_after_close_activation": {
 		"message": "Después de cerrar, enfocar en:"
 	},
@@ -70,6 +73,15 @@
 	},
 	"option_window_last_creation": {
 		"message": "Al final"
+	},
+	"option_new_foreground_tab_popup": {
+		"message": "Nueva pestaña en primer plano"
+	},
+	"option_new_background_tab_popup": {
+		"message": "Nueva pestaña en segundo plano"
+	},
+	"option_new_window_popup": {
+		"message": "Nueva ventana"
 	},
 	"option_before_removed_activation": {
 		"message": "La pestaña de la izquierda"

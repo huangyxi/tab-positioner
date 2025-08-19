@@ -32,6 +32,9 @@
 	"label_background_link_position": {
 		"message": "Lien ouvert en arrière-plan placé :"
 	},
+	"label_popup_position": {
+		"message": "Nouvel popup placé :"
+	},
 	"label_after_close_activation": {
 		"message": "Après fermeture, focus sur :"
 	},
@@ -70,6 +73,15 @@
 	},
 	"option_window_last_creation": {
 		"message": "À la fin"
+	},
+	"option_new_foreground_tab_popup": {
+		"message": "Nouvel onglet au premier plan"
+	},
+	"option_new_background_tab_popup": {
+		"message": "Nouvel onglet en arrière-plan"
+	},
+	"option_new_window_popup": {
+		"message": "Nouvelle fenêtre"
 	},
 	"option_before_removed_activation": {
 		"message": "L’onglet de gauche"

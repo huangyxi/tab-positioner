@@ -32,6 +32,9 @@
 	"label_background_link_position": {
 		"message": "在后台打开链接时，放置在："
 	},
+	"label_popup_position": {
+		"message": "打开弹出窗口时，放置在："
+	},
 	"label_after_close_activation": {
 		"message": "关闭标签页后，聚焦于："
 	},
@@ -70,6 +73,15 @@
 	},
 	"option_window_last_creation": {
 		"message": "最后面"
+	},
+	"option_new_foreground_tab_popup": {
+		"message": "新前台标签页"
+	},
+	"option_new_background_tab_popup": {
+		"message": "新后台标签页"
+	},
+	"option_new_window_popup": {
+		"message": "新窗口"
 	},
 	"option_before_removed_activation": {
 		"message": "左侧标签页"

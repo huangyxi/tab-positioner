@@ -32,6 +32,9 @@
 	"label_background_link_position": {
 		"message": "在背景開啟連結時，放置於："
 	},
+	"label_popup_position": {
+		"message": "開啟彈出視窗時，放置於："
+	},
 	"label_after_close_activation": {
 		"message": "關閉分頁後，焦點移至："
 	},
@@ -70,6 +73,15 @@
 	},
 	"option_window_last_creation": {
 		"message": "最後方"
+	},
+	"option_new_foreground_tab_popup": {
+		"message": "新前景分頁"
+	},
+	"option_new_background_tab_popup": {
+		"message": "新背景分頁"
+	},
+	"option_new_window_popup": {
+		"message": "新視窗"
 	},
 	"option_before_removed_activation": {
 		"message": "左側分頁"
