@@ -32,6 +32,9 @@
 	"label_background_link_position": {
 		"message": "링크를 배경에서 열 때 위치:"
 	},
+	"label_popup_position": {
+		"message": "팝업 열기 위치:"
+	},
 	"label_after_close_activation": {
 		"message": "탭을 닫은 후 포커스할 위치:"
 	},
@@ -70,6 +73,15 @@
 	},
 	"option_window_last_creation": {
 		"message": "마지막"
+	},
+	"option_new_foreground_tab_popup": {
+		"message": "새 전경 탭으로"
+	},
+	"option_new_background_tab_popup": {
+		"message": "새 배경 탭으로"
+	},
+	"option_new_window_popup": {
+		"message": "새 창으로"
 	},
 	"option_before_removed_activation": {
 		"message": "왼쪽 탭"

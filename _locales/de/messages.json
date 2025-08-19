@@ -32,6 +32,9 @@
 	"label_background_link_position": {
 		"message": "Link im Hintergrund platzieren:"
 	},
+	"label_popup_position": {
+		"message": "Neue Popup-Seite platzieren:"
+	},
 	"label_after_close_activation": {
 		"message": "Nach Schließen, Fokus auf:"
 	},
@@ -70,6 +73,15 @@
 	},
 	"option_window_last_creation": {
 		"message": "Am Ende"
+	},
+	"option_new_foreground_tab_popup": {
+		"message": "Als neuer Vordergrund-Tab"
+	},
+	"option_new_background_tab_popup": {
+		"message": "Als neuer Hintergrund-Tab"
+	},
+	"option_new_window_popup": {
+		"message": "Als neues Fenster"
 	},
 	"option_before_removed_activation": {
 		"message": "Den Tab links"

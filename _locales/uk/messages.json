@@ -32,6 +32,9 @@
 	"label_background_link_position": {
 		"message": "Розміщувати посилання (фон):"
 	},
+	"label_popup_position": {
+		"message": "Розміщувати спливаюче вікно:"
+	},
 	"label_after_close_activation": {
 		"message": "Після закриття фокус на:"
 	},
@@ -70,6 +73,15 @@
 	},
 	"option_window_last_creation": {
 		"message": "В кінці"
+	},
+	"option_new_foreground_tab_popup": {
+		"message": "Як нову передню вкладку"
+	},
+	"option_new_background_tab_popup": {
+		"message": "Як нову фонову вкладку"
+	},
+	"option_new_window_popup": {
+		"message": "Як нове вікно"
 	},
 	"option_before_removed_activation": {
 		"message": "Вкладка зліва"

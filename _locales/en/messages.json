@@ -43,6 +43,10 @@
 		"message": "When opening a link in the background, place it:",
 		"description": "Label for the setting that controls where links opened in the background are placed. Should match the context of option_xxx_creation. As short as possible, but still clear."
 	},
+	"label_popup_position": {
+		"message": "When opening a popup, place it:",
+		"description": "Label for the setting that controls where the popup is opened. Should match the context of option_xxx_popup. As short as possible, but still clear."
+	},
 	"label_after_close_activation": {
 		"message": "After closing a tab, focus on:",
 		"description": "Label for the setting that controls which tab receives focus after another is closed. Should match the context of option_xxx_activation. As short as possible, but still clear."
@@ -94,6 +98,18 @@
 	"option_window_last_creation": {
 		"message": "At the End",
 		"description": "Option to place a new tab at the end of the tab strip in the current window."
+	},
+	"option_new_foreground_tab_popup": {
+		"message": "As a New Foreground Tab",
+		"description": "Option to open the popup in a new foreground tab."
+	},
+	"option_new_background_tab_popup": {
+		"message": "As a New Foreground Tab",
+		"description": "Option to open the popup in a new foreground tab."
+	},
+	"option_new_window_popup": {
+		"message": "As a New Window",
+		"description": "Option to open the popup in a new window."
 	},
 	"option_before_removed_activation": {
 		"message": "The Tab to the Left",

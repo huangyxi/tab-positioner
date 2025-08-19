@@ -32,6 +32,9 @@
 	"label_background_link_position": {
 		"message": "リンクを背面で開くときの位置："
 	},
+	"label_popup_position": {
+		"message": "ポップアップを開くときの位置："
+	},
 	"label_after_close_activation": {
 		"message": "タブを閉じた後にフォーカスする場所："
 	},
@@ -70,6 +73,15 @@
 	},
 	"option_window_last_creation": {
 		"message": "末尾"
+	},
+	"option_new_foreground_tab_popup": {
+		"message": "新しい前面タブとして"
+	},
+	"option_new_background_tab_popup": {
+		"message": "新しい背景タブとして"
+	},
+	"option_new_window_popup": {
+		"message": "新しいウィンドウとして"
 	},
 	"option_before_removed_activation": {
 		"message": "左のタブ"
