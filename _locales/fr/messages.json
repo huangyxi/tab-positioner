@@ -35,6 +35,9 @@
 	"label_popup_position": {
 		"message": "Nouvel popup placé :"
 	},
+	"title_popup_position": {
+		"message": "⚠️ Fonction expérimentale. Les popups s’ouvrent selon les mêmes règles que les liens, selon l’option choisie."
+	},
 	"label_after_close_activation": {
 		"message": "Après fermeture, focus sur :"
 	},

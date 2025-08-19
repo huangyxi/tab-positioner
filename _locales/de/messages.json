@@ -35,6 +35,9 @@
 	"label_popup_position": {
 		"message": "Neue Popup-Seite platzieren:"
 	},
+	"title_popup_position": {
+		"message": "⚠️ Experimentelles Feature. Öffnet Popups nach denselben Regeln wie Links, gemäß gewählter Option."
+	},
 	"label_after_close_activation": {
 		"message": "Nach Schließen, Fokus auf:"
 	},

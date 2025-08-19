@@ -47,6 +47,10 @@
 		"message": "When opening a popup, place it:",
 		"description": "Label for the setting that controls where the popup is opened. Should match the context of option_xxx_popup. As short as possible, but still clear."
 	},
+	"title_popup_position": {
+		"message": "⚠️ Experimental feature. If enabled, the extension will open popups using the same rules as links, according to the selected option.",
+		"description": "Tooltip for the popup position setting, related to label_foreground_link_position and label_background_link_position."
+	},
 	"label_after_close_activation": {
 		"message": "After closing a tab, focus on:",
 		"description": "Label for the setting that controls which tab receives focus after another is closed. Should match the context of option_xxx_activation. As short as possible, but still clear."
@@ -104,8 +108,8 @@
 		"description": "Option to open the popup in a new foreground tab."
 	},
 	"option_new_background_tab_popup": {
-		"message": "As a New Foreground Tab",
-		"description": "Option to open the popup in a new foreground tab."
+		"message": "As a New Background Tab",
+		"description": "Option to open the popup in a new background tab."
 	},
 	"option_new_window_popup": {
 		"message": "As a New Window",

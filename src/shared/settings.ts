@@ -10,6 +10,7 @@ export type SettingKey = never
 	| 'new_tab_position'
 	| 'foreground_link_position'
 	| 'background_link_position'
+	| 'popup_position'
 	| 'after_close_activation'
 	| '_tab_batch_creation_threshold_ms'
 	| '_tab_batch_activation_threshold_ms'
@@ -43,6 +44,16 @@ const TAB_CREATION_POSITION_CHOICES: SettingChoices<TabCreationPosition> = {
 	window_last: { i18nKey: 'option_window_last_creation' },
 } as const;
 
+export type PopupCreationPosition = typeof DEFAULT_VALUE
+	| 'new_foreground_tab'
+	| 'new_background_tab'
+	| never;
+const POPUP_POSITION_CHOICES: SettingChoices<PopupCreationPosition> = {
+	[DEFAULT_VALUE]: { i18nKey: 'option_default' },
+	new_foreground_tab: { i18nKey: 'option_new_foreground_tab_popup' },
+	new_background_tab: { i18nKey: 'option_new_background_tab_popup' },
+} as const;
+
 export type TabActivationPosition = typeof DEFAULT_VALUE
 	| 'before_removed'
 	| 'after_removed'
@@ -63,6 +74,7 @@ export const DEFAULT_SETTINGS = {
 	new_tab_position: DEFAULT_VALUE as TabCreationPosition,
 	foreground_link_position: DEFAULT_VALUE as TabCreationPosition,
 	background_link_position: DEFAULT_VALUE as TabCreationPosition,
+	popup_position: DEFAULT_VALUE as PopupCreationPosition,
 	after_close_activation: DEFAULT_VALUE as TabActivationPosition,
 	_tab_batch_creation_threshold_ms: C.TAB_BATCH_CREATION_THRESHOLD_MS,
 	_tab_batch_activation_threshold_ms: C.TAB_BATCH_ACTIVATION_THRESHOLD_MS,
@@ -82,6 +94,7 @@ type SettingKeys<T extends ExtensionSettings[SettingKey]> = {
 }[SettingKey];
 
 export type TabCreationPositionKey = SettingKeys<TabCreationPosition>;
+export type PopupCreationPositionKey = SettingKeys<PopupCreationPosition>;
 export type TabActivationPositionKey = SettingKeys<TabActivationPosition>;
 
 type SettingValue<K extends SettingKey> =
@@ -122,6 +135,11 @@ export const SETTING_SCHEMAS: SettingSchemas = {
 		i18nKey: 'label_background_link_position',
 		type: 'choices',
 		choices: TAB_CREATION_POSITION_CHOICES,
+	},
+	popup_position: {
+		i18nKey: 'label_popup_position',
+		type: 'choices',
+		choices: POPUP_POSITION_CHOICES,
 	},
 	after_close_activation: {
 		i18nKey: 'label_after_close_activation',

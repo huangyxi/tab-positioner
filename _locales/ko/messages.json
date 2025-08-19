@@ -35,6 +35,9 @@
 	"label_popup_position": {
 		"message": "팝업 열기 위치:"
 	},
+	"title_popup_position": {
+		"message": "⚠️ 실험 기능. 활성화하면, 팝업이 선택한 옵션에 따라 링크와 동일한 규칙으로 열립니다."
+	},
 	"label_after_close_activation": {
 		"message": "탭을 닫은 후 포커스할 위치:"
 	},
