@@ -3,7 +3,6 @@ import { Listeners } from '../shared/listeners';
 import { SyncSettings } from './syncsettings';
 import { TabsInfo } from './tabsinfo';
 import { registerTabCreatedListener } from './tabcreation';
-import { registerPopupCreatedListener } from './popupcreation';
 import { registerTabRemovedListener } from './tabactivation';
 
 
@@ -32,8 +31,7 @@ function main() {
 	// - Remove: 1.onRemoved -> 2.onRemoved -> 1.onActivated -> 2.onActivated
 	// - Move between Windows: 1.onDetached -> 2.onDetached ( -> 1.onActivated -> 2.onActivated )
 	//   -> 1.onAttached -> 2.onAttached -> 1.onActivated -> 2.onActivated
-	registerTabCreatedListener(listeners, apiTabs);
-	registerPopupCreatedListener(listeners, apiWindows, apiTabs);
+	registerTabCreatedListener(listeners, apiTabs, apiWindows);
 	registerTabRemovedListener(listeners, apiTabs);
 
 	listeners.resolve();
