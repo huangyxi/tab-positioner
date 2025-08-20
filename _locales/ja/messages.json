@@ -32,10 +32,10 @@
 	"label_background_link_position": {
 		"message": "リンクを背面で開くときの位置："
 	},
-	"label_popup_position": {
+	"label__popup_position": {
 		"message": "ポップアップを開くときの位置："
 	},
-	"title_popup_position": {
+	"title__popup_position": {
 		"message": "⚠️ 実験機能。有効にすると、ポップアップは選択されたオプションに従い、リンクと同じルールで開きます。"
 	},
 	"label_after_close_activation": {

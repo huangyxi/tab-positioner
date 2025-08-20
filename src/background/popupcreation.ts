@@ -2,7 +2,6 @@ import { DEBUG } from '../shared/debug';
 import type { TabCreationPosition } from '../shared/settings';
 
 import { Listeners } from '../shared/listeners';
-import { errorHandler } from '../shared/logging';
 
 import { SyncSettings } from './syncsettings';
 import { TabsInfo } from './tabsinfo';
@@ -19,7 +18,7 @@ async function createdPopupMover(
 	const hasLoaded = tabsInfo.hasTabActivated();
 	if (!newWindow.id) return;
 	const settings = await SyncSettings.getInstance();
-	const setting = settings.get('popup_position');
+	const setting = settings.get('_popup_position');
 	DEBUG && console.log('  P2. Popup creation setting:', setting);
 	if (setting === 'default') return;
 	// Should get the window again with populate: true to ensure tabs are included.

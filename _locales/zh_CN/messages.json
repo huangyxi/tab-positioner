@@ -32,10 +32,10 @@
 	"label_background_link_position": {
 		"message": "在后台打开链接时，放置在："
 	},
-	"label_popup_position": {
+	"label__popup_position": {
 		"message": "打开弹出窗口时，放置在："
 	},
-	"title_popup_position": {
+	"title__popup_position": {
 		"message": "⚠️ 实验功能。启用后，弹出窗口将按照所选选项与链接相同的规则打开。"
 	},
 	"label_after_close_activation": {
