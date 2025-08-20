@@ -366,7 +366,9 @@ export class TabsInfo extends SessionSingleton {
 				console.log(' tabsInfo: Window focus changed', windowId);
 			}
 			const instance = await this.getInstance();
-			instance.recentNormalWindowId = windowId;
+			if (windowId !== -1) { // api.windows.WINDOW_ID_NONE
+				instance.recentNormalWindowId = windowId;
+			}
 		}, { windowTypes: ['normal'] });
 	}
 

@@ -61,13 +61,13 @@ export async function tabMover(
 		default:
 			const _exhaustive: never = setting;
 	}
-	DEBUG && console.log(`  c1. New index: ${newIndex}`);
+	DEBUG && console.log('  c1. New index:', newIndex);
 	if (newIndex === index) return;
 	DEBUG && console.log('  c2. Moving tab');
 	try {
 		await apiTabs.move(tabId, {
 			index: newIndex,
-			windowId: windowId,
+			windowId: windowId === -1 ? undefined : windowId,
 		});
 		if (!hasLoaded) {
 			await new Promise((resolve) => setTimeout(resolve, FIRST_ACTIVATION_DELAY_MS));
@@ -77,7 +77,11 @@ export async function tabMover(
 			});
 			if (tab?.id === tabId) {
 				DEBUG && console.log('  c2a. Tab active again');
-				tabsInfo.activateTab(windowId, tabId, newIndex);
+				tabsInfo.activateTab(
+					windowId,
+					tabId,
+					newIndex
+				);
 			}
 		}
 	} catch (error: any) {
@@ -113,6 +117,9 @@ async function createdTabMover(
 		console.log('  C4. Tab ID:', tabId);
 	}
 	if (!tabId || tabId === -1) return; // api.tabs.TAB_ID_NONE
+	const nTabs = tabsInfo.getCurrentTabs(newTab.windowId).length;
+	DEBUG && console.log('  C5. Current tabs count:', nTabs);
+	if (nTabs <= 1) return;
 	await tabMover(
 		apiTabs,
 		tabsInfo,
