@@ -134,7 +134,7 @@ export class TabsInfo extends SessionSingleton {
 	 */
 	private async initialize(
 		normalTabs: api.tabs.Tab[],
-		recentWindowId: WindowId = -1,
+		recentNormalWindowId: WindowId,
 	) {
 		if (DEBUG) {
 			console.log(' tabsInfo: Initialized', this);
@@ -157,7 +157,9 @@ export class TabsInfo extends SessionSingleton {
 				index: tab.index,
 			};
 		}
-		this.recentNormalWindowId = recentWindowId;
+		if (recentNormalWindowId !== -1) { // api.windows.WINDOW_ID_NONE
+			this.recentNormalWindowId = recentNormalWindowId;
+		}
 		this.saveState();
 	}
 
@@ -277,8 +279,11 @@ export class TabsInfo extends SessionSingleton {
 		}
 		const normalTabs = await apiTabs.query({ windowType: 'normal' });
 		const currentWindow = await apiWindows.getCurrent();
-		const recentWindowId = currentWindow?.id ?? -1;
-		await instance.initialize(normalTabs, recentWindowId);
+		let recentNormalWindowId = -1;
+		if (currentWindow.type === 'normal') {
+			recentNormalWindowId = currentWindow.id ?? -1;
+		}
+		await instance.initialize(normalTabs, recentNormalWindowId);
 	}
 
 	public static registerListeners(
@@ -371,7 +376,12 @@ export class TabsInfo extends SessionSingleton {
 			const instance = await this.getInstance();
 			instance._hasTabActivated = true;
 			const normalTabs = await apiTabs.query({ windowType: 'normal' });
-			await instance.initialize(normalTabs);
+			const currentWindow = await apiWindows.getCurrent();
+			let recentNormalWindowId = -1;
+			if (currentWindow.type === 'normal') {
+				recentNormalWindowId = currentWindow.id ?? -1;
+			}
+			await instance.initialize(normalTabs, recentNormalWindowId);
 		});
 
 		listeners.add(apiWindows.onFocusChanged, async (windowId) => {
