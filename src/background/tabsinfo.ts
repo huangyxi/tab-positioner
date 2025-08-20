@@ -250,6 +250,19 @@ export class TabsInfo extends SessionSingleton {
 		this.saveState();
 	}
 
+	private focusWindow(
+		windowId: WindowId,
+	) {
+		if (DEBUG) {
+			console.log('tabsInfo: Focusing window', windowId);
+		}
+		if (windowId === -1) {
+			return; // api.windows.WINDOW_ID_NONE
+		}
+		this.recentNormalWindowId = windowId;
+		this.saveState();
+	}
+
 	/**
 	 * Ensures initialization after the background script starts,
 	 * when api.runtime.onStartup and api.runtime.onInstalled events are not fired after restoring from suspension or being disabled.
@@ -362,13 +375,8 @@ export class TabsInfo extends SessionSingleton {
 		});
 
 		listeners.add(apiWindows.onFocusChanged, async (windowId) => {
-			if (DEBUG) {
-				console.log(' tabsInfo: Window focus changed', windowId);
-			}
 			const instance = await this.getInstance();
-			if (windowId !== -1) { // api.windows.WINDOW_ID_NONE
-				instance.recentNormalWindowId = windowId;
-			}
+			instance.focusWindow(windowId);
 		}, { windowTypes: ['normal'] });
 	}
 
