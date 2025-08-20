@@ -32,10 +32,10 @@
 	"label_background_link_position": {
 		"message": "Posizionare link in secondo piano:"
 	},
-	"label_popup_position": {
+	"label__popup_position": {
 		"message": "Posizionare popup:"
 	},
-	"title_popup_position": {
+	"title__popup_position": {
 		"message": "⚠️ Funzione sperimentale. I popup si apriranno seguendo le stesse regole dei link, secondo l’opzione selezionata."
 	},
 	"label_after_close_activation": {

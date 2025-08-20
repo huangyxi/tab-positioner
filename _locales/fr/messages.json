@@ -32,10 +32,10 @@
 	"label_background_link_position": {
 		"message": "Lien ouvert en arrière-plan placé :"
 	},
-	"label_popup_position": {
+	"label__popup_position": {
 		"message": "Nouvel popup placé :"
 	},
-	"title_popup_position": {
+	"title__popup_position": {
 		"message": "⚠️ Fonction expérimentale. Les popups s’ouvrent selon les mêmes règles que les liens, selon l’option choisie."
 	},
 	"label_after_close_activation": {

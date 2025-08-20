@@ -32,10 +32,10 @@
 	"label_background_link_position": {
 		"message": "在背景開啟連結時，放置於："
 	},
-	"label_popup_position": {
+	"label__popup_position": {
 		"message": "開啟彈出視窗時，放置於："
 	},
-	"title_popup_position": {
+	"title__popup_position": {
 		"message": "⚠️ 實驗功能。啟用後，彈出視窗將依所選選項按與連結相同的規則開啟。"
 	},
 	"label_after_close_activation": {

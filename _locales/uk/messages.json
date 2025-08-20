@@ -32,10 +32,10 @@
 	"label_background_link_position": {
 		"message": "Розміщувати посилання (фон):"
 	},
-	"label_popup_position": {
+	"label__popup_position": {
 		"message": "Розміщувати спливаюче вікно:"
 	},
-	"title_popup_position": {
+	"title__popup_position": {
 		"message": "⚠️ Експериментальна функція. Якщо увімкнено, спливаючі вікна відкриватимуться за тими ж правилами, що й посилання, згідно обраного параметра."
 	},
 	"label_after_close_activation": {
