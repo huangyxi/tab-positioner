@@ -12,8 +12,7 @@ async function createdPopupMover(
 	apiTabs: typeof api.tabs,
 	newWindow: api.windows.Window,
 ) {
-	if (newWindow.type !== 'popup') return;
-	console.log('  P1. Popup created');
+	DEBUG && console.log('  P1. Popup created');
 	const tabsInfo = await TabsInfo.getInstance();
 	const hasLoaded = tabsInfo.hasTabActivated();
 	if (!newWindow.id) return;
@@ -62,8 +61,9 @@ export function registerPopupCreatedListener(
 	apiWindows: typeof api.windows,
 	apiTabs: typeof api.tabs,
 ) {
-	// api.windows.onCreated with filters may not fire as expected.
 	listeners.add(apiWindows.onCreated,
-		createdPopupMover.bind(null, apiWindows, apiTabs)
+		createdPopupMover.bind(null, apiWindows, apiTabs), {
+			windowTypes: ['popup'],
+		}
 	);
 }
