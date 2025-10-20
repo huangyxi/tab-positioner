@@ -15,8 +15,8 @@
 	"devDependencies": {
 		"@11ty/eleventy": "^3.1.2",
 		"@11ty/eleventy-utils": "^2.0.7",
-		"@types/node": "^24.7.2",
-		"@zip.js/zip.js": "^2.8.7",
+		"@types/node": "^24.8.1",
+		"@zip.js/zip.js": "^2.8.8",
 		"chrome-types": "^0.1.383",
 		"editorconfig-checker": "^6.1.0",
 		"jsx-async-runtime": "^2.0.0",
@@ -27,7 +27,7 @@
 		"stylelint-config-standard-scss": "^16.0.0",
 		"tsx": "^4.20.6",
 		"typescript": "^5.9.3",
-		"vite": "^7.1.9",
+		"vite": "^7.1.10",
 		"vite-plugin-banner": "^0.8.1"
 	}
 }
