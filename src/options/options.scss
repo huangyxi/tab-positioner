@@ -65,6 +65,7 @@ $color-background-dark: #000000;
 
 // --- Themes ---
 
+/* stylelint-disable scss/dollar-variable-no-missing-interpolation */
 :root {
 	// Primary
 	--color-primary: #{$color-seed-primary};
@@ -121,6 +122,7 @@ $color-background-dark: #000000;
 		--color-outline-variant: #{color.mix($color-seed-neutral, $color-background-dark, 70%)};
 	}
 }
+/* stylelint-enable scss/dollar-variable-no-missing-interpolation */
 
 @keyframes rotate-360 {
 	from { transform: rotate(0deg); }
