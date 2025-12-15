@@ -30,7 +30,7 @@ jobs:
     - name: Install dependencies
       run: pnpm install
     - name: Cache editorconfig-checker binary
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         key: ec-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
         path: |
@@ -65,7 +65,7 @@ jobs:
       run: |
         pnpm run package --verbose --output ${{ vars.EXTENSION_FILENAME }} ${{ vars.OUTDIR }}
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: ${{ vars.EXTENSION_FILENAME }}
         path: ${{ vars.OUTDIR }}
