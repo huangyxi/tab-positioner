@@ -39,3 +39,7 @@ You can install Tab Positioner from the [Chrome Web Store](https://chromewebstor
 3. Open Chrome and navigate to `chrome://extensions`.
 4. Enable "Developer mode" in the top right corner.
 5. Click "Load unpacked" and select the extracted folder.
+
+
+## Development
+Please refer to the [AGENTS.md](AGENTS.md) file for development instructions.
