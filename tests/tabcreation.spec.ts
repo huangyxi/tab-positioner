@@ -1,9 +1,11 @@
 import { test, expect } from './fixtures';
+import { TEST_TIMEOUT } from './constants';
 
 test.describe('Tab Creation Behavior', () => {
-	test('should place new foreground tab after the active tab', async ({ context, extensionId, configureSettings }) => {
+	test('should place new foreground tab after the active tab', async ({ context, extensionId, configureSettings, getTabs }) => {
 		// Setup: Ensure we have at least one tab
 		const page1 = await context.newPage();
+		await page1.goto('http://example.com/1');
 		await page1.bringToFront();
 
 		// Configure setting: foreground_link_position = 'after_active'
@@ -13,13 +15,27 @@ test.describe('Tab Creation Behavior', () => {
 
 		// Create a new tab (simulate foreground creation)
 		const page2 = await context.newPage();
+		await page2.goto('http://example.com/2');
 		await page2.bringToFront();
 
-		expect(page2).toBeTruthy();
+		// Allow extension logic to run
+		await page1.waitForTimeout(TEST_TIMEOUT);
+
+		const tabs = await getTabs();
+		// We expect page2 to be after page1
+		// Since page1 was active, page2 should be at index of page1 + 1
+		// Current tabs: [extension (bg?), page1, page2] or something.
+		// Let's filter by url to be safe
+		const testTabs = tabs.filter(t => t.url.includes('example.com'));
+		expect(testTabs.length).toBe(2);
+		expect(testTabs[0].url).toContain('example.com/1');
+		expect(testTabs[1].url).toContain('example.com/2');
+		expect(testTabs[1].index).toBeGreaterThan(testTabs[0].index);
 	});
 
-	test('should place new foreground tab before the active tab', async ({ context, extensionId, configureSettings }) => {
+	test('should place new foreground tab before the active tab', async ({ context, extensionId, configureSettings, getTabs }) => {
 		const page1 = await context.newPage();
+		await page1.goto('http://example.com/1');
 		await page1.bringToFront();
 
 		// Configure setting
@@ -28,12 +44,23 @@ test.describe('Tab Creation Behavior', () => {
 		});
 
 		const page2 = await context.newPage();
+		await page2.goto('http://example.com/2');
 		await page2.bringToFront();
-		expect(page2).toBeTruthy();
+
+		await page1.waitForTimeout(TEST_TIMEOUT);
+
+		const tabs = await getTabs();
+		const testTabs = tabs.filter(t => t.url.includes('example.com'));
+		expect(testTabs.length).toBe(2);
+		// Expect: [page2, page1]
+		expect(testTabs[0].url).toContain('example.com/2');
+		expect(testTabs[1].url).toContain('example.com/1');
+		expect(testTabs[0].index).toBeLessThan(testTabs[1].index);
 	});
 
-	test('should place new foreground tab at the end of window', async ({ context, extensionId, configureSettings }) => {
+	test('should place new foreground tab at the end of window', async ({ context, extensionId, configureSettings, getTabs }) => {
 		const page1 = await context.newPage();
+		await page1.goto('http://example.com/1');
 
 		// Configure setting: foreground_link_position = 'window_last'
 		await configureSettings({
@@ -42,10 +69,18 @@ test.describe('Tab Creation Behavior', () => {
 
 		// Create a new page (simulated foreground)
 		const page3 = await context.newPage();
-		expect(page3).toBeTruthy();
+		await page3.goto('http://example.com/3');
+
+		await page1.waitForTimeout(TEST_TIMEOUT);
+
+		const tabs = await getTabs();
+		const testTabs = tabs.filter(t => t.url.includes('example.com'));
+		// Should be last
+		const lastTab = testTabs[testTabs.length - 1];
+		expect(lastTab.url).toContain('example.com/3');
 	});
 
-	test('should place new background tab at the start of window', async ({ context, extensionId, configureSettings }) => {
+	test('should place new background tab at the start of window', async ({ context, extensionId, configureSettings, getTabs }) => {
 		const page1 = await context.newPage();
 		await page1.goto('http://example.com/1');
 
@@ -71,11 +106,7 @@ test.describe('Tab Creation Behavior', () => {
 		await page1.keyboard.up(modifier);
 
 		// Wait for the new tab to exist
-		// Note: handling expected background tab behavior in Playwright can be tricky if not headless
-		// But in headless = new, it should work.
-		// We explicitly wait for the page to be part of the context
 		let page3 = await context.waitForEvent('page');
-		// Even if verify fails, we want to know what happened
 		try {
 			await page3.waitForLoadState();
 		} catch (e) {
@@ -83,20 +114,14 @@ test.describe('Tab Creation Behavior', () => {
 		}
 
 		// Allow extension logic to run
-		await page1.waitForTimeout(1000);
+		await page1.waitForTimeout(TEST_TIMEOUT);
 
-		const [background] = context.serviceWorkers();
+		const tabs = await getTabs();
+		const testTabs = tabs.filter(t => t.url.includes('example.com'));
 
-		const urls = await background.evaluate(async () => {
-			const tabs = await (self as any).chrome.tabs.query({ lastFocusedWindow: true });
-			tabs.sort((a: any, b: any) => a.index - b.index);
-			return tabs.map((t: any) => t.url);
-		});
-
-		// If working: [example.com/3, example.com/1] (since 3 moved to 0)
-		// Or: [example.com/3, blank, example.com/1] ?
-		// Depending on where it was inserted initially.
-		// We just check if urls[0] is the background one.
-		expect(urls[0]).toContain('example.com/3');
+		// Expect: [page3, page1]
+		expect(testTabs[0].url).toContain('example.com/3');
+		expect(testTabs[1].url).toContain('example.com/1');
+		expect(testTabs[0].index).toBeLessThan(testTabs[1].index);
 	});
 });

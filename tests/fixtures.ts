@@ -12,6 +12,7 @@ export const test = base.extend<{
 	context: BrowserContext;
 	extensionId: string;
 	configureSettings: (settings: Partial<ExtensionSettings>) => Promise<void>;
+	getTabs: () => Promise<any[]>;
 }>({
 	context: async ({ }, use) => {
 		const pathToExtension = path.join(__dirname, '../dist');
@@ -84,6 +85,15 @@ export const test = base.extend<{
 			}
 
 			await extensionPage.close();
+		});
+	},
+	getTabs: async ({ context }, use) => {
+		await use(async () => {
+			const [background] = context.serviceWorkers().length ? context.serviceWorkers() : [await context.waitForEvent('serviceworker')];
+			return await background.evaluate(async () => {
+				const tabs = await (self as any).chrome.tabs.query({ lastFocusedWindow: true });
+				return tabs.sort((a: any, b: any) => a.index - b.index);
+			});
 		});
 	},
 });

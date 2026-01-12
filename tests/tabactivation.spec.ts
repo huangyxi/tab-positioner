@@ -1,92 +1,128 @@
 import { test, expect } from './fixtures';
+import { TEST_TIMEOUT } from './constants';
 
 test.describe('Tab Activation Behavior', () => {
-	test('should activate the tab to the left after closing', async ({ context, extensionId, configureSettings }) => {
-		// Setup: Create 3 pages
-		const page1 = await context.newPage();
-		const page2 = await context.newPage();
-		const page3 = await context.newPage();
 
-		// Activate middle one
+	test('should activate the tab to the left after closing', async ({ context, configureSettings, getTabs }) => {
+		await configureSettings({ after_close_activation: 'before_removed' });
+
+		// 1. Create P1 first (safeguard)
+		const page1 = await context.newPage(); await page1.goto('http://example.com/1');
+
+		// 2. Cleanup any initial pages (about:blank) to ensure P1 is index 0
+		const pages = context.pages();
+		for (const p of pages) {
+			if (p !== page1) await p.close();
+		}
+
+		// 3. Create P2, P3
+		const page2 = await context.newPage(); await page2.goto('http://example.com/2');
+		const page3 = await context.newPage(); await page3.goto('http://example.com/3');
+
+		// 4. Activate P2
 		await page2.bringToFront();
+		await page1.waitForTimeout(TEST_TIMEOUT); // Sync state
 
-		// Configure setting: after_close_activation = 'before_removed'
-		await configureSettings({
-			after_close_activation: 'before_removed'
-		});
+		// Verify P2 is active and correct setup
+		let tabs = await getTabs();
+		expect(tabs.find(t => t.url.includes('example.com/2'))?.active).toBe(true);
+		expect(tabs.length).toBe(3);
 
-		// Close current page (page2)
+		// 5. Close P2
 		await page2.close();
 
-		// Give extension time to react
-		await page1.waitForTimeout(100);
+		// 6. Wait for P2 to be gone from Chrome
+		await expect.poll(async () => {
+			const t = await getTabs();
+			return t.find(x => x.url.includes('example.com/2'));
+		}).toBeUndefined();
+
+		// 7. Check Activation (Expect P1 - "before_removed")
+		// P1 should be index 0
+		tabs = await getTabs();
+		const activeTab = tabs.find(t => t.active);
+		expect(activeTab).toBeDefined();
+		expect(activeTab?.url).toContain('example.com/1');
 	});
 
-	test('should activate the tab to the right after closing', async ({ context, extensionId, configureSettings }) => {
-		// Setup: Create 3 pages
-		const page1 = await context.newPage();
-		const page2 = await context.newPage();
-		const page3 = await context.newPage();
+	test('should activate the tab to the right after closing', async ({ context, configureSettings, getTabs }) => {
+		await configureSettings({ after_close_activation: 'after_removed' });
 
-		// Activate middle one
+		const page1 = await context.newPage(); await page1.goto('http://example.com/1');
+		for (const p of context.pages()) { if (p !== page1) await p.close(); }
+
+		const page2 = await context.newPage(); await page2.goto('http://example.com/2');
+		const page3 = await context.newPage(); await page3.goto('http://example.com/3');
+
 		await page2.bringToFront();
+		await page1.waitForTimeout(TEST_TIMEOUT);
 
-		// Configure setting: after_close_activation = 'after_removed'
-		await configureSettings({
-			after_close_activation: 'after_removed'
-		});
+		let activeCheck = await getTabs();
+		expect(activeCheck.find(t => t.url.includes('/2'))?.active).toBe(true);
 
-		// Close current page (page2)
 		await page2.close();
 
-		// Give extension time to react
-		await page3.waitForTimeout(100);
+		await expect.poll(async () => {
+			const t = await getTabs();
+			return t.find(x => x.url.includes('example.com/2'));
+		}).toBeUndefined();
+
+		const tabs = await getTabs();
+		// Expect P3 (Right of P2)
+		const activeTab = tabs.find(t => t.active);
+		expect(activeTab).toBeDefined();
+		expect(activeTab?.url).toContain('example.com/3');
 	});
 
-	test('should activate the first tab in window after closing', async ({ context, extensionId, configureSettings }) => {
-		// Setup: Create 3 pages
-		const page1 = await context.newPage();
-		const page2 = await context.newPage();
-		const page3 = await context.newPage();
+	test('should activate the first tab in window after closing', async ({ context, configureSettings, getTabs }) => {
+		await configureSettings({ after_close_activation: 'window_first' });
 
-		// Activate middle one
+		const page1 = await context.newPage(); await page1.goto('http://example.com/1');
+		for (const p of context.pages()) { if (p !== page1) await p.close(); }
+
+		const page2 = await context.newPage(); await page2.goto('http://example.com/2');
+		const page3 = await context.newPage(); await page3.goto('http://example.com/3');
+
 		await page2.bringToFront();
-		await page2.waitForTimeout(200); // Ensure extension sees activation
+		await page1.waitForTimeout(TEST_TIMEOUT);
 
-		// Configure setting: after_close_activation = 'window_first'
-		await configureSettings({
-			after_close_activation: 'window_first'
-		});
-
-		// Close current page (page2)
 		await page2.close();
 
-		// Give extension time to react
-		await page1.waitForTimeout(500);
+		await expect.poll(async () => {
+			const t = await getTabs();
+			return t.find(x => x.url.includes('example.com/2'));
+		}).toBeUndefined();
 
-		// Assert page1 is active
-		const isPage1Active = await page1.evaluate(() => document.visibilityState === 'visible');
-		expect(isPage1Active).toBe(true);
+		const tabs = await getTabs();
+		// Expect P1 (Index 0)
+		const activeTab = tabs.find(t => t.active);
+		expect(activeTab).toBeDefined();
+		expect(activeTab?.url).toContain('example.com/1');
 	});
 
-	test('should activate the last tab in window after closing', async ({ context, extensionId, configureSettings }) => {
-		// Setup: Create 3 pages
-		const page1 = await context.newPage();
-		const page2 = await context.newPage();
-		const page3 = await context.newPage();
+	test('should activate the last tab in window after closing', async ({ context, configureSettings, getTabs }) => {
+		await configureSettings({ after_close_activation: 'window_last' });
 
-		// Activate middle one
+		const page1 = await context.newPage(); await page1.goto('http://example.com/1');
+		for (const p of context.pages()) { if (p !== page1) await p.close(); }
+
+		const page2 = await context.newPage(); await page2.goto('http://example.com/2');
+		const page3 = await context.newPage(); await page3.goto('http://example.com/3');
+
 		await page2.bringToFront();
+		await page1.waitForTimeout(TEST_TIMEOUT);
 
-		// Configure setting: after_close_activation = 'window_last'
-		await configureSettings({
-			after_close_activation: 'window_last'
-		});
-
-		// Close current page (page2)
 		await page2.close();
 
-		// Give extension time to react
-		await page3.waitForTimeout(100);
+		await expect.poll(async () => {
+			const t = await getTabs();
+			return t.find(x => x.url.includes('example.com/2'));
+		}).toBeUndefined();
+
+		const tabs = await getTabs();
+		// Expect P3 (Last Index)
+		const activeTab = tabs.find(t => t.active);
+		expect(activeTab).toBeDefined();
+		expect(activeTab?.url).toContain('example.com/3');
 	});
 });
