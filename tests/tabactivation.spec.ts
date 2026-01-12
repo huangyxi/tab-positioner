@@ -1,7 +1,7 @@
 import { test, expect } from './fixtures';
 
 test.describe('Tab Activation Behavior', () => {
-	test('should activate the tab to the left after closing', async ({ context, extensionId }) => {
+	test('should activate the tab to the left after closing', async ({ context, extensionId, configureSettings }) => {
 		// Setup: Create 3 pages
 		const page1 = await context.newPage();
 		const page2 = await context.newPage();
@@ -11,10 +11,9 @@ test.describe('Tab Activation Behavior', () => {
 		await page2.bringToFront();
 
 		// Configure setting: after_close_activation = 'before_removed'
-		const extensionPage = await context.newPage();
-		await extensionPage.goto(`chrome-extension://${extensionId}/options.html?context=page`);
-		await extensionPage.selectOption('select[name="after_close_activation"]', 'before_removed');
-		await extensionPage.close();
+		await configureSettings({
+			after_close_activation: 'before_removed'
+		});
 
 		// Close current page (page2)
 		await page2.close();
@@ -23,7 +22,7 @@ test.describe('Tab Activation Behavior', () => {
 		await page1.waitForTimeout(100);
 	});
 
-	test('should activate the tab to the right after closing', async ({ context, extensionId }) => {
+	test('should activate the tab to the right after closing', async ({ context, extensionId, configureSettings }) => {
 		// Setup: Create 3 pages
 		const page1 = await context.newPage();
 		const page2 = await context.newPage();
@@ -33,10 +32,9 @@ test.describe('Tab Activation Behavior', () => {
 		await page2.bringToFront();
 
 		// Configure setting: after_close_activation = 'after_removed'
-		const extensionPage = await context.newPage();
-		await extensionPage.goto(`chrome-extension://${extensionId}/options.html?context=page`);
-		await extensionPage.selectOption('select[name="after_close_activation"]', 'after_removed');
-		await extensionPage.close();
+		await configureSettings({
+			after_close_activation: 'after_removed'
+		});
 
 		// Close current page (page2)
 		await page2.close();
@@ -45,7 +43,7 @@ test.describe('Tab Activation Behavior', () => {
 		await page3.waitForTimeout(100);
 	});
 
-	test('should activate the first tab in window after closing', async ({ context, extensionId }) => {
+	test('should activate the first tab in window after closing', async ({ context, extensionId, configureSettings }) => {
 		// Setup: Create 3 pages
 		const page1 = await context.newPage();
 		const page2 = await context.newPage();
@@ -56,10 +54,9 @@ test.describe('Tab Activation Behavior', () => {
 		await page2.waitForTimeout(200); // Ensure extension sees activation
 
 		// Configure setting: after_close_activation = 'window_first'
-		const extensionPage = await context.newPage();
-		await extensionPage.goto(`chrome-extension://${extensionId}/options.html?context=page`);
-		await extensionPage.selectOption('select[name="after_close_activation"]', 'window_first');
-		await extensionPage.close();
+		await configureSettings({
+			after_close_activation: 'window_first'
+		});
 
 		// Close current page (page2)
 		await page2.close();
@@ -72,7 +69,7 @@ test.describe('Tab Activation Behavior', () => {
 		expect(isPage1Active).toBe(true);
 	});
 
-	test('should activate the last tab in window after closing', async ({ context, extensionId }) => {
+	test('should activate the last tab in window after closing', async ({ context, extensionId, configureSettings }) => {
 		// Setup: Create 3 pages
 		const page1 = await context.newPage();
 		const page2 = await context.newPage();
@@ -82,10 +79,9 @@ test.describe('Tab Activation Behavior', () => {
 		await page2.bringToFront();
 
 		// Configure setting: after_close_activation = 'window_last'
-		const extensionPage = await context.newPage();
-		await extensionPage.goto(`chrome-extension://${extensionId}/options.html?context=page`);
-		await extensionPage.selectOption('select[name="after_close_activation"]', 'window_last');
-		await extensionPage.close();
+		await configureSettings({
+			after_close_activation: 'window_last'
+		});
 
 		// Close current page (page2)
 		await page2.close();

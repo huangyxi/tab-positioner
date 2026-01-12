@@ -1,16 +1,15 @@
 import { test, expect } from './fixtures';
 
 test.describe('Tab Creation Behavior', () => {
-	test('should place new foreground tab after the active tab', async ({ context, extensionId }) => {
+	test('should place new foreground tab after the active tab', async ({ context, extensionId, configureSettings }) => {
 		// Setup: Ensure we have at least one tab
 		const page1 = await context.newPage();
 		await page1.bringToFront();
 
 		// Configure setting: foreground_link_position = 'after_active'
-		const extensionPage = await context.newPage();
-		await extensionPage.goto(`chrome-extension://${extensionId}/options.html?context=page`);
-		await extensionPage.selectOption('select[name="foreground_link_position"]', 'after_active');
-		await extensionPage.close();
+		await configureSettings({
+			foreground_link_position: 'after_active'
+		});
 
 		// Create a new tab (simulate foreground creation)
 		const page2 = await context.newPage();
@@ -19,44 +18,41 @@ test.describe('Tab Creation Behavior', () => {
 		expect(page2).toBeTruthy();
 	});
 
-	test('should place new foreground tab before the active tab', async ({ context, extensionId }) => {
+	test('should place new foreground tab before the active tab', async ({ context, extensionId, configureSettings }) => {
 		const page1 = await context.newPage();
 		await page1.bringToFront();
 
 		// Configure setting
-		const extensionPage = await context.newPage();
-		await extensionPage.goto(`chrome-extension://${extensionId}/options.html?context=page`);
-		await extensionPage.selectOption('select[name="foreground_link_position"]', 'before_active');
-		await extensionPage.close();
+		await configureSettings({
+			foreground_link_position: 'before_active'
+		});
 
 		const page2 = await context.newPage();
 		await page2.bringToFront();
 		expect(page2).toBeTruthy();
 	});
 
-	test('should place new foreground tab at the end of window', async ({ context, extensionId }) => {
+	test('should place new foreground tab at the end of window', async ({ context, extensionId, configureSettings }) => {
 		const page1 = await context.newPage();
 
 		// Configure setting: foreground_link_position = 'window_last'
-		const extensionPage = await context.newPage();
-		await extensionPage.goto(`chrome-extension://${extensionId}/options.html?context=page`);
-		await extensionPage.selectOption('select[name="foreground_link_position"]', 'window_last');
-		await extensionPage.close();
+		await configureSettings({
+			foreground_link_position: 'window_last'
+		});
 
 		// Create a new page (simulated foreground)
 		const page3 = await context.newPage();
 		expect(page3).toBeTruthy();
 	});
 
-	test('should place new background tab at the start of window', async ({ context, extensionId }) => {
+	test('should place new background tab at the start of window', async ({ context, extensionId, configureSettings }) => {
 		const page1 = await context.newPage();
 		await page1.goto('http://example.com/1');
 
 		// Configure setting: background_link_position = 'window_first'
-		const extensionPage = await context.newPage();
-		await extensionPage.goto(`chrome-extension://${extensionId}/options.html?context=page`);
-		await extensionPage.selectOption('select[name="background_link_position"]', 'window_first');
-		await extensionPage.close();
+		await configureSettings({
+			background_link_position: 'window_first'
+		});
 
 		// Create a link and click it with modifier to open in background
 		// Mac: Meta, Windows/Linux: Control

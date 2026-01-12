@@ -3,6 +3,7 @@ import { test as base, chromium, type BrowserContext, expect } from '@playwright
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import { type ExtensionSettings } from '../src/shared/settings';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -10,6 +11,7 @@ const __dirname = path.dirname(__filename);
 export const test = base.extend<{
 	context: BrowserContext;
 	extensionId: string;
+	configureSettings: (settings: Partial<ExtensionSettings>) => Promise<void>;
 }>({
 	context: async ({ }, use) => {
 		const pathToExtension = path.join(__dirname, '../dist');
@@ -56,6 +58,33 @@ export const test = base.extend<{
 
 		const extensionId = background.url().split('/')[2];
 		await use(extensionId);
+	},
+	configureSettings: async ({ context, extensionId }, use) => {
+		await use(async (settings: Partial<ExtensionSettings>) => {
+			const extensionPage = await context.newPage();
+			await extensionPage.goto(`chrome-extension://${extensionId}/options.html?context=page`);
+
+			for (const [key, value] of Object.entries(settings)) {
+				// Handle advanced settings which are inside a details element
+				if (key.startsWith('_')) {
+					// Ensure advanced settings are visible
+					const details = extensionPage.locator('details');
+					if (await details.isVisible()) {
+						if (!(await details.evaluate((el: HTMLDetailsElement) => el.open))) {
+							await details.locator('summary').click();
+						}
+					}
+				}
+
+				if (typeof value === 'boolean') {
+					await extensionPage.locator(`input[name="${key}"]`).setChecked(value);
+				} else {
+					await extensionPage.selectOption(`select[name="${key}"]`, String(value), { force: true });
+				}
+			}
+
+			await extensionPage.close();
+		});
 	},
 });
 
