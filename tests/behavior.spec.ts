@@ -49,18 +49,60 @@ test.describe('Tab Creation Behavior', () => {
 		expect(page3).toBeTruthy();
 	});
 
-	test('should place new foreground tab at the start of window', async ({ context, extensionId }) => {
+	test('should place new background tab at the start of window', async ({ context, extensionId }) => {
 		const page1 = await context.newPage();
+		await page1.goto('http://example.com/1');
 
-		// Configure setting: foreground_link_position = 'window_first'
+		// Configure setting: background_link_position = 'window_first'
 		const extensionPage = await context.newPage();
 		await extensionPage.goto(`chrome-extension://${extensionId}/options.html?context=page`);
-		await extensionPage.selectOption('select[name="foreground_link_position"]', 'window_first');
+		await extensionPage.selectOption('select[name="background_link_position"]', 'window_first');
 		await extensionPage.close();
 
-		// Create a new page (simulated foreground)
-		const page3 = await context.newPage();
-		expect(page3).toBeTruthy();
+		// Create a link and click it with modifier to open in background
+		// Mac: Meta, Windows/Linux: Control
+		const modifier = process.platform === 'darwin' ? 'Meta' : 'Control';
+
+		await page1.evaluate(() => {
+			const a = document.createElement('a');
+			a.href = 'http://example.com/3';
+			a.id = 'bg-link';
+			a.innerText = 'Click Me';
+			document.body.appendChild(a);
+		});
+
+		await page1.keyboard.down(modifier);
+		await page1.click('#bg-link');
+		await page1.keyboard.up(modifier);
+
+		// Wait for the new tab to exist
+		// Note: handling expected background tab behavior in Playwright can be tricky if not headless
+		// But in headless = new, it should work.
+		// We explicitly wait for the page to be part of the context
+		let page3 = await context.waitForEvent('page');
+		// Even if verify fails, we want to know what happened
+		try {
+			await page3.waitForLoadState();
+		} catch (e) {
+			// ignore timeouts if about:blank
+		}
+
+		// Allow extension logic to run
+		await page1.waitForTimeout(1000);
+
+		const [background] = context.serviceWorkers();
+
+		const urls = await background.evaluate(async () => {
+			const tabs = await (self as any).chrome.tabs.query({ lastFocusedWindow: true });
+			tabs.sort((a: any, b: any) => a.index - b.index);
+			return tabs.map((t: any) => t.url);
+		});
+
+		// If working: [example.com/3, example.com/1] (since 3 moved to 0)
+		// Or: [example.com/3, blank, example.com/1] ?
+		// Depending on where it was inserted initially.
+		// We just check if urls[0] is the background one.
+		expect(urls[0]).toContain('example.com/3');
 	});
 });
 
@@ -117,6 +159,7 @@ test.describe('Tab Activation Behavior', () => {
 
 		// Activate middle one
 		await page2.bringToFront();
+		await page2.waitForTimeout(200); // Ensure extension sees activation
 
 		// Configure setting: after_close_activation = 'window_first'
 		const extensionPage = await context.newPage();
@@ -128,7 +171,11 @@ test.describe('Tab Activation Behavior', () => {
 		await page2.close();
 
 		// Give extension time to react
-		await page1.waitForTimeout(100);
+		await page1.waitForTimeout(500);
+
+		// Assert page1 is active
+		const isPage1Active = await page1.evaluate(() => document.visibilityState === 'visible');
+		expect(isPage1Active).toBe(true);
 	});
 
 	test('should activate the last tab in window after closing', async ({ context, extensionId }) => {

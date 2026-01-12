@@ -12,7 +12,8 @@
 		"lint:locales": "node scripts/locales.ts",
 		"test": "playwright test",
 		"test:coverage": "COVERAGE=true npm-run-all clean build test report:coverage",
-		"report:coverage": "nyc report --reporter=html --reporter=text"
+		"report:coverage": "nyc report --reporter=html --reporter=text",
+		"open:coverage": "open coverage/index.html"
 	},
 	"type": "module",
 	"devDependencies": {

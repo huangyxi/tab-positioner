@@ -26,6 +26,15 @@ export const test = base.extend<{
 			headless: false,
 			args,
 		});
+
+		// Enable Debug Mode for improved coverage
+		const [background] = context.serviceWorkers().length ? context.serviceWorkers() : [await context.waitForEvent('serviceworker')];
+		await background.evaluate(() => {
+			return new Promise<void>((resolve) => {
+				(self as any).chrome.storage.sync.set({ '_debug_mode': true }, resolve);
+			});
+		});
+
 		await use(context);
 
 		if (process.env.COVERAGE) {
