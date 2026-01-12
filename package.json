@@ -9,18 +9,23 @@
 		"lint:editorconfig": "editorconfig-checker",
 		"lint:css": "stylelint 'src/**/*.scss'",
 		"lint:ts": "tsc --noEmit",
-		"lint:locales": "node scripts/locales.ts"
+		"lint:locales": "node scripts/locales.ts",
+		"test": "playwright test",
+		"test:coverage": "COVERAGE=true npm-run-all clean build test report:coverage",
+		"report:coverage": "nyc report --reporter=html --reporter=text"
 	},
 	"type": "module",
 	"devDependencies": {
 		"@11ty/eleventy": "^3.1.2",
 		"@11ty/eleventy-utils": "^2.0.7",
+		"@playwright/test": "^1.57.0",
 		"@types/node": "^25.0.6",
 		"@zip.js/zip.js": "^2.8.14",
 		"chrome-types": "^0.1.409",
 		"editorconfig-checker": "^6.1.1",
 		"jsx-async-runtime": "^2.0.2",
 		"npm-run-all2": "^8.0.4",
+		"nyc": "^17.1.0",
 		"sass": "^1.97.2",
 		"sharp": "^0.34.5",
 		"stylelint": "^16.26.1",
@@ -28,6 +33,7 @@
 		"tsx": "^4.21.0",
 		"typescript": "^5.9.3",
 		"vite": "^7.3.1",
-		"vite-plugin-banner": "^0.8.1"
+		"vite-plugin-banner": "^0.8.1",
+		"vite-plugin-istanbul": "^7.2.1"
 	}
 }

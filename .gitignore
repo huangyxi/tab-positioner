@@ -17,3 +17,7 @@ node_modules/
 # Temporary files
 *.tmp
 *.swp
+playwright-report/
+test-results/
+.nyc_output/
+coverage/
