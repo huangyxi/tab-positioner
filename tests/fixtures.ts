@@ -13,7 +13,7 @@ export const test = base.extend<{
 }>({
 	context: async ({ }, use) => {
 		const pathToExtension = path.join(__dirname, '../dist');
-		const headless = process.env.HEADLESS === 'true' || !!process.env.CI;
+		const headless = process.env.CI !== 'false';
 		const args = [
 			`--disable-extensions-except=${pathToExtension}`,
 			`--load-extension=${pathToExtension}`,
