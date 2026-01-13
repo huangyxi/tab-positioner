@@ -5,16 +5,21 @@ import fs from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { type ExtensionSettings, SETTING_SCHEMAS } from '../src/shared/settings';
 
+export { expect };
+export type { ExtensionSettings };
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const test = base.extend<{
+export type Fixtures = {
 	context: BrowserContext;
 	background: Worker;
 	extensionId: string;
 	configureSettings: (settings: Partial<ExtensionSettings>) => Promise<void>;
 	getTabs: () => Promise<api.tabs.Tab[]>;
-}>({
+};
+
+export const test = base.extend<Fixtures>({
 	context: async ({ }, use) => {
 		const pathToExtension = path.join(__dirname, '../dist');
 		const headless = JSON.parse(process.env.CI ?? 'false');
@@ -94,4 +99,6 @@ export const test = base.extend<{
 	},
 });
 
-export { expect };
+// type TestArgs = Parameters<typeof test>;
+// type TestCallback = TestArgs extends [any, any, infer CB, ...any[]] ? CB : TestArgs extends [any, infer CB, ...any[]] ? CB : never;
+// export type Fixtures = Parameters<Extract<TestCallback, (...args: any) => any>>[0];
