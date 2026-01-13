@@ -11,7 +11,7 @@
 		"lint:css": "stylelint 'src/**/*.scss'",
 		"lint:locales": "node scripts/locales.ts",
 		"typecheck": "tsc --noEmit",
-		"test": "npm-run-all test:deps test:build \"test:run {@}\" test:report --",
+		"test": "npm-run-all test:deps test:build \"test:run {@}\" test:coverage --",
 		"test:deps": "playwright install --with-deps",
 		"test:build": "npm-run-all build",
 		"test:run": "playwright test",
