@@ -3,6 +3,7 @@
 [![Chrome Web Store](https://img.shields.io/chrome-web-store/v/ejlekdhgfefgeoobnnfgmafagedicagj?label=Chrome%20Web%20Store&logo=googlechrome)](https://chromewebstore.google.com/detail/ejlekdhgfefgeoobnnfgmafagedicagj)
 [![GitHub Release](https://img.shields.io/github/v/release/huangyxi/tab-positioner?label=Release&logo=github)](https://github.com/huangyxi/tab-positioner/releases/latest)
 [![Actions](https://img.shields.io/github/actions/workflow/status/huangyxi/tab-positioner/ci.yml?label=Actions&logo=github&branch=main)](https://github.com/huangyxi/tab-positioner/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/huangyxi/tab-positioner/branch/main/graph/badge.svg)](https://codecov.io/gh/huangyxi/tab-positioner/branch/main)
 ![GitHub repo size](https://img.shields.io/github/repo-size/huangyxi/tab-positioner)
 <!-- [![Actions](https://github.com/huangyxi/tab-positioner/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/huangyxi/tab-positioner/actions/workflows/ci.yml) -->
 
