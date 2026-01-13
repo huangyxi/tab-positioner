@@ -110,9 +110,9 @@ test.describe('Tab Creation Behavior', () => {
 			expectedOrder: [PAGE('new'), PAGE(0), PAGE(1), PAGE(2), PAGE(3)],
 		}
 	].forEach(({ title, settings, action, expectedOrder }) => {
-		test(title, async (fixtures) => {
+		test(title, async ({ context, configureSettings, getTabs }) => {
 			await verifyTabCreation(
-				fixtures,
+				{ context, configureSettings, getTabs },
 				settings,
 				action,
 				expectedOrder,
