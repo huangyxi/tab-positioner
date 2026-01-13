@@ -27,7 +27,7 @@ jobs:
       with:
         node-version: '24'
         cache: 'pnpm'
-    - name: Install dependencies
+    - name: Install pnpm dependencies
       run: pnpm install
     - name: Cache editorconfig-checker binary
       uses: actions/cache@v5
@@ -35,6 +35,8 @@ jobs:
         key: ec-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
         path: |
           node_modules/editorconfig-checker/bin/latest
+    - name: Install Playwright dependencies
+      run: pnpm run test:deps
     - name: Lint files
       run: |
         pnpm run lint
