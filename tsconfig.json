@@ -24,6 +24,7 @@
 		"src",
 		"utils",
 		"scripts",
+		"tests",
 		"_locales/*/messages.json",
 	],
 	"exclude": [

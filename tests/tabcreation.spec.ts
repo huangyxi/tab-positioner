@@ -1,11 +1,11 @@
 import { test, expect } from './fixtures';
-import { TEST_TIMEOUT } from './constants';
+import { PAGE, TEST_TIMEOUT } from './constants';
 
 test.describe('Tab Creation Behavior', () => {
-	test('should place new foreground tab after the active tab', async ({ context, extensionId, configureSettings, getTabs }) => {
+	test('should place new foreground tab after the active tab', async ({ context, configureSettings, getTabs }) => {
 		// Setup: Ensure we have at least one tab
 		const page1 = await context.newPage();
-		await page1.goto('http://example.com/1');
+		await page1.goto(PAGE(1));
 		await page1.bringToFront();
 
 		// Configure setting: foreground_link_position = 'after_active'
@@ -15,7 +15,7 @@ test.describe('Tab Creation Behavior', () => {
 
 		// Create a new tab (simulate foreground creation)
 		const page2 = await context.newPage();
-		await page2.goto('http://example.com/2');
+		await page2.goto(PAGE(2));
 		await page2.bringToFront();
 
 		// Allow extension logic to run
@@ -26,16 +26,16 @@ test.describe('Tab Creation Behavior', () => {
 		// Since page1 was active, page2 should be at index of page1 + 1
 		// Current tabs: [extension (bg?), page1, page2] or something.
 		// Let's filter by url to be safe
-		const testTabs = tabs.filter(t => t.url.includes('example.com'));
+		const testTabs = tabs.filter(t => t.url?.includes(PAGE()));
 		expect(testTabs.length).toBe(2);
-		expect(testTabs[0].url).toContain('example.com/1');
-		expect(testTabs[1].url).toContain('example.com/2');
+		expect(testTabs[0].url).toContain(PAGE(1));
+		expect(testTabs[1].url).toContain(PAGE(2));
 		expect(testTabs[1].index).toBeGreaterThan(testTabs[0].index);
 	});
 
 	test('should place new foreground tab before the active tab', async ({ context, extensionId, configureSettings, getTabs }) => {
 		const page1 = await context.newPage();
-		await page1.goto('http://example.com/1');
+		await page1.goto(PAGE(1));
 		await page1.bringToFront();
 
 		// Configure setting
@@ -44,23 +44,23 @@ test.describe('Tab Creation Behavior', () => {
 		});
 
 		const page2 = await context.newPage();
-		await page2.goto('http://example.com/2');
+		await page2.goto(PAGE(2));
 		await page2.bringToFront();
 
 		await page1.waitForTimeout(TEST_TIMEOUT);
 
 		const tabs = await getTabs();
-		const testTabs = tabs.filter(t => t.url.includes('example.com'));
+		const testTabs = tabs.filter(t => t.url?.includes(PAGE()));
 		expect(testTabs.length).toBe(2);
 		// Expect: [page2, page1]
-		expect(testTabs[0].url).toContain('example.com/2');
-		expect(testTabs[1].url).toContain('example.com/1');
+		expect(testTabs[0].url).toContain(PAGE(2));
+		expect(testTabs[1].url).toContain(PAGE(1));
 		expect(testTabs[0].index).toBeLessThan(testTabs[1].index);
 	});
 
 	test('should place new foreground tab at the end of window', async ({ context, extensionId, configureSettings, getTabs }) => {
 		const page1 = await context.newPage();
-		await page1.goto('http://example.com/1');
+		await page1.goto(PAGE(1));
 
 		// Configure setting: foreground_link_position = 'window_last'
 		await configureSettings({
@@ -69,20 +69,20 @@ test.describe('Tab Creation Behavior', () => {
 
 		// Create a new page (simulated foreground)
 		const page3 = await context.newPage();
-		await page3.goto('http://example.com/3');
+		await page3.goto(PAGE(3));
 
 		await page1.waitForTimeout(TEST_TIMEOUT);
 
 		const tabs = await getTabs();
-		const testTabs = tabs.filter(t => t.url.includes('example.com'));
+		const testTabs = tabs.filter(t => t.url?.includes(PAGE()));
 		// Should be last
 		const lastTab = testTabs[testTabs.length - 1];
-		expect(lastTab.url).toContain('example.com/3');
+		expect(lastTab.url).toContain(PAGE(3));
 	});
 
 	test('should place new background tab at the start of window', async ({ context, extensionId, configureSettings, getTabs }) => {
 		const page1 = await context.newPage();
-		await page1.goto('http://example.com/1');
+		await page1.goto(PAGE(1));
 
 		// Configure setting: background_link_position = 'window_first'
 		await configureSettings({
@@ -93,13 +93,13 @@ test.describe('Tab Creation Behavior', () => {
 		// Mac: Meta, Windows/Linux: Control
 		const modifier = process.platform === 'darwin' ? 'Meta' : 'Control';
 
-		await page1.evaluate(() => {
+		await page1.evaluate((url) => {
 			const a = document.createElement('a');
-			a.href = 'http://example.com/3';
+			a.href = url;
 			a.id = 'bg-link';
 			a.innerText = 'Click Me';
 			document.body.appendChild(a);
-		});
+		}, PAGE(3));
 
 		await page1.keyboard.down(modifier);
 		await page1.click('#bg-link');
@@ -117,11 +117,11 @@ test.describe('Tab Creation Behavior', () => {
 		await page1.waitForTimeout(TEST_TIMEOUT);
 
 		const tabs = await getTabs();
-		const testTabs = tabs.filter(t => t.url.includes('example.com'));
+		const testTabs = tabs.filter(t => t.url?.includes(PAGE()));
 
 		// Expect: [page3, page1]
-		expect(testTabs[0].url).toContain('example.com/3');
-		expect(testTabs[1].url).toContain('example.com/1');
+		expect(testTabs[0].url).toContain(PAGE(3));
+		expect(testTabs[1].url).toContain(PAGE(1));
 		expect(testTabs[0].index).toBeLessThan(testTabs[1].index);
 	});
 });

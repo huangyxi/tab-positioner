@@ -13,6 +13,8 @@ interface VitePluginOptions {
 	banner: string;
 	/** Version of the extension */
 	version: string;
+	/** Whether to instrument code for coverage */
+	coverage: boolean;
 }
 
 const DEFAULT_OPTIONS: VitePluginOptions = {
@@ -20,6 +22,7 @@ const DEFAULT_OPTIONS: VitePluginOptions = {
 	minify: false,
 	banner: '',
 	version: 'v0.0.0.1',
+	coverage: true,
 };
 
 class VitePlugin {
@@ -57,7 +60,7 @@ class VitePlugin {
 					outDir: this.directories.output,
 					emptyOutDir: false, // Keep Eleventy passthroughed files
 					minify: this.options.minify, // Disable minification for potential faster reviews
-					sourcemap: !!process.env.COVERAGE,
+					sourcemap: this.options.coverage,
 					rollupOptions: {
 						input: this.options.entries,
 						output: {
@@ -69,9 +72,8 @@ class VitePlugin {
 				},
 				plugins: [
 					banner(this.options.banner),
-					process.env.COVERAGE ? istanbul({
+					this.options.coverage ? istanbul({
 						include: 'src/**',
-						exclude: ['node_modules', 'tests/', 'dist/'],
 						extension: ['.ts', '.tsx'],
 						requireEnv: false,
 						forceBuildInstrument: true,

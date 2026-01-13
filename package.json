@@ -5,15 +5,18 @@
 		"dev": "eleventy --watch",
 		"clean": "node scripts/clean.ts",
 		"release": "npm-run-all --continue-on-error clean build \"package {@}\" --",
+		"check": "npm-run-all --continue-on-error lint typecheck test",
 		"lint": "npm-run-all --continue-on-error lint:*",
 		"lint:editorconfig": "editorconfig-checker",
 		"lint:css": "stylelint 'src/**/*.scss'",
-		"lint:ts": "tsc --noEmit",
 		"lint:locales": "node scripts/locales.ts",
-		"test": "playwright test",
-		"test:coverage": "COVERAGE=true npm-run-all clean build test report:coverage",
-		"report:coverage": "nyc report --reporter=html --reporter=text",
-		"open:coverage": "open coverage/index.html"
+		"typecheck": "tsc --noEmit",
+		"test": "npm-run-all test:*",
+		"test:deps": "playwright install --with-deps",
+		"test:build": "npm-run-all build",
+		"test:run": "playwright test --workers=1",
+		"test:report": "nyc report --reporter=lcov --reporter=html --reporter=text",
+		"report:coverage": "nyc report --reporter=html --reporter=text"
 	},
 	"type": "module",
 	"devDependencies": {

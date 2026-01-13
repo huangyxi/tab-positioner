@@ -1,12 +1,17 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const ci = !!JSON.parse(process.env.CI ?? 'false');
+
 export default defineConfig({
 	testDir: './tests',
 	fullyParallel: true,
-	forbidOnly: !!process.env.CI,
-	retries: process.env.CI ? 2 : 0,
-	workers: process.env.CI ? 1 : undefined,
-	reporter: [['html', { open: 'never' }]],
+	forbidOnly: ci,
+	retries: ci ? 2 : 0,
+	workers: ci ? 1 : undefined,
+	reporter: [
+		[ ci ? 'github' : 'list' ],
+		['html', { open: ci ? 'never' : 'on-failure' }],
+	],
 	use: {
 		trace: 'on-first-retry',
 	},
