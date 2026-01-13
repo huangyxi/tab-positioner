@@ -44,9 +44,7 @@ export const test = base.extend<Fixtures>({
 		const coverage = await context.serviceWorkers()[0].evaluate(() => (self as any).__coverage__);
 		if (coverage) {
 			const coveragePath = path.join(__dirname, '../.nyc_output');
-			if (!(await fs.stat(coveragePath)).isDirectory()) {
-				await fs.mkdir(coveragePath);
-			}
+			await fs.mkdir(coveragePath, { recursive: true });
 			await fs.writeFile(path.join(coveragePath, `coverage-${Date.now()}.json`), JSON.stringify(coverage));
 		}
 		await context.close();
