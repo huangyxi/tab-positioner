@@ -104,7 +104,7 @@ test.describe('Tab Creation Behavior', () => {
 			expectedOrder: [PAGE(0), PAGE(1), PAGE(2), PAGE(3), PAGE('new')],
 		},
 		{
-			title: 'background_link_position: after_active',
+			title: 'background_link_position: window_first',
 			settings: { background_link_position: 'window_first' } as const,
 			action: 'new_background' as const,
 			expectedOrder: [PAGE('new'), PAGE(0), PAGE(1), PAGE(2), PAGE(3)],

@@ -27,6 +27,7 @@ export const test = base.extend<Fixtures>({
 			`--disable-extensions-except=${pathToExtension}`,
 			`--load-extension=${pathToExtension}`,
 		];
+		// Keep both the CLI headless flag and the context headless option; removing / modifying either breaks headless runs.
 		if (headless) {
 			args.push('--headless=new');
 		}

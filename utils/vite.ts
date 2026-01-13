@@ -22,7 +22,7 @@ const DEFAULT_OPTIONS: VitePluginOptions = {
 	minify: false,
 	banner: '',
 	version: 'v0.0.0.1',
-	coverage: true,
+	coverage: false,
 };
 
 class VitePlugin {

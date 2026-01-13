@@ -50,6 +50,7 @@ async function eleventySetup(eleventyConfig){
 		minify: false, // Disable minification for potential faster reviews
 		banner: docComments(comments),
 		version: version_name,
+		coverage: !!JSON.parse(process.env.COVERAGE ?? 'false'),
 	});
 }
 
