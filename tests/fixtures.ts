@@ -36,6 +36,9 @@ export const test = base.extend<Fixtures>({
 			args,
 		});
 		const [background] = context.serviceWorkers().length ? context.serviceWorkers() : [await context.waitForEvent('serviceworker')];
+		background.on('console', msg => {
+			console.log(`  [EXTENSION][${msg.type()}] ${msg.text()}`);
+		});
 		await background.evaluate(() => {
 			return new Promise<void>((resolve) => {
 				(self as any).chrome.storage.sync.set({ '_debug_mode': true } satisfies Partial<ExtensionSettings>, resolve);

@@ -9,7 +9,8 @@ export default defineConfig({
 	retries: ci ? 2 : 0,
 	workers: ci ? 1 : undefined,
 	reporter: [
-		[ ci ? 'github' : 'list' ],
+		[ 'list' ],
+		[ ci ? 'github' : 'null' ],
 		['html', { open: ci ? 'never' : 'on-failure' }],
 	],
 	use: {
