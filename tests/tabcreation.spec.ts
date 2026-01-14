@@ -30,8 +30,7 @@ async function verifyTabCreation(
 	await page1.keyboard.up(modifier);
 
 	const page2 = await context.waitForEvent('page');
-	// Wait for background tab to be somewhat ready
-	try { await page2.waitForLoadState(); } catch (e) { }
+	await page2.waitForLoadState();
 
 	await configureSettings(settings);
 
@@ -67,7 +66,7 @@ async function verifyTabCreation(
 		await page1.keyboard.up(modifier);
 
 		const newPage = await context.waitForEvent('page');
-		try { await newPage.waitForLoadState(); } catch (e) { }
+		await newPage.waitForLoadState();
 	}
 
 	await page1.waitForTimeout(TEST_TIMEOUT);

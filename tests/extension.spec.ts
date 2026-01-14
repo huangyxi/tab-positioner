@@ -1,6 +1,7 @@
 import { test, expect } from './fixtures';
 
-test('Options page should load', async ({ page, extensionId }) => {
+test('Options page should load', async ({ context, extensionId }) => {
+	const page = await context.newPage();
 	await page.goto(`chrome-extension://${extensionId}/options.html?context=page`);
 	await page.waitForLoadState('domcontentloaded');
 	expect(page.url()).toContain('options.html?context=page');
@@ -9,7 +10,8 @@ test('Options page should load', async ({ page, extensionId }) => {
 	await expect(controls.first()).toBeVisible();
 });
 
-test('Popup should load', async ({ page, extensionId }) => {
+test('Popup should load', async ({ context, extensionId }) => {
+	const page = await context.newPage();
 	await page.goto(`chrome-extension://${extensionId}/options.html?context=popup`);
 	await page.waitForLoadState('domcontentloaded');
 	expect(page.url()).toContain('options.html?context=popup');

@@ -97,7 +97,3 @@ export const test = base.extend<Fixtures>({
 		});
 	},
 });
-
-// type TestArgs = Parameters<typeof test>;
-// type TestCallback = TestArgs extends [any, any, infer CB, ...any[]] ? CB : TestArgs extends [any, infer CB, ...any[]] ? CB : never;
-// export type Fixtures = Parameters<Extract<TestCallback, (...args: any) => any>>[0];

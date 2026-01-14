@@ -38,7 +38,7 @@ async function verifyPopupPosition(
 
 	await page1.close();
 	if (!popup.isClosed()) await popup.close();
-};
+}
 
 test.describe('Popup Behavior', () => {
 	[

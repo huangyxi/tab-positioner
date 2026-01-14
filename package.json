@@ -13,8 +13,8 @@
 		"typecheck": "tsc --noEmit",
 		"test": "npm-run-all test:deps test:build \"test:run {@}\" test:coverage --",
 		"test:deps": "playwright install --with-deps",
-		"test:build": "COVERAGE=true npm-run-all build",
-		"test:run": "playwright test",
+		"test:build": "npm-run-all build -- --coverage",
+		"test:run": "playwright test --workers=1",
 		"test:coverage": "nyc report --reporter=lcov --reporter=html --reporter=text"
 	},
 	"type": "module",
