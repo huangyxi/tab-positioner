@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
 export type Fixtures = {
 	context: BrowserContext;
 	extensionWorker: Worker;
-	extensionId: string;
+	extensionOrigin: string;
 	configureSettings: (settings: Partial<ExtensionSettings>) => Promise<void>;
 	getTabs: () => Promise<api.tabs.Tab[]>;
 };
@@ -39,13 +39,13 @@ export const test = base.extend<Fixtures>({
 		extensionWorker.on('console', msg => {
 			console.log(`  [EXTENSION][${msg.type()}] ${msg.text()}`);
 		});
-		await extensionWorker.evaluate(() => {
-			return new Promise<void>((resolve) => {
-				(self as any).chrome.storage.sync.set({ '_debug_mode': true } satisfies Partial<ExtensionSettings>, resolve);
-			});
+		await extensionWorker.evaluate(async () => {
+			await chrome.storage.sync.set({
+				_debug_mode: true,
+			} satisfies Partial<ExtensionSettings>);
 		});
 		await use(context);
-		const coverage = await context.serviceWorkers()[0].evaluate(() => (self as any).__coverage__);
+		const coverage = await extensionWorker.evaluate(() => (self as any).__coverage__);
 		if (coverage) {
 			const coveragePath = path.join(__dirname, '../.nyc_output');
 			await fs.mkdir(coveragePath, { recursive: true });
@@ -54,17 +54,18 @@ export const test = base.extend<Fixtures>({
 		await context.close();
 	},
 	extensionWorker: async ({ context }, use) => {
-		const [serviceworker] = context.serviceWorkers().length ? context.serviceWorkers() : [await context.waitForEvent('serviceworker')];
+		const [serviceworker] = context.serviceWorkers();
 		await use(serviceworker);
 	},
-	extensionId: async ({ extensionWorker }, use) => {
-		const extensionId = extensionWorker.url().split('/')[2];
-		await use(extensionId);
+	extensionOrigin: async ({ extensionWorker }, use) => {
+		const extensionUri = extensionWorker.url(); // `chrome-extension://${extensionId}/background.js`;
+		const extensionOrigin = extensionUri.split('/').slice(0, 3).join('/');
+		await use(extensionOrigin);
 	},
-	configureSettings: async ({ context, extensionId }, use) => {
+	configureSettings: async ({ context, extensionOrigin }, use) => {
 		await use(async (settings: Partial<ExtensionSettings>) => {
 			const extensionPage = await context.newPage();
-			await extensionPage.goto(`chrome-extension://${extensionId}/options.html?context=page`);
+			await extensionPage.goto(`${extensionOrigin}/options.html?context=page`);
 			for (const [key, value] of Object.entries(settings)) {
 				if (key.startsWith('_')) {
 					const details = extensionPage.locator('details');
