@@ -28,8 +28,8 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install
-      - name: Lint files
-        run: pnpm run lint
+      - name: Check files
+        run: pnpm run check
       - name: Build project
         run: |
           pnpm run build --output ${{ vars.OUTDIR }}

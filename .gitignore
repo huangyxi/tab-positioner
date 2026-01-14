@@ -5,6 +5,12 @@ dist/
 *.crx
 *.pem
 
+# Test output
+playwright-report/
+test-results/
+.nyc_output/
+coverage/
+
 # Node.js dependencies
 node_modules/
 

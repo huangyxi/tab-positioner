@@ -1,6 +1,8 @@
 import { Merge } from '@11ty/eleventy-utils';
 import { build as viteBuild } from 'vite';
+import type { PluginOption } from 'vite';
 import banner from 'vite-plugin-banner';
+import istanbul from 'vite-plugin-istanbul';
 
 interface VitePluginOptions {
 	/** Entry points for the Vite build */
@@ -11,6 +13,8 @@ interface VitePluginOptions {
 	banner: string;
 	/** Version of the extension */
 	version: string;
+	/** Whether to instrument code for coverage */
+	coverage: boolean;
 }
 
 const DEFAULT_OPTIONS: VitePluginOptions = {
@@ -18,6 +22,7 @@ const DEFAULT_OPTIONS: VitePluginOptions = {
 	minify: false,
 	banner: '',
 	version: 'v0.0.0.1',
+	coverage: false,
 };
 
 class VitePlugin {
@@ -55,6 +60,7 @@ class VitePlugin {
 					outDir: this.directories.output,
 					emptyOutDir: false, // Keep Eleventy passthroughed files
 					minify: this.options.minify, // Disable minification for potential faster reviews
+					sourcemap: this.options.coverage,
 					rollupOptions: {
 						input: this.options.entries,
 						output: {
@@ -66,7 +72,13 @@ class VitePlugin {
 				},
 				plugins: [
 					banner(this.options.banner),
-				],
+					this.options.coverage ? istanbul({
+						include: 'src/**',
+						extension: ['.ts', '.tsx'],
+						requireEnv: false,
+						forceBuildInstrument: true,
+					}) : undefined,
+				].filter(Boolean) as PluginOption[],
 			});
 			this.logger.logWithOptions({
 				prefix: VitePlugin.LOGGER_PREFIX,
