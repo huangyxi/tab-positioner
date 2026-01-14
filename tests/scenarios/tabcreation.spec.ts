@@ -1,5 +1,5 @@
-import { test, expect, type Fixtures, type ExtensionSettings } from './fixtures';
-import { PAGE, TEST_TIMEOUT } from './constants';
+import { test, expect, type Fixtures, type ExtensionSettings } from '../fixtures';
+import { PAGE, TEST_TIMEOUT } from '../constants';
 
 async function verifyTabCreation(
 	fixtures: Partial<Fixtures>,

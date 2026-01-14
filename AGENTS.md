@@ -28,37 +28,41 @@ The project is organized as follows:
 - **`root`**:
 	- `manifest.json`: The Manifest V3 configuration. **Source of Truth** for extension metadata, permissions, and entry points.
 	- `eleventy.config.mjs`: Main build configuration file. Defines how `src` files are processed into `dist`.
+	- `package.json`: Node.js project configuration. Lists dependencies, scripts, and metadata.
 	- `tsconfig.json`: TypeScript configuration.
 	- `TESTING.md`: Manual testing checklist.
-
 - **`src/`**: Source code directory.
 	- **`background/`**: Contains the code for the extension's Service Worker (Background Script).
 		- `main.ts`: Entry point. Initializes `Listeners`, `SyncSettings`, and `TabsInfo`.
+		- `syncsettings.ts`: Synchronizes settings from `chrome.storage` into memory/session for fast access.
+		- `tabsinfo.ts`: Maintains state about tabs to support decision making (e.g. creation delay, recent tabs).
+		- `tabmover.ts`: Core logic for moving normal and popup tabs (`tabMover`).
 		- `tabcreation.ts`: Core logic for where to place new tabs (`createdTabMover`).
 		- `tabactivation.ts`: Core logic for which tab to activate after closing one (`tabRemovedActivater`).
-		- `tabsinfo.ts`: Maintains state about tabs to support decision making (e.g. creation delay, recent tabs).
+		- `popupcreation.ts`: Core logic for handling popup tab creation (`createdPopupMover`).
 	- **`options/`**: Contains code for the Extension Options Page and Popup.
 		- `index.tsx`: Main UI entry point (JSX).
 		- `options.ts`: Logic for loading/saving settings and form interactions.
 		- `settings.tsx`: Dynamically generates UI components based on the shared setting schemas.
 		- `options.scss`: Stylesheets.
 	- **`shared/`**: Shared utilities and constants used by both background and options contexts.
-		- `constants.ts`: Global constants (e.g., delays, magic URLs).
+		- `constants.ts`: Global constants (e.g., delays, magic URIs).
 		- `i18n.ts`: Type-safe i18n helpers. Imports English messages for compile-time key validation.
-		- `listeners.ts`: Wrapper for Chrome events. It forces async listener callbacks to execute synchronously (sequentially).
+		- `listeners.ts`: Wrapper for Chrome events. It forces async listener callbacks to execute synchronously and sequentially.
 		- `session.ts`: Base class for synchronizing singleton state with `chrome.storage.session`.
 		- `settings.ts`: **Critical File**. Defines `ExtensionSettings`, `SETTING_SCHEMAS`, and default values.
 		- `storage.ts`: Handles reading/writing to `chrome.storage`.
 	- **`types/`**: TypeScript type definitions.
-
 - **`scripts/`**: Build and maintenance scripts.
-	- `clean.ts`
-	- `locales.ts`
-	- `package.ts`
-	- `package.sh`
+	- `clean.ts`: Cleans the `dist/` directory.
+	- `locales.ts`: Validates i18n locale files against the English base.
+	- `package.ts`: Packages the extension into a `.zip` for the Chrome Web Store.
+	- `package.sh`: Bash alternative to `package.ts` (NOT preferred).
 - **`tests/`**: Automated Playwright tests.
-	- `extension.spec.ts`: Main test specification.
 	- `fixtures.ts`: Test fixtures.
+	- `constants.ts`: Test constants (e.g., delays, URIs).
+	- `extension.spec.ts`: Basic extension loading test.
+	- `scenarios/*.spec.ts`: Test scenarios organized by feature.
 - **`utils/`**: Utilities used by the **build process** (Eleventy plugins, git info, etc.).
 	- `comments.ts`
 	- `gitinfo.ts`
@@ -87,6 +91,9 @@ The project is organized as follows:
 - **Tab Activation** (`src/background/tabactivation.ts`):
 	- Triggered when a tab is closed.
 	- Calculates the next tab to activate based on the `after_close_activation` setting (e.g., `before_removed`, `window_last`).
+- **Popup Creation** (`src/background/popupcreation.ts`):
+	- Handles special cases for popup tabs.
+	- Uses `createdPopupMover` to place popups following specific rules from `foreground_link_position` and `background_link_position`.
 
 ### Options UI
 - **Dynamic Generation**: `src/options/settings.tsx` iterates over `SETTING_SCHEMAS` to build the UI form. This means adding a new setting in `src/shared/settings.ts` automatically adds it to the UI.
@@ -97,7 +104,7 @@ The project is organized as follows:
 - **Source of Truth**: `_locales/en/messages.json` is the base for all keys.
 - **Type Safety**: `src/shared/i18n.ts` imports the English messages to generate the `I18nKey` type, ensuring compile-time safety for message keys.
 - **Component Helpers**: Helper functions `_` (getMessage) and `_a` (createI18nAttribute) are used in JSX components to easily bind text and attributes to i18n keys.
-- **Validation**: `pnpm lint:locales` (running `scripts/locales.ts`) ensures all other locales (`_locales/*`) have the exact same keys as the English base, preventing missing or extra keys.
+- **Validation**: `pnpm run lint:locales` (running `scripts/locales.ts`) ensures all other locales (`_locales/*/messages.json`) have the exact same keys as the English base, but with translated messages. The `description` fields should not be included in other locales than English.
 
 ## 5. Build & Development Workflow
 
@@ -109,7 +116,7 @@ pnpm install
 ### Development (Watch Mode)
 Compiles files and watches for changes.
 ```bash
-pnpm dev
+pnpm run dev
 ```
 - **Output**: The extension is built into the `dist/` directory.
 - **Load**: Load the `dist/` folder as an "Unpacked Extension" in `chrome://extensions`.
@@ -117,36 +124,34 @@ pnpm dev
 ### Production Build
 Creates a production-ready build in `dist/`.
 ```bash
-pnpm build
-```
-
-### Packaging
-Creates a `.zip` file for the Chrome Web Store.
-```bash
-pnpm release
+pnpm run build
 ```
 
 ### Checking
 Run all checks (linting, type checking, and tests).
+```bash
+CI=true pnpm run check
+```
+This command is combined with linting, type checking, and testing to ensure code quality. `CI=true` here and its sub-commands `CI=true pnpm run test` ensure that all Playwright logs are shown in the terminal instead of web UI.
+
+- **Note**: Ensure the extension is built (or run `pnpm run test:build`) before running Playwright tests.
 
 ### Manual Verification
 Refer to `TESTING.md` for a checklist of manual verification steps. Ensure all items are checked before major releases.
 
-### Testing
-Runs automated Playwright tests.
+### Packaging
+Creates a `.zip` file for the Chrome Web Store.
 ```bash
-pnpm test
+pnpm run release
 ```
-- **Note**: Ensure the extension is built (or tests are configured to point to the right build logic) before running tests.
 
 ## 6. Access Rules for AI Agents
 
 1.	**Read First**: Always read `manifest.json` and `package.json` if you are unsure about dependencies or entry points.
 2.	**Schema Driven**: If adding a setting, start in `src/shared/settings.ts` AND update `_locales/en/messages.json` (and other supported locales) with the corresponding keys. The UI will largely adapt automatically.
 3.	**Modify `src`**: Do not modify `dist` directly. Make changes in `src`.
-4.	**Test**: After making changes, run `pnpm build` to verify compilation and `pnpm test` to verify functionality.
-5.	**Check**: Run `pnpm check` before finishing tasks to ensure code compliance.
-6.	**Update Instructions**: If you discover new patterns, add files, or change the architecture, YOU MUST update this `AGENTS.md` file to keep it current.
+4.	**Check**: Run `CI=true pnpm run check` before finishing tasks to ensure code quality.
+5.	**Update Instructions**: If you discover new patterns, add files, or change the architecture, YOU MUST update this `AGENTS.md` file to keep it current.
 
 ## 7. Coding Style & Preferences
 
@@ -159,7 +164,7 @@ The project enforces strict coding styles via `.editorconfig` and linting tools.
 - **Trailing Whitespace**: Trimmed.
 - **Final Newline**: Inserted.
 - **Linting**:
-	- **Stylelint**: Standard SCSS config. Run `pnpm lint:css`.
-	- **EditorConfig**: Enforced via `editorconfig-checker`. Run `pnpm lint:editorconfig`.
+	- **Stylelint**: Standard SCSS config. Run `pnpm run lint:css`.
+	- **EditorConfig**: Enforced via `editorconfig-checker`. Run `pnpm run lint:editorconfig`.
 
 **IMPORTANT**: Always respect the **TAB** indentation in source files. Do not convert to spaces.
