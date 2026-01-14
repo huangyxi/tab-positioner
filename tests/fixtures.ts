@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename);
 
 export type Fixtures = {
 	context: BrowserContext;
-	background: Worker;
+	extensionWorker: Worker;
 	extensionId: string;
 	configureSettings: (settings: Partial<ExtensionSettings>) => Promise<void>;
 	getTabs: () => Promise<api.tabs.Tab[]>;
@@ -35,11 +35,11 @@ export const test = base.extend<Fixtures>({
 			headless: false,
 			args,
 		});
-		const [background] = context.serviceWorkers().length ? context.serviceWorkers() : [await context.waitForEvent('serviceworker')];
-		background.on('console', msg => {
+		const [extensionWorker] = context.serviceWorkers().length ? context.serviceWorkers() : [await context.waitForEvent('serviceworker')];
+		extensionWorker.on('console', msg => {
 			console.log(`  [EXTENSION][${msg.type()}] ${msg.text()}`);
 		});
-		await background.evaluate(() => {
+		await extensionWorker.evaluate(() => {
 			return new Promise<void>((resolve) => {
 				(self as any).chrome.storage.sync.set({ '_debug_mode': true } satisfies Partial<ExtensionSettings>, resolve);
 			});
@@ -53,12 +53,12 @@ export const test = base.extend<Fixtures>({
 		}
 		await context.close();
 	},
-	background: async ({ context }, use) => {
+	extensionWorker: async ({ context }, use) => {
 		const [serviceworker] = context.serviceWorkers().length ? context.serviceWorkers() : [await context.waitForEvent('serviceworker')];
 		await use(serviceworker);
 	},
-	extensionId: async ({ background }, use) => {
-		const extensionId = background.url().split('/')[2];
+	extensionId: async ({ extensionWorker }, use) => {
+		const extensionId = extensionWorker.url().split('/')[2];
 		await use(extensionId);
 	},
 	configureSettings: async ({ context, extensionId }, use) => {
@@ -91,9 +91,9 @@ export const test = base.extend<Fixtures>({
 			await extensionPage.close();
 		});
 	},
-	getTabs: async ({ background }, use) => {
+	getTabs: async ({ extensionWorker }, use) => {
 		await use(async () => {
-			return await background.evaluate(async () => {
+			return await extensionWorker.evaluate(async () => {
 				const tabs: api.tabs.Tab[] = await (self as any).chrome.tabs.query({ lastFocusedWindow: true });
 				return tabs.sort((a: any, b: any) => a.index - b.index);
 			});
