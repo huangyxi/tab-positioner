@@ -14,7 +14,7 @@ function PAGE(pageId: PageId = ''): string {
  * @returns Array of test tabs
  */
 export function filterTestTabs(tabs: chrome.tabs.Tab[]): chrome.tabs.Tab[] {
-	return tabs.filter(t => t.url?.includes('example.com'));
+	return tabs.filter(t => t.url?.includes(PAGE()));
 }
 
 /**
@@ -25,7 +25,7 @@ export function filterTestTabs(tabs: chrome.tabs.Tab[]): chrome.tabs.Tab[] {
  * @returns The tab matching the page identifier, or undefined
  */
 export function findTabByPage(tabs: chrome.tabs.Tab[], pageId: PageId): chrome.tabs.Tab | undefined {
-	return tabs.find(t => t.url?.includes(`example.com/${pageId}`));
+	return tabs.find(t => t.url?.includes(PAGE(pageId)));
 }
 
 /**
