@@ -1,6 +1,6 @@
 import { test, type Fixtures, type ExtensionSettings } from '../fixtures';
 import { TEST_TIMEOUT_MS } from '../constants';
-import { createPage, openForegroundLink, openBackgroundLink, expectTabOrder, filterTestTabs, type PageId } from '../helpers';
+import { createPage, openLink, expectTabOrder, filterTestTabs, type PageId } from '../helpers';
 
 async function verifyTabCreation(
 	fixtures: Partial<Fixtures>,
@@ -17,7 +17,7 @@ async function verifyTabCreation(
 
 	// Open the PAGE2 from PAGE1's background link
 	await page1.bringToFront();
-	const page2 = await openBackgroundLink(page1, 2, 'setup-link');
+	const page2 = await openLink(page1, 2, true);
 
 	await configureSettings(settings);
 
@@ -28,9 +28,9 @@ async function verifyTabCreation(
 	// test a new page's behavior
 	const newPageId: PageId = 'new';
 	if (action === 'new_foreground') {
-		await openForegroundLink(page1, newPageId);
+		await openLink(page1, newPageId);
 	} else if (action === 'new_background') {
-		await openBackgroundLink(page1, newPageId);
+		await openLink(page1, newPageId, true);
 	}
 
 	await page1.waitForTimeout(TEST_TIMEOUT_MS);

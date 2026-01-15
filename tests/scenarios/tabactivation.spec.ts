@@ -1,6 +1,6 @@
-import { test, expect, type Fixtures, ExtensionSettings } from '../fixtures';
+import { test, type Fixtures, ExtensionSettings } from '../fixtures';
 import { TEST_TIMEOUT_MS } from '../constants';
-import { createPage, expectActiveTab, findTabByPage, type PageId } from '../helpers';
+import { createPage, expectActiveTab, type PageId } from '../helpers';
 
 async function verifyTabActivation(
 	fixtures: Partial<Fixtures>,
@@ -11,39 +11,26 @@ async function verifyTabActivation(
 
 	await configureSettings({ after_close_activation: activationSetting });
 
-	// 1. Create P0 first (safeguard)
+	// Create P0 first (safeguard)
 	const page0 = await createPage(context, 0);
 
-	// 2. Cleanup any initial pages (about:blank) to ensure P0 is index 0
+	// Cleanup any initial pages to ensure P0 is index 0
 	const pages = context.pages();
 	for (const p of pages) {
 		if (p !== page0) await p.close();
 	}
 
-	// 3. Create P1, P2
 	const page1 = await createPage(context, 1);
 	const page2 = await createPage(context, 2);
-
-	// 4. Activate P1
 	await page1.bringToFront();
 	await page0.waitForTimeout(TEST_TIMEOUT_MS); // Sync state
 
-	// Verify P1 is active and correct setup
-	let tabs = await getTabs();
-	expectActiveTab(tabs, 1);
+	expectActiveTab(await getTabs(), 1);
 
-	// 5. Close P1
 	await page1.close();
+	await page0.waitForTimeout(TEST_TIMEOUT_MS); // Sync state
 
-	// 6. Wait for P1 to be gone from Chrome
-	await expect.poll(async () => {
-		const t = await getTabs();
-		return findTabByPage(t, 1);
-	}).toBeUndefined();
-
-	// 7. Check Activation
-	tabs = await getTabs();
-	expectActiveTab(tabs, expectedActivePage);
+	expectActiveTab(await getTabs(), expectedActivePage);
 }
 
 test.describe('Tab Activation Behavior', () => {
