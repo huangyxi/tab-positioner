@@ -40,10 +40,10 @@ async function createdTabMover(
 	const hasLoaded = tabsInfo.hasTabActivated();
 	// The above line should be executed ASAP before the new tab is activated
 	const tabId = newTab.id;
-	DEBUG && console.log('  C4. Tab ID:', tabId);
+	DEBUG && console.log('  C2. Tab ID:', tabId);
 	if (!tabId || tabId === -1) return; // api.tabs.TAB_ID_NONE
 	const nTabs = tabsInfo.getCurrentTabs(newTab.windowId).length;
-	DEBUG && console.log('  C5. Current tabs count:', nTabs);
+	DEBUG && console.log('  C3. Current tabs count:', nTabs);
 	if (nTabs <= 1) {
 		const window = await apiWindows.get(newTab.windowId);
 		if (window.type === 'popup') {
@@ -58,10 +58,10 @@ async function createdTabMover(
 		return;
 	}
 	const {setting, settingKey, tabBatchThresholdMs} = await getTabCreationSetting(newTab);
-	DEBUG && console.log('  C2. Tab creation setting:', setting);
+	DEBUG && console.log('  C4. Tab creation setting:', setting);
 	if (setting === 'default') return;
 	const delay = tabsInfo.getCreationDelay();
-	DEBUG && console.log('  C3. Creation delay:', delay);
+	DEBUG && console.log('  C5. Creation delay:', delay);
 	if (delay < tabBatchThresholdMs) {
 		return;
 	}
