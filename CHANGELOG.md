@@ -1,3 +1,4 @@
+- v0.4.3: Fixed an issue where popups were not opening in the correct position when configured to open as background tabs.
 - v0.4.2: Added a new experimental feature to open popups as tabs.
 - v0.4.1: Improved robustness when re-enabling the extension after it has been disabled, and refined i18n text on the settings page.
 - v0.4.0: Added support for a new setting to control foreground link position, and multiple languages including German, Spanish, French, Italian, Japanese, Korean, Ukrainian, and Chinese (Simplified/Traditional).

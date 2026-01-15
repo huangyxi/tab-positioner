@@ -39,14 +39,6 @@ async function createdTabMover(
 	const tabsInfo = await TabsInfo.getInstance();
 	const hasLoaded = tabsInfo.hasTabActivated();
 	// The above line should be executed ASAP before the new tab is activated
-	const {setting, settingKey, tabBatchThresholdMs} = await getTabCreationSetting(newTab);
-	DEBUG && console.log('  C2. Tab creation setting:', setting);
-	if (setting === 'default') return;
-	const delay = tabsInfo.getCreationDelay();
-	DEBUG && console.log('  C3. Creation delay:', delay);
-	if (delay < tabBatchThresholdMs) {
-		return;
-	}
 	const tabId = newTab.id;
 	DEBUG && console.log('  C4. Tab ID:', tabId);
 	if (!tabId || tabId === -1) return; // api.tabs.TAB_ID_NONE
@@ -63,6 +55,14 @@ async function createdTabMover(
 				hasLoaded,
 			);
 		}
+		return;
+	}
+	const {setting, settingKey, tabBatchThresholdMs} = await getTabCreationSetting(newTab);
+	DEBUG && console.log('  C2. Tab creation setting:', setting);
+	if (setting === 'default') return;
+	const delay = tabsInfo.getCreationDelay();
+	DEBUG && console.log('  C3. Creation delay:', delay);
+	if (delay < tabBatchThresholdMs) {
 		return;
 	}
 	DEBUG && console.log('  C6->c. Normal window, moving tab');

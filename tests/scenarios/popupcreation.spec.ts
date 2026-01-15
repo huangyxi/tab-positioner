@@ -39,12 +39,11 @@ test.describe('Popup Behavior', () => {
 			settings: { _popup_position: 'new_foreground_tab', foreground_link_position: 'window_first' } as const,
 			expectedIndex: 0,
 		},
-		// TODO: Fix this test case
-		// {
-		// 	title: '_popup_position: new_background_tab -> window_first',
-		// 	settings: { _popup_position: 'new_background_tab', background_link_position: 'window_first' } as const,
-		// 	expectedIndex: 0,
-		// },
+		{
+			title: '_popup_position: new_background_tab -> window_first',
+			settings: { _popup_position: 'new_background_tab', background_link_position: 'window_first' } as const,
+			expectedIndex: 0,
+		},
 	].forEach(({ title, settings, expectedIndex }) => {
 		test(title, async ({ context, configureSettings, getTabs }) => {
 			await verifyPopupPosition(
