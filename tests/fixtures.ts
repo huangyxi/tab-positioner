@@ -36,13 +36,57 @@ export const test = base.extend<Fixtures>({
 			args,
 		});
 		const [extensionWorker] = context.serviceWorkers().length ? context.serviceWorkers() : [await context.waitForEvent('serviceworker')];
+
 		extensionWorker.on('console', msg => {
 			console.log(`  [EXTENSION][${msg.type()}] ${msg.text()}`);
 		});
+
+		// Wait for startup to complete before setting debug mode
+		// This prevents a race condition where startup's saveSettings() overwrites our debug mode setting
+		// We poll the session storage to determine when SyncSettings has completed initialization
+		await extensionWorker.evaluate(async () => {
+			const maxWaitMs = 2000;
+			const pollIntervalMs = 50;
+			const startTime = Date.now();
+
+			while (Date.now() - startTime < maxWaitMs) {
+				try {
+					// Check if SyncSettings instance exists in session storage
+					// The SessionSingleton base class stores a flag at 'ClassName:_instances'
+					const sessionData = await chrome.storage.session.get('SyncSettings:_instances');
+					if (sessionData['SyncSettings:_instances']) {
+						// SyncSettings is initialized and has saved its state
+						break;
+					}
+				} catch (e) {
+					// Session storage might not be ready yet
+				}
+				await new Promise(resolve => setTimeout(resolve, pollIntervalMs));
+			}
+		});
+
+		// Set debug mode in storage - the storage change listener will update the DEBUG variable
 		await extensionWorker.evaluate(async () => {
 			await chrome.storage.sync.set({
 				_debug_mode: true,
 			} satisfies Partial<ExtensionSettings>);
+
+			// Wait for the DEBUG variable to actually be updated
+			// This is more reliable than a fixed timeout
+			const maxWaitMs = 500;
+			const pollIntervalMs = 10;
+			const startTime = Date.now();
+
+			while (Date.now() - startTime < maxWaitMs) {
+				// Check if debug mode is actually enabled by checking storage
+				const result = await chrome.storage.sync.get('_debug_mode');
+				if (result._debug_mode === true) {
+					// Give the storage listener a moment to process and update DEBUG
+					await new Promise(resolve => setTimeout(resolve, 50));
+					break;
+				}
+				await new Promise(resolve => setTimeout(resolve, pollIntervalMs));
+			}
 		});
 		await use(context);
 		const coverage = await extensionWorker.evaluate(() => (self as any).__coverage__);
