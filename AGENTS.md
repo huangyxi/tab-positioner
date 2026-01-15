@@ -60,6 +60,7 @@ The project is organized as follows:
 	- `package.sh`: Bash alternative to `package.ts` (NOT preferred).
 - **`tests/`**: Automated Playwright tests.
 	- `fixtures.ts`: Test fixtures.
+	- `helpers.ts`: Test helper functions.
 	- `constants.ts`: Test constants (e.g., delays, URIs).
 	- `extension.spec.ts`: Basic extension loading test.
 	- `scenarios/*.spec.ts`: Test scenarios organized by feature.
@@ -150,7 +151,7 @@ pnpm run release
 1.	**Read First**: Always read `manifest.json` and `package.json` if you are unsure about dependencies or entry points.
 2.	**Schema Driven**: If adding a setting, start in `src/shared/settings.ts` AND update `_locales/en/messages.json` (and other supported locales) with the corresponding keys. The UI will largely adapt automatically.
 3.	**Modify `src`**: Do not modify `dist` directly. Make changes in `src`.
-4.	**Check**: Run `CI=true pnpm run check` before finishing tasks to ensure code quality.
+4.	**Check**: Run `CI=true pnpm run check` before finishing tasks to ensure code quality. `CI=true` MUST be used to ensure all logs are printed in the terminal.
 5.	**Update Instructions**: If you discover new patterns, add files, or change the architecture, YOU MUST update this `AGENTS.md` file to keep it current.
 
 ## 7. Coding Style & Preferences

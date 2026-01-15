@@ -1,51 +1,49 @@
 import { test, expect, type Fixtures, ExtensionSettings } from '../fixtures';
-import { PAGE, TEST_TIMEOUT } from '../constants';
+import { TEST_TIMEOUT_MS } from '../constants';
+import { createPage, expectActiveTab, findTabByPage, type PageId } from '../helpers';
 
 async function verifyTabActivation(
 	fixtures: Partial<Fixtures>,
 	activationSetting: ExtensionSettings['after_close_activation'],
-	expectedActivePage: number,
+	expectedActivePage: PageId,
 ) {
 	const { context, configureSettings, getTabs } = fixtures as Fixtures;
 
 	await configureSettings({ after_close_activation: activationSetting });
 
-	// 1. Create P1 first (safeguard)
-	const page1 = await context.newPage(); await page1.goto(PAGE(1));
+	// 1. Create P0 first (safeguard)
+	const page0 = await createPage(context, 0);
 
-	// 2. Cleanup any initial pages (about:blank) to ensure P1 is index 0
+	// 2. Cleanup any initial pages (about:blank) to ensure P0 is index 0
 	const pages = context.pages();
 	for (const p of pages) {
-		if (p !== page1) await p.close();
+		if (p !== page0) await p.close();
 	}
 
-	// 3. Create P2, P3
-	const page2 = await context.newPage(); await page2.goto(PAGE(2));
-	const page3 = await context.newPage(); await page3.goto(PAGE(3));
+	// 3. Create P1, P2
+	const page1 = await createPage(context, 1);
+	const page2 = await createPage(context, 2);
 
-	// 4. Activate P2
-	await page2.bringToFront();
-	await page1.waitForTimeout(TEST_TIMEOUT); // Sync state
+	// 4. Activate P1
+	await page1.bringToFront();
+	await page0.waitForTimeout(TEST_TIMEOUT_MS); // Sync state
 
-	// Verify P2 is active and correct setup
+	// Verify P1 is active and correct setup
 	let tabs = await getTabs();
-	expect(tabs.find(t => t.url?.includes(PAGE(2)))?.active).toBe(true);
-	expect(tabs.length).toBe(3);
+	expectActiveTab(tabs, 1);
 
-	// 5. Close P2
-	await page2.close();
+	// 5. Close P1
+	await page1.close();
 
-	// 6. Wait for P2 to be gone from Chrome
+	// 6. Wait for P1 to be gone from Chrome
 	await expect.poll(async () => {
 		const t = await getTabs();
-		return t.find(x => x.url?.includes(PAGE(2)));
+		return findTabByPage(t, 1);
 	}).toBeUndefined();
 
 	// 7. Check Activation
 	tabs = await getTabs();
-	const activeTab = tabs.find(t => t.active);
-	expect(activeTab).toBeDefined();
-	expect(activeTab?.url).toContain(PAGE(expectedActivePage));
+	expectActiveTab(tabs, expectedActivePage);
 }
 
 test.describe('Tab Activation Behavior', () => {
@@ -53,22 +51,22 @@ test.describe('Tab Activation Behavior', () => {
 		{
 			title: 'after_close_activation: before_removed',
 			activationSetting: 'before_removed' as const,
-			expectedActivePage: 1,
+			expectedActivePage: 0,
 		},
 		{
 			title: 'after_close_activation: after_removed',
 			activationSetting: 'after_removed' as const,
-			expectedActivePage: 3,
+			expectedActivePage: 2,
 		},
 		{
 			title: 'after_close_activation: window_first',
 			activationSetting: 'window_first' as const,
-			expectedActivePage: 1,
+			expectedActivePage: 0,
 		},
 		{
 			title: 'after_close_activation: window_last',
 			activationSetting: 'window_last' as const,
-			expectedActivePage: 3,
+			expectedActivePage: 2,
 		}
 	].forEach(({ title, activationSetting, expectedActivePage }) => {
 		test(title, async ({ context, configureSettings, getTabs }) => {
