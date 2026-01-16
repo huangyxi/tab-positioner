@@ -20,7 +20,7 @@ async function verifyPopupPosition(
 	// Check that tabs are in expected order
 	const expectedOrder: PageId[] = [0];
 	expectedOrder.splice(expectedIndex, 0, popupPageId);
-	await expect(await getTabs()).toMatchPageIds(expectedOrder);
+	expect(await getTabs()).toMatchPageIds(expectedOrder);
 	await page0.close();
 	if (!popup.isClosed()) await popup.close();
 }
@@ -46,7 +46,6 @@ test.describe('Popup Behavior', () => {
 			);
 		});
 	});
-
 
 	test('[IDLE] popup_position: new_foreground_tab -> window_first', async ({ context, configureSettings, getTabs }) => {
 		await configureSettings({ _popup_position: 'new_foreground_tab', foreground_link_position: 'window_first' });

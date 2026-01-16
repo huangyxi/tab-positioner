@@ -172,6 +172,7 @@ export async function openLink(
 	const effectiveLinkId = linkId ?? (background ? 'bg-link' : 'fg-link');
 	const context = page.context();
 	const uri = pageUri(pageId);
+	// Create a unique DOM id in order to avoid selector conflicts
 	const domId = effectiveLinkId + '-' + Date.now();
 	await page.evaluate((args) => {
 		const existing = document.getElementById(args.domId);
