@@ -19,6 +19,8 @@ export class SyncSettings extends SessionSingleton {
 
 	/**
 	 * User-configurable persistent background worker (configured in Advanced Settings).
+	 * Keeps the service worker alive from going idle by periodically pinging the runtime API.
+	 * https://developer.chrome.com/docs/extensions/develop/concepts/service-workers/lifecycle#idle-shutdown
 	 */
 	public async keepAlive(apiRuntime: typeof api.runtime) {
 		const abortException = new Error('Keep alive aborted');
