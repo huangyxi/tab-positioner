@@ -76,8 +76,8 @@ export const test = base.extend<Fixtures>({
 		const extensionPage = await context.newPage();
 		await extensionPage.goto(extensionWorker.url().replace(manifest.background.service_worker, manifest.options_page));
 		for (const page of pages) {
-				await page.close();
-			}
+			await page.close();
+		}
 		await extensionPage.waitForLoadState();
 		const debug_mode_setting: keyof ExtensionSettings = '_debug_mode';
 		const debug_mode_element = extensionPage.locator(
@@ -121,7 +121,7 @@ export const test = base.extend<Fixtures>({
 	},
 	testWorker: async ({ context }, use) => {
 		const testWorker = await getTestWorker(context);
-		use(testWorker);
+		await use(testWorker);
 	},
 	configureSettings: async ({ context, extensionPage, extensionOrigin }, use) => {
 		await use(async (settings: Partial<ExtensionSettings>) => {

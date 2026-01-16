@@ -132,7 +132,7 @@ export const expect = baseExpect.extend({
 			actual: actualPageId,
 		};
 	},
-})
+});
 
 
 /**
