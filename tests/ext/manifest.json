@@ -1,0 +1,14 @@
+{
+	"manifest_version": 3,
+	"minimum_chrome_version": "120",
+	"name": "Helper Extension",
+	"description": "A helper extension with tabs permission for testing.",
+	"version": "0.1.0",
+	"permissions": [
+		"tabs"
+	],
+	"background": {
+		"service_worker": "test_service_worker.js",
+		"type": "module"
+	}
+}

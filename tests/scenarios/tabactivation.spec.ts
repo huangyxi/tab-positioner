@@ -1,6 +1,6 @@
-import { test, type Fixtures, ExtensionSettings } from '../fixtures';
+import { test, type Fixtures, type ExtensionSettings } from '../fixtures';
+import { expect, createPage, closeNonTestPages, type PageId } from '../helpers';
 import { TEST_TIMEOUT_MS } from '../constants';
-import { createPage, expectActiveTab, type PageId } from '../helpers';
 
 async function verifyTabActivation(
 	fixtures: Partial<Fixtures>,
@@ -14,23 +14,19 @@ async function verifyTabActivation(
 	// Create P0 first (safeguard)
 	const page0 = await createPage(context, 0);
 
-	// Cleanup any initial pages to ensure P0 is index 0
-	const pages = context.pages();
-	for (const p of pages) {
-		if (p !== page0) await p.close();
-	}
+	await closeNonTestPages(context);
 
 	const page1 = await createPage(context, 1);
 	const page2 = await createPage(context, 2);
 	await page1.bringToFront();
 	await page0.waitForTimeout(TEST_TIMEOUT_MS); // Sync state
 
-	expectActiveTab(await getTabs(), 1);
+	expect(await getTabs()).toMatchActiveTab(1);
 
 	await page1.close();
 	await page0.waitForTimeout(TEST_TIMEOUT_MS); // Sync state
 
-	expectActiveTab(await getTabs(), expectedActivePage);
+	expect(await getTabs()).toMatchActiveTab(expectedActivePage);
 }
 
 test.describe('Tab Activation Behavior', () => {
@@ -54,7 +50,7 @@ test.describe('Tab Activation Behavior', () => {
 			title: 'after_close_activation: window_last',
 			activationSetting: 'window_last' as const,
 			expectedActivePage: 2,
-		}
+		},
 	].forEach(({ title, activationSetting, expectedActivePage }) => {
 		test(title, async ({ context, configureSettings, getTabs }) => {
 			await verifyTabActivation(

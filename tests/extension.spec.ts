@@ -1,4 +1,5 @@
-import { test, expect } from './fixtures';
+import { test } from './fixtures';
+import { expect } from './helpers';
 
 test('Options page should load', async ({ context, extensionOrigin }) => {
 	const page = await context.newPage();

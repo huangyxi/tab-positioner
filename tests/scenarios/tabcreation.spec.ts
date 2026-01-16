@@ -1,6 +1,6 @@
 import { test, type Fixtures, type ExtensionSettings } from '../fixtures';
+import { expect, createPage, openLink, idleExtensionWorker, type PageId } from '../helpers';
 import { TEST_TIMEOUT_MS } from '../constants';
-import { createPage, openLink, expectTabOrder, filterTestTabs, type PageId } from '../helpers';
 
 async function verifyTabCreation(
 	fixtures: Partial<Fixtures>,
@@ -35,12 +35,8 @@ async function verifyTabCreation(
 
 	await page1.waitForTimeout(TEST_TIMEOUT_MS);
 
-	const tabs = await getTabs();
-	// Filter to only test tabs
-	const testTabs = filterTestTabs(tabs);
-
 	// We expect the exact URLs in expectedOrder
-	expectTabOrder(testTabs, expectedOrder);
+	expect(await getTabs()).toMatchPageIds(expectedOrder);
 }
 
 test.describe('Tab Creation Behavior', () => {
@@ -78,5 +74,23 @@ test.describe('Tab Creation Behavior', () => {
 				expectedOrder,
 			);
 		});
+	});
+
+	test('[IDLE] foreground_link_position: window_first', async ({ context, configureSettings, getTabs }) => {
+		await configureSettings({ foreground_link_position: 'window_first' });
+		const page0 = await createPage(context, 0);
+		await idleExtensionWorker(context);
+		const page1 = await openLink(page0, 1);
+		await page1.waitForTimeout(TEST_TIMEOUT_MS);
+		expect(await getTabs()).toMatchPageIds([1, 0]);
+	});
+
+	test('[IDLE] background_link_position: window_first', async ({ context, configureSettings, getTabs }) => {
+		await configureSettings({ background_link_position: 'window_first' });
+		const page0 = await createPage(context, 0);
+		await idleExtensionWorker(context);
+		const page1 = await openLink(page0, 1, true);
+		await page1.waitForTimeout(TEST_TIMEOUT_MS);
+		expect(await getTabs()).toMatchPageIds([1, 0]);
 	});
 });
