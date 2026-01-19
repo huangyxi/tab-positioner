@@ -1,4 +1,4 @@
-import type { ExtensionSettings} from './settings';
+import type { ExtensionSettings } from './settings';
 import { DEFAULT_SETTINGS, sanitizeSettings } from './settings';
 import { errorHandler } from './logging';
 

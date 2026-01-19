@@ -62,9 +62,4 @@ async function main() {
 	process.exit(1);
 }
 
-try {
-	await main();
-} catch (error: any) {
-	console.error(`Unexpected error: ${error.message}`);
-	process.exit(1);
-}
+await main();

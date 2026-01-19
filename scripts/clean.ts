@@ -59,9 +59,4 @@ export async function main(argv: string[]) {
 	});
 }
 
-try {
-	await main(process.argv.slice(2));
-} catch (error: any) {
-	console.error(`Unexpected error: ${error.message}`);
-	process.exit(1);
-}
+await main(process.argv.slice(2));
