@@ -17,7 +17,7 @@ async function verifyTabActivation(
 	await closeNonTestPages(context);
 
 	const page1 = await createPage(context, 1);
-	const page2 = await createPage(context, 2);
+	const _page2 = await createPage(context, 2);
 	await page1.bringToFront();
 	await page0.waitForTimeout(TEST_TIMEOUT_MS); // Sync state
 

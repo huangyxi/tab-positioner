@@ -5,6 +5,7 @@
 [![Actions](https://img.shields.io/github/actions/workflow/status/huangyxi/tab-positioner/ci.yml?label=Actions&logo=github&branch=main)](https://github.com/huangyxi/tab-positioner/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/huangyxi/tab-positioner/branch/main/graph/badge.svg)](https://app.codecov.io/gh/huangyxi/tab-positioner)
 ![GitHub repo size](https://img.shields.io/github/repo-size/huangyxi/tab-positioner)
+
 <!-- [![Actions](https://github.com/huangyxi/tab-positioner/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/huangyxi/tab-positioner/actions/workflows/ci.yml) -->
 
 **OPEN SOURCE • NO ADS • NO TRACKING**
@@ -21,26 +22,27 @@ Contributions are always welcome!
 
 ## Features
 
-* **New Tab Position**: Decide where new tabs open.
-* **Link Tab Position**: Set different rules for tabs opened from links in the foreground or background.
-* **Popup Position**: Open popups as tabs, following the same rules as links.
-* **Tab Activation**: Choose which tab gets focus after you close one.
-* **Sync Settings**: Your tab position preferences sync across all your devices with [Chrome's built-in sync feature](https://support.google.com/chrome/answer/185277#zippy=%2Csign-in-turn-on-sync).
-* **Dark Mode**: The extension automatically matches Chrome’s dark mode.
-
+- **New Tab Position**: Decide where new tabs open.
+- **Link Tab Position**: Set different rules for tabs opened from links in the foreground or background.
+- **Popup Position**: Open popups as tabs, following the same rules as links.
+- **Tab Activation**: Choose which tab gets focus after you close one.
+- **Sync Settings**: Your tab position preferences sync across all your devices with [Chrome's built-in sync feature](https://support.google.com/chrome/answer/185277#zippy=%2Csign-in-turn-on-sync).
+- **Dark Mode**: The extension automatically matches Chrome’s dark mode.
 
 ## Installation
 
 ### Chrome Web Store
+
 You can install Tab Positioner from the [Chrome Web Store](https://chromewebstore.google.com/detail/ejlekdhgfefgeoobnnfgmafagedicagj).
 
 ### Offline Installation
+
 1. Download the latest release from the [Releases page](https://github.com/huangyxi/tab-positioner/releases/latest).
 2. Extract the downloaded ZIP file.
 3. Open Chrome and navigate to `chrome://extensions`.
 4. Enable "Developer mode" in the top right corner.
 5. Click "Load unpacked" and select the extracted folder.
 
-
 ## Development
+
 Please refer to the [AGENTS.md](AGENTS.md) file for development instructions.

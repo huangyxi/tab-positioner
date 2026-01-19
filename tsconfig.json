@@ -25,6 +25,7 @@
 		"utils",
 		"scripts",
 		"tests",
+		"playwright.config.ts",
 		"_locales/*/messages.json",
 	],
 	"exclude": [

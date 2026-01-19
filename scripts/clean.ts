@@ -18,10 +18,10 @@ export async function main(argv: string[]) {
 				console.log(`       npm run clean -- [options]`);
 				console.log(`\nOptions:` +
 					'\n  -h, --help      Show this help message' +
-					'\n  --output <path> Specify output directory to clean'
+					'\n  --output <path> Specify output directory to clean',
 				);
 				console.log(`\nDefaults:` +
-					`\n  output: Defined in 'eleventy.config.mjs'`)
+					`\n  output: Defined in 'eleventy.config.mjs'`);
 				process.exit(0);
 			case '--output':
 				output = args.shift();
@@ -38,7 +38,7 @@ export async function main(argv: string[]) {
 	}
 	const eleventy = new Eleventy(
 		undefined,
-		output || undefined,
+		output ?? undefined,
 		{
 			dryRun: true,
 		},
@@ -50,7 +50,7 @@ export async function main(argv: string[]) {
 		process.exit(1);
 	}
 	const eleventyConfig = eleventy.eleventyConfig;
-	const outDir = output || eleventyConfig.directories.output;
+	const outDir = output ?? eleventyConfig.directories.output;
 	await fs.rm(outDir, { force: true, recursive: true });
 	eleventyConfig.logger.logWithOptions({
 		prefix: '[Clean]',
@@ -59,4 +59,4 @@ export async function main(argv: string[]) {
 	});
 }
 
-main(process.argv.slice(2));
+await main(process.argv.slice(2));

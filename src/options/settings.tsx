@@ -1,6 +1,6 @@
 
 import { getMessage as _, createI18nAttribute as _a } from '../shared/i18n';
-import type { SettingKey, SettingSchemas, SettingText, ExtensionSettings } from '../shared/settings';
+import type { SettingKey, SettingSchemas, SettingText } from '../shared/settings';
 import { SETTING_SCHEMAS, DEFAULT_SETTINGS } from '../shared/settings';
 
 function _t(
@@ -18,12 +18,14 @@ function _st(
 ) {
 	const property = 'title';
 	const titleKey = `${property}_${settingKey}`;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument
 	const message = _(titleKey as any);
 	if (!message) {
 		return {};
 	}
 	return {
 		[property]: message,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument
 		..._a(titleKey as any, property),
 	};
 }
@@ -139,8 +141,9 @@ function ChoicesSetting<K extends TypeKey<'choices'>>({
 	const forId = `${settingKey}-select`;
 	const defaultChoiceKey = DEFAULT_SETTINGS[settingKey];
 	const defaultChoice: SettingText = setting.choices[defaultChoiceKey];
+	// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 	const otherChoices = (Object.entries(setting.choices) as Array<[string, SettingText]>).filter(
-		([choiceKey, _]) => choiceKey !== defaultChoiceKey
+		([choiceKey, _]) => choiceKey !== defaultChoiceKey,
 	);
 	return <>
 		<form
@@ -176,7 +179,7 @@ function ChoicesSetting<K extends TypeKey<'choices'>>({
 							>
 								{_(choice.i18nKey)}
 							</option>
-						)
+						),
 					)}
 				</select>
 				<button
@@ -192,16 +195,16 @@ function ChoicesSetting<K extends TypeKey<'choices'>>({
 function Setting<T extends SettingSchemas[SettingKey]['type']>({
 	settingKey,
 	setting,
-}: SettingPair<T>
+}: SettingPair<T>,
 ): JSX.Element {
 	const type = setting.type;
 	switch (type) {
 		case 'boolean':
 			return BooleanSetting({settingKey, setting} as SettingPair<'boolean'>);
 		case 'number':
-			return <NumberSetting settingKey={settingKey as any} setting={setting as any} />;
+			return NumberSetting({settingKey, setting} as SettingPair<'number'>);
 		case 'choices':
-			return <ChoicesSetting settingKey={settingKey as any} setting={setting as any} />;
+			return ChoicesSetting({settingKey, setting} as SettingPair<'choices'>);
 		default:
 			const _exhaustive: never = type;
 	}
@@ -212,13 +215,13 @@ export function Settings<K extends SettingKey>({
 }: {
 	advanced?: boolean;
 }): JSX.Element {
-	const settings = Object.entries(SETTING_SCHEMAS) as Array<[K, SettingSchemas[K]]>;
+	const settings = Object.entries(SETTING_SCHEMAS) as [K, SettingSchemas[K]][];
 	const filteredSettings = advanced
 		? settings.filter(([settingKey, _]) => settingKey.startsWith('_'))
 		: settings.filter(([settingKey, _]) => !settingKey.startsWith('_'));
 	return <>
 		{filteredSettings.map(([settingKey, setting]) => <>
-				<Setting settingKey={settingKey as any} setting={setting as any} />
+			<Setting settingKey={settingKey} setting={setting as SettingSchemas[SettingKey]} />
 		</>)}
 	</>;
 }

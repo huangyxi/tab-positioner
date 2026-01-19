@@ -1,7 +1,8 @@
 // The filename should be different from .tsx for the linter to work correctly
-import { I18nKey, getI18nMessage, getI18nAttribute, I18N_HTML_PROPERTIES } from '../shared/i18n';
+import type { I18nKey } from '../shared/i18n';
+import { getI18nMessage, getI18nAttribute, I18N_HTML_PROPERTIES } from '../shared/i18n';
 import type { SettingKey, ExtensionSettings } from '../shared/settings';
-import { DEFAULT_SETTINGS, SETTING_SCHEMAS } from '../shared/settings';
+import { DEFAULT_SETTINGS } from '../shared/settings';
 import { loadSettings, saveSettings, clearSettings } from '../shared/storage';
 
 type SettingElement = HTMLSelectElement | HTMLInputElement;
@@ -20,7 +21,7 @@ function getFormSetting(form: HTMLFormElement): ExtensionSettings[SettingKey] | 
 			}
 			return element.valueAsNumber;
 		case 'select-one':
-			return element.value as any;
+			return element.value as ExtensionSettings[SettingKey];
 		default:
 			console.warn(`Unsupported element type: ${element.type} for setting ${settingKey}`);
 			return undefined; // Unsupported type
@@ -53,7 +54,7 @@ function setFormSetting(
 
 function toggleResetButton(
 	form: HTMLFormElement,
-	unchanged: boolean | undefined = undefined,
+	unchanged?: boolean,
 ): void {
 	const settingKey = form.id as SettingKey;
 	if (!(settingKey in DEFAULT_SETTINGS)) return;
@@ -101,7 +102,7 @@ function localizeHtmlPage() {
 			const messageKey = elem.getAttribute(attribute);
 			if (!messageKey) return;
 			elem[property] = getI18nMessage(messageKey as I18nKey);
-		})
+		});
 	});
 }
 
@@ -115,14 +116,14 @@ async function restoreFormSettings(forms: NodeListOf<HTMLFormElement>) {
 
 async function saveFormSettings(forms:
 	| HTMLFormElement
-	| Array<HTMLFormElement>
+	| HTMLFormElement[]
 	| NodeListOf<HTMLFormElement>,
-	defaultSettings: ExtensionSettings = DEFAULT_SETTINGS,
+defaultSettings: ExtensionSettings = DEFAULT_SETTINGS,
 ) {
 	if (forms instanceof HTMLElement) {
 		forms = [forms];
 	}
-	const settings: Partial<Record<SettingKey, any>> = {}
+	const settings: Partial<Record<SettingKey, unknown>> = {};
 	for (const form of forms) {
 		toggleResetButton(form);
 		const settingKey = form.id as SettingKey;
@@ -137,7 +138,7 @@ async function saveFormSettings(forms:
 		}
 		settings[settingKey] = setting;
 	}
-	await saveSettings(settings, true);
+	await saveSettings(settings as Partial<ExtensionSettings>, true);
 	showStatus('status_settings_saved');
 }
 
@@ -161,9 +162,9 @@ async function resetFormSettings(forms: NodeListOf<HTMLFormElement>) {
 }
 
 function isOptionsPage() {
-	const m = api.runtime.getManifest();
-	const optionsURI = api.runtime.getURL(m.options_page || m.options_ui?.page || 'options.html');
-	const isOptionsPage = window.location.href === optionsURI
+	const manifest = api.runtime.getManifest();
+	const optionsURI = api.runtime.getURL(manifest.options_page as string ?? 'options.html');
+	const isOptionsPage = window.location.href === optionsURI;
 	return isOptionsPage;
 }
 
@@ -177,27 +178,23 @@ function openDetails() {
 async function main() {
 	localizeHtmlPage();
 
-	const forms = document.querySelectorAll('form') as NodeListOf<HTMLFormElement>;
+	const forms = document.querySelectorAll('form');
 
 	await restoreFormSettings(forms);
 
 	forms.forEach(form => {
-		form.addEventListener('change', async () => await saveFormSettings(form));
+		form.addEventListener('change', () => void saveFormSettings(form));
 	});
 
 	forms.forEach(form => {
-		form.addEventListener('reset', async (event) => {
-			await resetFormSetting(form);
-		});
+		form.addEventListener('reset', () => void resetFormSetting(form));
 	});
 
-	document.getElementById('reset-all')?.addEventListener('click', async () => {
-		await resetFormSettings(forms)
-	});
+	document.getElementById('reset-all')?.addEventListener('click', () => void resetFormSettings(forms));
 
 	if (isOptionsPage()) {
 		openDetails();
 	}
 }
 
-main();
+void main();

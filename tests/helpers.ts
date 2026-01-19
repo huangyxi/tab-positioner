@@ -21,7 +21,7 @@ function pageUri(pageId: PageId = ''): string {
  * @returns The page identifier, or null if not found
  */
 function pageId(uri: string): PageId | null {
-	const match = uri.match(/about:blank\?page=(.*)$/);
+	const match = /about:blank\?page=(.*)$/.exec(uri);
 	if (!match) {
 		return null;
 	}
@@ -60,7 +60,7 @@ export const expect = baseExpect.extend({
 	 * @param expectedPageIds - The expected pageIds in order
 	 * @returns
 	 */
-	async toMatchPageIds(
+	toMatchPageIds(
 		currentTabs: chrome.tabs.Tab[],
 		expectedPageIds: PageId[],
 	) {
@@ -69,11 +69,11 @@ export const expect = baseExpect.extend({
 		const actualTabIds = currentTabs
 			.filter(t => isTestTabUri(t.url ?? ''))
 			.sort((a, b) => (a.index - b.index))
-			.map(t => t.url!)
+			.map(t => t.url ?? '')
 			.map(uri => pageId(uri));
 		pass = actualTabIds.length === expectedPageIds.length &&
 			actualTabIds.every((value, index) =>
-				String(value) === String(expectedPageIds[index])
+				String(value) === String(expectedPageIds[index]),
 			);
 		if (this.isNot) {
 			pass = !pass;
@@ -103,13 +103,13 @@ export const expect = baseExpect.extend({
 	 * @param expectedPageId - Expected active pageId
 	 * @returns
 	 */
-	async toMatchActiveTab(
+	toMatchActiveTab(
 		currentTabs: chrome.tabs.Tab[],
 		expectedPageId: PageId,
 	) {
 		const assertionName = 'toMatchActiveTab';
 		const activeTab = currentTabs.find(t => t.active && isTestTabUri(t.url ?? ''));
-		const actualPageId = activeTab ? pageId(activeTab.url!) : null;
+		const actualPageId = activeTab ? pageId(activeTab.url ?? '') : null;
 		const uriHint = actualPageId === null ? ` (URI: ${activeTab?.url})` : '';
 		let pass = actualPageId !== null && String(actualPageId) === String(expectedPageId);
 		if (this.isNot) {
@@ -173,7 +173,7 @@ export async function openLink(
 	const context = page.context();
 	const uri = pageUri(pageId);
 	// Create a unique DOM id in order to avoid selector conflicts
-	const domId = effectiveLinkId + '-' + Date.now();
+	const domId = effectiveLinkId + '-' + Date.now().toFixed();
 	await page.evaluate((args) => {
 		const existing = document.getElementById(args.domId);
 		if (existing) {
@@ -257,12 +257,12 @@ export async function idleExtensionWorker(
 	const client = await context.newCDPSession(page);
 
 	try {
-		const { targetInfos } = await (client as any).send('Target.getTargets');
-		for (const target of (targetInfos || [])) {
+		const { targetInfos } = await client.send('Target.getTargets');
+		for (const target of targetInfos) {
 			if (target.type === 'service_worker' && isExtensionUri(target.url)) {
 				console.log(`[TEST] Stopping service worker: ${target.url}`);
-				await (client as any).send('Target.closeTarget', {
-					targetId: target.targetId
+				await client.send('Target.closeTarget', {
+					targetId: target.targetId,
 				});
 			}
 		}

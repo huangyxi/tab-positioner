@@ -85,10 +85,11 @@ class VitePlugin {
 				message: `Built assets with Vite to ${this.directories.output}`,
 				type: 'info',
 			});
-		} catch (error: any) {
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
 			this.logger.logWithOptions({
 				prefix: VitePlugin.LOGGER_PREFIX,
-				message: `Failed to build with Vite: ${error.message}`,
+				message: `Failed to build with Vite: ${message}`,
 				type: 'error',
 				color: 'red',
 			});
@@ -112,17 +113,17 @@ export default function (
 	const plugin = new VitePlugin(eleventyConfig, options);
 
 	eleventyConfig.on('eleventy.before', async ({
-		directories, runMode, outputMode
+		directories, runMode, outputMode,
 	}: any) => {
 		if (
 			runMode === 'serve' ||
-			outputMode === "json" ||
-			outputMode === "ndjson"
+			outputMode === 'json' ||
+			outputMode === 'ndjson'
 		) {
 			return;
 		}
 		await plugin.build();
-	})
+	});
 
 	// import EleventyVitePlugin from '@11ty/eleventy-plugin-vite';
 	// eleventyConfig.addPlugin(EleventyVitePlugin, {

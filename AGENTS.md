@@ -52,6 +52,7 @@ The project is organized as follows:
 		- `session.ts`: Base class for synchronizing singleton state with `chrome.storage.session`.
 		- `settings.ts`: **Critical File**. Defines `ExtensionSettings`, `SETTING_SCHEMAS`, and default values.
 		- `storage.ts`: Handles reading/writing to `chrome.storage`.
+		- `logging.ts`: Centralized logging with configurable log levels.
 	- **`types/`**: TypeScript type definitions.
 - **`scripts/`**: Build and maintenance scripts.
 	- `clean.ts`: Cleans the `dist/` directory.
@@ -59,6 +60,7 @@ The project is organized as follows:
 	- `package.ts`: Packages the extension into a `.zip` for the Chrome Web Store.
 	- `package.sh`: Bash alternative to `package.ts` (NOT preferred).
 - **`tests/`**: Automated Playwright tests.
+	- **`ext/`**: A helper extension used in tests to access `chrome` APIs.
 	- `fixtures.ts`: Test fixtures.
 	- `helpers.ts`: Test helper functions.
 	- `constants.ts`: Test constants (e.g., delays, URIs).
@@ -75,12 +77,14 @@ The project is organized as follows:
 ## 4. Codebase Deep Dive
 
 ### Shared Logic & Data Models
+
 - **Settings Schema**: Defined in `src/shared/settings.ts`.
 	- `ExtensionSettings`: The interface for all setting keys and values.
 	- `SETTING_SCHEMAS`: Metadata for each setting (type, potential choices, i18n keys). This drives the UI generation in `src/options/settings.tsx`.
 	- **Advanced Settings**: Keys starting with an underscore (e.g., `_debug_mode`) are functionally treated as **Advanced Settings**. The UI generation logic (`src/options/settings.tsx`) uses this prefix to automatically filter and place them in the "Advanced" details section.
 
 ### Background Service Worker
+
 - **Initialization** (`src/background/main.ts`):
 	- Synchronously initializes `Listeners` to ensure no events are missed.
 	- Sets up `SyncSettings` (replicates storage in memory/session for sync access) and `TabsInfo` (tracks tab state).
@@ -97,11 +101,13 @@ The project is organized as follows:
 	- Uses `createdPopupMover` to place popups following specific rules from `foreground_link_position` and `background_link_position`.
 
 ### Options UI
+
 - **Dynamic Generation**: `src/options/settings.tsx` iterates over `SETTING_SCHEMAS` to build the UI form. This means adding a new setting in `src/shared/settings.ts` automatically adds it to the UI.
 - **Form Handling**: `src/options/options.ts` manages standard HTML forms. It listens for `change` events to save settings and `reset` events to restore defaults.
 - **Styling**: `src/options/options.scss` handles the look and feel, supporting light/dark modes.
 
 ### Internationalization (i18n)
+
 - **Source of Truth**: `_locales/en/messages.json` is the base for all keys.
 - **Type Safety**: `src/shared/i18n.ts` imports the English messages to generate the `I18nKey` type, ensuring compile-time safety for message keys.
 - **Component Helpers**: Helper functions `_` (getMessage) and `_a` (createI18nAttribute) are used in JSX components to easily bind text and attributes to i18n keys.
@@ -110,49 +116,61 @@ The project is organized as follows:
 ## 5. Build & Development Workflow
 
 ### Installation
+
 ```bash
 pnpm install
 ```
 
 ### Development (Watch Mode)
+
 Compiles files and watches for changes.
+
 ```bash
 pnpm run dev
 ```
+
 - **Output**: The extension is built into the `dist/` directory.
 - **Load**: Load the `dist/` folder as an "Unpacked Extension" in `chrome://extensions`.
 
 ### Production Build
+
 Creates a production-ready build in `dist/`.
+
 ```bash
 pnpm run build
 ```
 
 ### Checking
+
 Run all checks (linting, type checking, and tests).
+
 ```bash
 CI=true pnpm run check
 ```
+
 This command is combined with linting, type checking, and testing to ensure code quality. `CI=true` here and its sub-commands `CI=true pnpm run test` ensure that all Playwright logs are shown in the terminal instead of web UI.
 
 - **Note**: Ensure the extension is built (or run `pnpm run test:build`) before running Playwright tests.
 
 ### Manual Verification
+
 Refer to `TESTING.md` for a checklist of manual verification steps. Ensure all items are checked before major releases.
 
 ### Packaging
+
 Creates a `.zip` file for the Chrome Web Store.
+
 ```bash
 pnpm run release
 ```
 
 ## 6. Access Rules for AI Agents
 
-1.	**Read First**: Always read `manifest.json` and `package.json` if you are unsure about dependencies or entry points.
-2.	**Schema Driven**: If adding a setting, start in `src/shared/settings.ts` AND update `_locales/en/messages.json` (and other supported locales) with the corresponding keys. The UI will largely adapt automatically.
-3.	**Modify `src`**: Do not modify `dist` directly. Make changes in `src`.
-4.	**Check**: Run `CI=true pnpm run check` before finishing tasks to ensure code quality. `CI=true` MUST be used to ensure all logs are printed in the terminal.
-5.	**Update Instructions**: If you discover new patterns, add files, or change the architecture, YOU MUST update this `AGENTS.md` file to keep it current.
+1. **Read First**: Always read `manifest.json` and `package.json` if you are unsure about dependencies or entry points.
+2. **Schema Driven**: If adding a setting, start in `src/shared/settings.ts` AND update `_locales/en/messages.json` (and other supported locales) with the corresponding keys. The UI will largely adapt automatically.
+3. **Modify `src`**: Do not modify `dist` directly. Make changes in `src`.
+4. **Check**: Run `CI=true pnpm run check` before finishing tasks to ensure code quality. `CI=true` MUST be used to ensure all logs are printed in the terminal.
+5. **Update Instructions**: If you discover new patterns, add files, or change the architecture, YOU MUST update this `AGENTS.md` file to keep it current.
 
 ## 7. Coding Style & Preferences
 

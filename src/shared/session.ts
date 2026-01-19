@@ -1,27 +1,27 @@
-import { DEBUG } from './debug';
-import { errorHandler } from './logging';
 import { STATE_SAVE_DELAY_MS } from './constants';
+import { LOG_LEVEL } from './logging';
+import { log, compareLogLevels } from './logging';
 
 const storageSession = api.storage.session;
 
-async function getSessionState(key: string): Promise<any | undefined> {
+async function getSessionState(key: string): Promise<unknown> {
 	try {
 		const session = await storageSession.get(key);
 		return session[key] ?? undefined;
 	} catch (error) {
-		errorHandler(error);
+		console.error(error);
 		return undefined;
 	}
 }
 
 async function setSessionState(
 	key: string,
-	value: any,
+	value: unknown,
 ): Promise<void> {
 	try {
 		await storageSession.set({ [key]: value });
 	} catch (error) {
-		errorHandler(error);
+		console.error(error);
 	}
 }
 
@@ -42,7 +42,7 @@ export abstract class SessionSingleton {
 	public constructor() { }
 
 	private skipProperty(property: string): boolean {
-		return property.startsWith('_')
+		return property.startsWith('_');
 	}
 
 	public static hasLoaded<T extends typeof SessionSingleton>(
@@ -51,7 +51,7 @@ export abstract class SessionSingleton {
 		if (this === SessionSingleton) {
 			return true;
 		}
-		const superCls = Object.getPrototypeOf(this);
+		const superCls = Object.getPrototypeOf(this) as typeof SessionSingleton;
 		return this._instances.has(this) && superCls.hasLoaded();
 	}
 
@@ -82,10 +82,9 @@ export abstract class SessionSingleton {
 		}
 		const loadingPromise = (async () => {
 			try {
-				if (DEBUG) {
-					console.log(`_${this.name}: Creating new instance`);
-				}
-				const instance = new (this as any)(...args) as InstanceType<T>;
+				log('debug', `_${this.name}: Initializing singleton instance`);
+				type Constructor = new (...args: ConstructorParameters<T>) => InstanceType<T>;
+				const instance = new (this as unknown as Constructor)(...args);
 				if (await instance.isStateSaved()) {
 					await instance.loadState();
 				}
@@ -100,18 +99,16 @@ export abstract class SessionSingleton {
 	}
 
 	protected async saveState(
-		properties?: Array<keyof this & string>,
+		properties?: (keyof this & string)[],
 	) {
-		if (properties === undefined) {
-			properties = this.properties() as any[];
-		}
+		properties ??= this.properties() as (keyof this & string)[];
 		if (properties.length === 0) return;
 		const cls = this.constructor as typeof SessionSingleton;
 		cls._saveControllers.get(cls)?.abort();
 		const previousLock = cls._saveLocks.get(cls) ?? Promise.resolve();
 		const controller = new AbortController();
 		cls._saveControllers.set(cls, controller);
-		let release: () => void;
+		let release!: () => void;
 		const currentLock = new Promise<void>((resolve) => {
 			release = resolve;
 		});
@@ -119,9 +116,8 @@ export abstract class SessionSingleton {
 		const abortException = new Error('saveState aborted');
 		try {
 			await previousLock;
-			if (DEBUG) {
-				console.log(`_${this.name}: Saving state`);
-			}
+			log('debug', `_${this.name}: Saving state`);
+			const DEBUG = compareLogLevels('debug', LOG_LEVEL) >= 0;
 			const timestamp = DEBUG ? Date.now() : 0;
 			await new Promise((resolve, reject) => {
 				const timeout = setTimeout(resolve, STATE_SAVE_DELAY_MS);
@@ -133,31 +129,26 @@ export abstract class SessionSingleton {
 			for (const property of properties) {
 				if (controller.signal.aborted) throw abortException;
 				if (this.skipProperty(property)) continue;
-				const value = (this as any)[property];
+				const value = this[property];
 				if (value === undefined) continue;
 				await setSessionState(this.sessionKeyFor(property), JSON.stringify(value));
 			}
 			await this.flagState();
-			if (DEBUG) {
-				console.log(`_${this.name}: State saved in ${Date.now() - timestamp}ms`);
-			}
+			log('debug', `_${this.name}: State saved in ${Date.now() - timestamp}ms`);
 		} catch (error) {
 			if (error === abortException) {
-				if (DEBUG) {
-					console.log(`_${this.name}: Save aborted due to a new save request.`);
-				}
+				log('debug', `_${this.name}: Save aborted due to a new save request.`);
 			} else {
-				errorHandler(`_${this.name}: Save error:`, error);
+				log('error', `_${this.name}: Save error:`, error);
 			}
 		} finally {
-			release!();
+			release();
 		}
 	}
 
 	private async loadState() {
-		if (DEBUG) {
-			console.log(`_${this.name}: Loading state`);
-		}
+		log('debug', `_${this.name}: Loading state`);
+		const DEBUG = compareLogLevels('debug', LOG_LEVEL) >= 0;
 		const timestamp = DEBUG ? Date.now() : 0;
 		for (const property of this.properties()) {
 			if (this.skipProperty(property)) {
@@ -165,11 +156,9 @@ export abstract class SessionSingleton {
 			}
 			const value = await getSessionState(this.sessionKeyFor(property));
 			if (value === undefined) continue;
-			(this as any)[property] = JSON.parse(value);
+			(this as Record<string, unknown>)[property] = JSON.parse(value as string);
 		}
-		if (DEBUG) {
-			console.log(`_${this.name}: State loaded in ${Date.now() - timestamp}ms`);
-		}
+		log('debug', `_${this.name}: State loaded in ${Date.now() - timestamp}ms`);
 	}
 
 	// Use property name '_instances' to avoid conflicts with other properties in subclasses.

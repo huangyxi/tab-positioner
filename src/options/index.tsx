@@ -1,6 +1,6 @@
 // Processing TSX files with Eleventy
 export const data = {
-	permalink: "options.html",
+	permalink: 'options.html',
 };
 
 import { getMessage as _, createI18nAttribute as _a } from '../shared/i18n';
@@ -59,5 +59,5 @@ export default function OptionsPage(): JSX.Element {
 			</body>
 
 		</html>
-	</>
+	</>;
 };

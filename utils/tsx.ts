@@ -61,7 +61,7 @@ class TsxPlugin {
 
 	private getInputDirectory(): string {
 		if (this.directories.input !== undefined) {
-			return this.directories.input;
+			return this.directories.input as string;
 		}
 		const entries = this.entries;
 		if (entries.length === 0) {
@@ -90,7 +90,7 @@ class TsxPlugin {
 		this.logger.logWithOptions({
 			message: `${TsxPlugin.LOGGER_PREFIX} No input directory set, using '${inputDir}' as default.`,
 			level: 'warn',
-		})
+		});
 		return inputDir;
 	}
 

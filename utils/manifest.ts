@@ -25,7 +25,7 @@ const DEFAULT_OPTIONS: ManifestPluginOptions = {
 	manifestOutPath: 'manifest.json',
 	iconInPath: './icon.svg',
 	iconOutSizes: [16, 32, 48, 128],
-	iconOutFilename: (size) => `icon-${size}.png`,
+	iconOutFilename: (size) => `icon-${size.toFixed()}.png`,
 	version: '0.0.0.1',
 	version_name: '',
 };
@@ -59,7 +59,7 @@ class ManifestPlugin {
 		await fs.mkdir(outDir, { recursive: true });
 		for (const size of this.options.iconOutSizes) {
 			const iconOutputFilename = this.options.iconOutFilename(size);
-			const iconOutputPath = path.join(outDir, iconOutputFilename)
+			const iconOutputPath = path.join(outDir, iconOutputFilename);
 			await sharp(this.options.iconInPath)
 				.resize(size, size)
 				.png()
@@ -99,16 +99,16 @@ export default function (
 	const plugin = new ManifestPlugin(eleventyConfig, options);
 
 	eleventyConfig.once('eleventy.before', async ({
-		directories, runMode, outputMode
+		directories, runMode, outputMode,
 	}: any) => {
 		if (
 			runMode === 'serve' ||
-			outputMode === "json" ||
-			outputMode === "ndjson"
+			outputMode === 'json' ||
+			outputMode === 'ndjson'
 		) {
 			return;
 		}
 		await plugin.patch();
 
-	})
+	});
 }

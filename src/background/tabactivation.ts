@@ -1,6 +1,5 @@
-import { DEBUG } from '../shared/debug';
-import { Listeners } from '../shared/listeners';
-import { errorHandler } from '../shared/logging';
+import type { Listeners } from '../shared/listeners';
+import { logClosure } from '../shared/logging';
 
 import { TabsInfo } from './tabsinfo';
 import { SyncSettings } from './syncsettings';
@@ -17,37 +16,26 @@ async function tabRemovedActivater(
 	apiTabs: typeof api.tabs,
 	tabId: number,
 ) {
-	if (DEBUG) {
-		console.log('  R1. Tab removed:', tabId);
-	}
+	const logger = logClosure('  tabActivation');
+	logger.debug('Tab removal activation process started for tab ID:', tabId);
 	const tabsInfo = await TabsInfo.getInstance();
 	const {setting, tabBatchThresholdMs} = await getTabActivationSetting();
-	if (DEBUG) {
-		console.log('  R2. Tab activation setting:', setting);
-	}
+	logger.debug('Tab activation setting:', setting);
 	if (setting === 'default') return;
 	const delay = tabsInfo.getRemovalDelay();
-	if (DEBUG) {
-		console.log('  R3. Removal delay:', delay);
-	}
+	logger.debug('Removal delay:', delay);
 	if (delay < tabBatchThresholdMs) {
 		return;
 	}
 	const removedTab = tabsInfo.getRemovedTab();
-	if (DEBUG) {
-		console.log('  R4. Removed tab:', removedTab);
-	}
+	logger.debug('Removed tab info:', removedTab);
 	if (tabId !== removedTab.id) return;
 	const windowId = removedTab.windowId;
 	const recentTab = tabsInfo.getRecentTab(windowId);
-	if (DEBUG) {
-		console.log('  R5. Recent tab:', recentTab);
-	}
+	logger.debug('Recent tab info:', recentTab);
 	if (removedTab.id !== recentTab.id) return;
 	const currentTabs = tabsInfo.getCurrentTabs(windowId);
-	if (DEBUG) {
-		console.log('  R6. Get current tabs');
-	}
+	logger.debug('Get current tabs');
 	// No tabs remain in the current window to activate; this is handled by the browser.
 	if (currentTabs.length === 0) return;
 	let newIndex: number = -1;
@@ -72,9 +60,7 @@ async function tabRemovedActivater(
 		default:
 			const _exhaustive: never = setting;
 	}
-	if (DEBUG) {
-		console.log(`  R7. New index: ${newIndex}, New tab ID: ${newTabId}`);
-	}
+	logger.debug('Determined new index:', newIndex, 'New tab ID:', newTabId);
 	if (newTabId === undefined) {
 		const newTabIds = await apiTabs.query({
 			windowType: 'normal',
@@ -82,25 +68,21 @@ async function tabRemovedActivater(
 			index: newIndex,
 		});
 		if (newTabIds.length === 0) return; // No tab found at the specified index
-		newTabId = newTabIds[0].id!;
+		newTabId = newTabIds[0].id ?? api.tabs.TAB_ID_NONE;
 	}
-	if (DEBUG) {
-		console.log('  R8. New tab ID:', newTabId, 'New index:', newIndex);
-	}
+	logger.debug('Final new tab ID to activate:', newTabId);
 	try {
 		await apiTabs.update(newTabId, { active: true });
-	} catch (error: any) {
-		if (DEBUG) {
-			if (error.message.startsWith('No tab with id:')) {
-				console.log(`  R8a. Tab ${newTabId} not found, skipping activation.`);
-			} else {
-				errorHandler(error);
-			}
+		logger.info('Activated tab ID:', newTabId);
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		if (message.startsWith('No tab with id:')) {
+			logger.warn('Tab to activate not found:', newTabId);
+		} else {
+			logger.error(error);
 		}
 	}
-	if (DEBUG) {
-		console.log('  R9. Tab activated');
-	}
+	logger.debug('Tab removal activation process completed');
 }
 
 export function registerTabRemovedListener(
@@ -108,6 +90,6 @@ export function registerTabRemovedListener(
 	apiTabs: typeof api.tabs,
 ) {
 	listeners.add(apiTabs.onRemoved,
-		tabRemovedActivater.bind(null, apiTabs)
+		tabRemovedActivater.bind(null, apiTabs),
 	);
 }

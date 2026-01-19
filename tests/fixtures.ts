@@ -14,14 +14,14 @@ export type { ExtensionSettings };
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export type Fixtures = {
+export interface Fixtures {
 	context: BrowserContext;
 	extensionOrigin: string;
 	extensionPage: Page;
 	testWorker: Worker;
 	configureSettings: (settings: Partial<ExtensionSettings>) => Promise<void>;
 	getTabs: () => Promise<chrome.tabs.Tab[]>;
-};
+}
 
 const EXTENSION_SERVICE_WORKER = manifest.background.service_worker;
 const TEST_SERVICE_WORKER = test_manifest.background.service_worker;
@@ -38,10 +38,8 @@ async function getExtensionWorker(
 	service_worker: string = EXTENSION_SERVICE_WORKER,
 ): Promise<Worker> {
 	const serviceWorkers = context.serviceWorkers();
-	let extensionWorker = serviceWorkers.find(sw => isExtensionUri(sw.url()));
-	if (!extensionWorker) {
-		extensionWorker = await context.waitForEvent('serviceworker', sw => sw.url().includes(manifest.background.service_worker));
-	}
+	let extensionWorker = serviceWorkers.find(sw => isExtensionUri(sw.url(), service_worker));
+	extensionWorker ??= await context.waitForEvent('serviceworker', sw => isExtensionUri(sw.url(), service_worker));
 	return extensionWorker;
 }
 
@@ -54,7 +52,7 @@ export const test = base.extend<Fixtures>({
 	context: async ({ }, use) => {
 		const pathToExtension = path.join(__dirname, '../dist');
 		const pathToTestExtension = path.join(__dirname, 'ext');
-		const headless = JSON.parse(process.env.CI ?? 'false');
+		const headless: unknown = JSON.parse(process.env.CI ?? 'false');
 		const args = [
 			`--disable-extensions-except=${pathToExtension},${pathToTestExtension}`,
 			`--load-extension=${pathToExtension},${pathToTestExtension}`,
@@ -81,22 +79,22 @@ export const test = base.extend<Fixtures>({
 		await extensionPage.waitForLoadState();
 		const debug_mode_setting: keyof ExtensionSettings = '_debug_mode';
 		const debug_mode_element = extensionPage.locator(
-			`input[name="${debug_mode_setting}"]`
+			`input[name="${debug_mode_setting}"]`,
 		);
 		await debug_mode_element.setChecked(true);
 
 		await use(context);
 
 		try {
-			const coverage = await extensionWorker.evaluate(() => (self as any).__coverage__);
+			const coverage = await extensionWorker.evaluate(() => self.__coverage__ as unknown);
 			if (coverage) {
 				const coveragePath = path.join(__dirname, '../.nyc_output');
 				await fs.mkdir(coveragePath, { recursive: true });
 				await fs.writeFile(path.join(coveragePath, `coverage-${Date.now()}.json`), JSON.stringify(coverage));
 			}
-		} catch (error: any) {
+		} catch (error) {
 			// Worker might have been terminated, skip coverage collection
-			if (error.message?.includes('Execution context was destroyed')) {
+			if (error instanceof Error && error.message.includes('Execution context was destroyed')) {
 				console.log('[TEST] Skipping coverage collection - worker was terminated');
 			} else {
 				throw error;
@@ -112,7 +110,7 @@ export const test = base.extend<Fixtures>({
 	},
 	extensionPage: async ({ context, extensionOrigin }, use) => {
 		const extensionPage = context.pages().find(
-			tab => tab.url().startsWith(extensionOrigin)
+			tab => tab.url().startsWith(extensionOrigin),
 		) ?? await context.newPage();
 		if (!extensionPage.url().startsWith(extensionOrigin)) {
 			await extensionPage.goto(`${extensionOrigin}/${manifest.options_page}`);
@@ -166,5 +164,5 @@ export const test = base.extend<Fixtures>({
 			});
 			return tabs;
 		});
-	}
+	},
 });

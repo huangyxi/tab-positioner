@@ -1,5 +1,5 @@
-import { ExtensionSettings, DEFAULT_SETTINGS, sanitizeSettings } from './settings';
-import { errorHandler } from './logging';
+import type { ExtensionSettings } from './settings';
+import { DEFAULT_SETTINGS, sanitizeSettings } from './settings';
 
 const storageSync = api.storage.sync;
 
@@ -15,7 +15,7 @@ export async function loadSettings(): Promise<ExtensionSettings> {
 		const sanitizedSettings = sanitizeSettings(settings);
 		return sanitizedSettings;
 	} catch (error) {
-		errorHandler(error);
+		console.error(error);
 		return DEFAULT_SETTINGS;
 	}
 }
@@ -37,7 +37,7 @@ export async function saveSettings(
 		}
 		await storageSync.set(settings);
 	} catch (error) {
-		errorHandler(error);
+		console.error(error);
 	}
 }
 
@@ -45,6 +45,6 @@ export async function clearSettings(): Promise<void> {
 	try {
 		await storageSync.clear();
 	} catch (error) {
-		errorHandler(error);
+		console.error(error);
 	}
 }

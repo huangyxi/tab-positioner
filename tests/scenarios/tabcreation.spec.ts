@@ -11,13 +11,13 @@ async function verifyTabCreation(
 ) {
 	const { context, configureSettings, getTabs } = fixtures as Fixtures;
 
-	const page0 = await createPage(context, 0);
+	const _page0 = await createPage(context, 0);
 	const page1 = await createPage(context, 1);
-	const page3 = await createPage(context, 3);
+	const _page3 = await createPage(context, 3);
 
 	// Open the PAGE2 from PAGE1's background link
 	await page1.bringToFront();
-	const page2 = await openLink(page1, 2, true);
+	const _page2 = await openLink(page1, 2, true);
 
 	await configureSettings(settings);
 
@@ -27,10 +27,15 @@ async function verifyTabCreation(
 
 	// test a new page's behavior
 	const newPageId: PageId = 'new';
-	if (action === 'new_foreground') {
-		await openLink(page1, newPageId);
-	} else if (action === 'new_background') {
-		await openLink(page1, newPageId, true);
+	switch (action) {
+		case 'new_foreground':
+			await openLink(page1, newPageId);
+			break;
+		case 'new_background':
+			await openLink(page1, newPageId, true);
+			break;
+		default:
+			const _exhaustive: never = action;
 	}
 
 	await page1.waitForTimeout(TEST_TIMEOUT_MS);
@@ -64,7 +69,7 @@ test.describe('Tab Creation Behavior', () => {
 			settings: { background_link_position: 'window_first' } as const,
 			action: 'new_background' as const,
 			expectedOrder: ['new', 0, 1, 2, 3] as PageId[],
-		}
+		},
 	].forEach(({ title, settings, action, expectedOrder }) => {
 		test(title, async ({ context, configureSettings, getTabs }) => {
 			await verifyTabCreation(

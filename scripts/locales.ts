@@ -42,14 +42,15 @@ async function main() {
 			} else {
 				console.log(`✓ ${locale}`);
 			}
-		} catch (e: any) {
-			localeErrors[locale] = [`File/parse error: ${e.message}`];
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			localeErrors[locale] = [`File/parse error: ${message}`];
 		}
 	}
 
 	const failedLocales = Object.keys(localeErrors);
 	if (failedLocales.length === 0) {
-		return
+		return;
 	}
 	console.error('\nLocale validation errors:');
 	for (const loc of failedLocales) {
@@ -62,9 +63,4 @@ async function main() {
 	process.exit(1);
 }
 
-try {
-	await main();
-} catch (error: any) {
-	console.error(`Unexpected error: ${error.message}`);
-	process.exit(1);
-}
+await main();

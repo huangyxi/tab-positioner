@@ -18,7 +18,7 @@ function toRelPath(p: string): string {
 }
 
 function parseArgs(
-	argv: string[]
+	argv: string[],
 ) {
 	const args = [...argv]; // Copy to avoid modifying the original array
 	const inputPaths: string[] = [];
@@ -39,12 +39,12 @@ function parseArgs(
 					'\n  -o, --output <path> Specify output zip file' +
 					'\n  -p, --preserve-root Preserve root directory structure' +
 					'\n  -v, --verbose       Enable verbose output' +
-					'\n  <inputs>            One or more input files or directories to zip'
+					'\n  <inputs>            One or more input files or directories to zip',
 				);
 				console.log(
 					'\nDefaults:' +
 					`\n  inputs: ${DEFAULT_INPUTS}` +
-					`\n  output: ${DEFAULT_OUTPUT}`
+					`\n  output: ${DEFAULT_OUTPUT}`,
 				);
 				process.exit(0);
 			case '--output':
@@ -141,7 +141,7 @@ async function zipInputs(
 					if (verbose) console.log(' ⊘', toRelPath(entry.absPath), '[skipped]');
 					continue;
 				}
-				ret = await zipAppend(zipWriter, entry.absPath, entry.relPath, verbose) === 0 ? ret : 1
+				ret = await zipAppend(zipWriter, entry.absPath, entry.relPath, verbose) === 0 ? ret : 1;
 				if (verbose) console.log(' +', toRelPath(entry.absPath));
 			}
 		}
@@ -169,10 +169,11 @@ export async function main(argv: string[]) {
 			process.exit(1);
 		}
 
-	} catch (error: any) {
-		console.error('❌ Failed to create zip:', error.message);
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		console.error('❌ Failed to create zip:', message);
 		process.exit(1);
 	}
 }
 
-main(process.argv.slice(2));
+await main(process.argv.slice(2));
