@@ -57,7 +57,7 @@ async function createdTabMover(
 		}
 		return;
 	}
-	const {setting, settingKey, tabBatchThresholdMs} = await getTabCreationSetting(newTab);
+	const {setting, settingKey: _, tabBatchThresholdMs} = await getTabCreationSetting(newTab);
 	DEBUG && console.log('  C4. Tab creation setting:', setting);
 	if (setting === 'default') return;
 	const delay = tabsInfo.getCreationDelay();
@@ -77,7 +77,7 @@ async function createdTabMover(
 	);
 }
 
-export async function registerTabCreatedListener(
+export function registerTabCreatedListener(
 	listeners: Listeners,
 	apiTabs: typeof api.tabs,
 	apiWindows: typeof api.windows,

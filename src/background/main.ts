@@ -19,10 +19,10 @@ function main() {
 	const apiTabs = api.tabs;
 	const apiWindows = api.windows;
 
-	SyncSettings.startup(apiRuntime); // no await here
+	void SyncSettings.startup(apiRuntime); // no await here
 	SyncSettings.registerListeners(listeners, apiRuntime, apiStorage);
 
-	TabsInfo.startup(apiTabs, apiWindows); // no await here
+	void TabsInfo.startup(apiTabs, apiWindows); // no await here
 	TabsInfo.registerListeners(listeners, apiTabs, apiWindows);
 
 	// In right order to ensure the listeners in TabsInfo are registered before others.

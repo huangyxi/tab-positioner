@@ -4,7 +4,7 @@ import { STATE_SAVE_DELAY_MS } from './constants';
 
 const storageSession = api.storage.session;
 
-async function getSessionState(key: string): Promise<any | undefined> {
+async function getSessionState(key: string): Promise<unknown> {
 	try {
 		const session = await storageSession.get(key);
 		return session[key] ?? undefined;
@@ -52,7 +52,7 @@ export abstract class SessionSingleton {
 			return true;
 		}
 		const superCls = Object.getPrototypeOf(this);
-		return this._instances.has(this) && superCls.hasLoaded();
+		return this._instances.has(this) && superCls.hasLoaded() as boolean;
 	}
 
 	public static getLoadedInstance<T extends typeof SessionSingleton>(
@@ -165,7 +165,7 @@ export abstract class SessionSingleton {
 			}
 			const value = await getSessionState(this.sessionKeyFor(property));
 			if (value === undefined) continue;
-			(this as any)[property] = JSON.parse(value);
+			(this as any)[property] = JSON.parse(value as string);
 		}
 		if (DEBUG) {
 			console.log(`_${this.name}: State loaded in ${Date.now() - timestamp}ms`);

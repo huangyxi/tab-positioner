@@ -6,12 +6,6 @@ import { errorHandler } from '../shared/logging';
 
 type WindowId = number;
 type TabId = number;
-// TabInfo does not store the index, as it can change.
-interface TabInfo {
-	id: TabId;
-	lastAccessed: number;
-	openerTabId?: number;
-}
 type TabIndex = number;
 interface RecentTabInfo {
 	id: TabId;
@@ -132,7 +126,7 @@ export class TabsInfo extends SessionSingleton {
 	 * @param normalTabs Tabs with `windowType: 'normal'` to initialize the TabsInfo,
 	 * where the `windowId` and `id` are defined.
 	 */
-	private async initialize(
+	private initialize(
 		normalTabs: api.tabs.Tab[],
 		recentNormalWindowId: WindowId,
 	) {
@@ -160,7 +154,7 @@ export class TabsInfo extends SessionSingleton {
 		if (recentNormalWindowId !== -1) { // api.windows.WINDOW_ID_NONE
 			this.recentNormalWindowId = recentNormalWindowId;
 		}
-		this.saveState();
+		void this.saveState();
 	}
 
 	/**
@@ -182,7 +176,7 @@ export class TabsInfo extends SessionSingleton {
 				index: tab.index,
 			};
 		}
-		this.saveState();
+		void this.saveState();
 	}
 
 	private addTab(
@@ -199,7 +193,7 @@ export class TabsInfo extends SessionSingleton {
 			this.currentTabs[windowId] = [];
 		}
 		this.currentTabs[windowId].push(tabId);
-		this.saveState();
+		void this.saveState();
 	}
 
 	private removeTab(
@@ -228,7 +222,7 @@ export class TabsInfo extends SessionSingleton {
 			delete this.recentTabs[windowId];
 			return;
 		}
-		this.saveState();
+		void this.saveState();
 	}
 
 	public activateTab(
@@ -249,7 +243,7 @@ export class TabsInfo extends SessionSingleton {
 			id: tabId,
 			index: index,
 		};
-		this.saveState();
+		void this.saveState();
 	}
 
 	private focusWindow(
@@ -262,7 +256,7 @@ export class TabsInfo extends SessionSingleton {
 			return; // api.windows.WINDOW_ID_NONE
 		}
 		this.recentNormalWindowId = windowId;
-		this.saveState();
+		void this.saveState();
 	}
 
 	/**
@@ -283,7 +277,7 @@ export class TabsInfo extends SessionSingleton {
 		if (currentWindow.type === 'normal') {
 			recentNormalWindowId = currentWindow.id ?? -1;
 		}
-		await instance.initialize(normalTabs, recentNormalWindowId);
+		instance.initialize(normalTabs, recentNormalWindowId);
 	}
 
 	public static registerListeners(
@@ -381,7 +375,7 @@ export class TabsInfo extends SessionSingleton {
 			if (currentWindow.type === 'normal') {
 				recentNormalWindowId = currentWindow.id ?? -1;
 			}
-			await instance.initialize(normalTabs, recentNormalWindowId);
+			instance.initialize(normalTabs, recentNormalWindowId);
 		});
 
 		listeners.add(apiWindows.onFocusChanged, async (windowId) => {

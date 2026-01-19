@@ -2,7 +2,7 @@
 import type { I18nKey} from '../shared/i18n';
 import { getI18nMessage, getI18nAttribute, I18N_HTML_PROPERTIES } from '../shared/i18n';
 import type { SettingKey, ExtensionSettings } from '../shared/settings';
-import { DEFAULT_SETTINGS, SETTING_SCHEMAS } from '../shared/settings';
+import { DEFAULT_SETTINGS } from '../shared/settings';
 import { loadSettings, saveSettings, clearSettings } from '../shared/storage';
 
 type SettingElement = HTMLSelectElement | HTMLInputElement;
@@ -21,7 +21,7 @@ function getFormSetting(form: HTMLFormElement): ExtensionSettings[SettingKey] | 
 			}
 			return element.valueAsNumber;
 		case 'select-one':
-			return element.value as any;
+			return element.value as ExtensionSettings[SettingKey];
 		default:
 			console.warn(`Unsupported element type: ${element.type} for setting ${settingKey}`);
 			return undefined; // Unsupported type
@@ -162,8 +162,8 @@ async function resetFormSettings(forms: NodeListOf<HTMLFormElement>) {
 }
 
 function isOptionsPage() {
-	const m = api.runtime.getManifest();
-	const optionsURI = api.runtime.getURL(m.options_page || m.options_ui?.page || 'options.html');
+	const manifest = api.runtime.getManifest();
+	const optionsURI = api.runtime.getURL(manifest.options_page as string ?? 'options.html');
 	const isOptionsPage = window.location.href === optionsURI;
 	return isOptionsPage;
 }
@@ -183,22 +183,18 @@ async function main() {
 	await restoreFormSettings(forms);
 
 	forms.forEach(form => {
-		form.addEventListener('change', async () => await saveFormSettings(form));
+		form.addEventListener('change', () => void saveFormSettings(form));
 	});
 
 	forms.forEach(form => {
-		form.addEventListener('reset', async (event) => {
-			await resetFormSetting(form);
-		});
+		form.addEventListener('reset', () => void resetFormSetting(form));
 	});
 
-	document.getElementById('reset-all')?.addEventListener('click', async () => {
-		await resetFormSettings(forms);
-	});
+	document.getElementById('reset-all')?.addEventListener('click', () => void resetFormSettings(forms));
 
 	if (isOptionsPage()) {
 		openDetails();
 	}
 }
 
-main();
+void main();

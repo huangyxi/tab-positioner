@@ -11,13 +11,13 @@ async function verifyTabCreation(
 ) {
 	const { context, configureSettings, getTabs } = fixtures as Fixtures;
 
-	const page0 = await createPage(context, 0);
+	const _page0 = await createPage(context, 0);
 	const page1 = await createPage(context, 1);
-	const page3 = await createPage(context, 3);
+	const _page3 = await createPage(context, 3);
 
 	// Open the PAGE2 from PAGE1's background link
 	await page1.bringToFront();
-	const page2 = await openLink(page1, 2, true);
+	const _page2 = await openLink(page1, 2, true);
 
 	await configureSettings(settings);
 

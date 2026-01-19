@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 interface Callback {
 	function: (...args: any[]) => void | Promise<void>;
 	args: any[];
 }
 
-type CustomChromeEvent<H extends (...args: any) => void> =
+type CustomChromeEvent<H extends (...args: any) => void | Promise<void>> =
 	Omit<api.events.Event<H>, 'addListener'> & {
 		readonly addListener: H;
 	};
@@ -11,15 +12,15 @@ type CustomChromeEvent<H extends (...args: any) => void> =
 export class Listeners {
 	private listeners: Map<CustomChromeEvent<any>, Callback[]> = new Map();
 
-	public add<H extends (...args: any[]) => void>(
+	public add<H extends (...args: any[]) => void | Promise<void>>(
 		event: CustomChromeEvent<H>,
 		...args: Parameters<H>
 	): void;
-	public add<T extends api.events.Event<any>>(
-		event: T,
-		callback: T extends api.events.Event<infer H> ? H : never,
-	): void;
 	public add<H extends (...args: any[]) => void>(
+		event: api.events.Event<H>,
+		callback: (...args: Parameters<H>) => void | Promise<void>,
+	): void;
+	public add<H extends (...args: any[]) => void | Promise<void>>(
 		event: CustomChromeEvent<H>,
 		callback: H,
 		...args: any[]
@@ -36,8 +37,10 @@ export class Listeners {
 	public resolve(): void {
 		for (const [event, callbacks] of this.listeners.entries()) {
 			const noArgsCallbacks = callbacks.filter(cb => cb.args.length === 0);
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 			event.addListener(async (..._args: any[]) => {
 				for (const callback of noArgsCallbacks) {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 					const ret = callback.function(..._args);
 					if (ret instanceof Promise) {
 						await ret;
@@ -46,6 +49,7 @@ export class Listeners {
 			});
 			const argsCallbacks = callbacks.filter(cb => cb.args.length > 0);
 			for (const callback of argsCallbacks) {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 				event.addListener(callback.function, ...callback.args);
 			}
 		}

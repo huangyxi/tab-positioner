@@ -60,7 +60,7 @@ export const expect = baseExpect.extend({
 	 * @param expectedPageIds - The expected pageIds in order
 	 * @returns
 	 */
-	async toMatchPageIds(
+	toMatchPageIds(
 		currentTabs: chrome.tabs.Tab[],
 		expectedPageIds: PageId[],
 	) {
@@ -103,7 +103,7 @@ export const expect = baseExpect.extend({
 	 * @param expectedPageId - Expected active pageId
 	 * @returns
 	 */
-	async toMatchActiveTab(
+	toMatchActiveTab(
 		currentTabs: chrome.tabs.Tab[],
 		expectedPageId: PageId,
 	) {
@@ -259,7 +259,7 @@ export async function idleExtensionWorker(
 	try {
 		const { targetInfos } = await (client as any).send('Target.getTargets');
 		for (const target of (targetInfos || [])) {
-			if (target.type === 'service_worker' && isExtensionUri(target.url)) {
+			if (target.type === 'service_worker' && isExtensionUri(target.url as string)) {
 				console.log(`[TEST] Stopping service worker: ${target.url}`);
 				await (client as any).send('Target.closeTarget', {
 					targetId: target.targetId,

@@ -18,12 +18,14 @@ function _st(
 ) {
 	const property = 'title';
 	const titleKey = `${property}_${settingKey}`;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument
 	const message = _(titleKey as any);
 	if (!message) {
 		return {};
 	}
 	return {
 		[property]: message,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument
 		..._a(titleKey as any, property),
 	};
 }

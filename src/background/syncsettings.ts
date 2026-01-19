@@ -61,7 +61,7 @@ export class SyncSettings extends SessionSingleton {
 		if (DEBUG) {
 			console.log(' syncSettings: Settings saved:', settings);
 		}
-		this.saveState();
+		void this.saveState();
 		await saveSettings(settings);
 	}
 
@@ -78,7 +78,7 @@ export class SyncSettings extends SessionSingleton {
 	 * when api.runtime.onStartup and api.runtime.onInstalled events are not fired after restoring from suspension or being disabled.
 	 */
 	public static async startup(apiRuntime: typeof api.runtime) {
-		this.setDebugMode();
+		await this.setDebugMode();
 		const instance = await this.getInstance();
 		if (DEBUG) {
 			console.log(' syncSettings: Instance created at startup');
@@ -98,12 +98,12 @@ export class SyncSettings extends SessionSingleton {
 			}
 			const instance = await this.getInstance();
 			const debugModeKey: keyof typeof DEFAULT_SETTINGS = '_debug_mode';
-			if (debugModeKey in changes) await this.setDebugMode(changes[debugModeKey].newValue);
+			if (debugModeKey in changes) await this.setDebugMode(changes[debugModeKey].newValue as boolean);
 			if (DEBUG) {
 				console.log(' syncSettings: Settings changed:', changes);
 			}
 			await instance.saveSettings();
-			instance.keepAlive(apiRuntime);
+			await instance.keepAlive(apiRuntime);
 		});
 	}
 }

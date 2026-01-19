@@ -1,3 +1,4 @@
-export function errorHandler(...error: any[]): void {
+export function errorHandler(...error: unknown[]): void {
+
 	console.error('Tab Positioner Error:', ...error);
 }

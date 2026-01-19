@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 import type { I18nKey } from './i18n';
 import { errorHandler } from './logging';
 import * as C from './constants';
@@ -16,7 +17,7 @@ export type SettingKey = never
 	| '_tab_batch_activation_threshold_ms'
 	| '_persistent_background'
 	| '_debug_mode'
-	| never;
+	;
 
 export interface SettingText {
 	i18nKey: I18nKey;
@@ -80,7 +81,7 @@ export const DEFAULT_SETTINGS = {
 	_tab_batch_activation_threshold_ms: C.TAB_BATCH_ACTIVATION_THRESHOLD_MS,
 	_debug_mode: false,
 	_persistent_background: false,
-} satisfies Record<SettingKey, any>;
+} satisfies Record<SettingKey, unknown>;
 // export interface ExtensionSettings extends Record<SettingKey, ChoiceValue> {
 // 	new_tab_position: TabCreationPosition;
 // 	background_link_position: TabCreationPosition;
@@ -168,11 +169,11 @@ export const SETTING_SCHEMAS: SettingSchemas = {
 	},
 } as const;
 
-export function sanitizeSettings<T extends Partial<Record<SettingKey, any>>>(
+export function sanitizeSettings<T extends Partial<Record<SettingKey, unknown>>>(
 	settings: T,
 	settingName?: string,
-): T extends Record<SettingKey, any> ? ExtensionSettings : Partial<ExtensionSettings> {
-	const sanitizedSettings: Partial<Record<keyof T, any>> = {};
+): T extends Record<SettingKey, unknown> ? ExtensionSettings : Partial<ExtensionSettings> {
+	const sanitizedSettings: Partial<Record<keyof T, unknown>> = {};
 	for (const [key, value] of Object.entries(settings) as Array<[SettingKey, any]>) {
 		const setting = SETTING_SCHEMAS[key];
 		const type = setting.type;
@@ -185,7 +186,7 @@ export function sanitizeSettings<T extends Partial<Record<SettingKey, any>>>(
 				break;
 			case 'number':
 				if (typeof value === 'number' && !isNaN(value)) {
-					const { min, max, step } = setting;
+					const { min, max, step: _ } = setting;
 					if (min !== undefined && value < min) break;
 					if (max !== undefined && value > max) break;
 					sanitizedSettings[key] = Math.round(value);
@@ -206,5 +207,5 @@ export function sanitizeSettings<T extends Partial<Record<SettingKey, any>>>(
 		);
 		sanitizedSettings[key] = DEFAULT_SETTINGS[key];
 	}
-	return sanitizedSettings as any;
+	return sanitizedSettings as T extends Record<SettingKey, unknown> ? ExtensionSettings : Partial<ExtensionSettings>;
 }
