@@ -84,7 +84,7 @@ export class SyncSettings extends SessionSingleton {
 			console.log(' syncSettings: Instance created at startup');
 		}
 		await instance.saveSettings();
-		await instance.keepAlive(apiRuntime);
+		void instance.keepAlive(apiRuntime);
 	}
 
 	public static registerListeners(
@@ -103,7 +103,7 @@ export class SyncSettings extends SessionSingleton {
 				console.log(' syncSettings: Settings changed:', changes);
 			}
 			await instance.saveSettings();
-			await instance.keepAlive(apiRuntime);
+			void instance.keepAlive(apiRuntime);
 		});
 	}
 }
