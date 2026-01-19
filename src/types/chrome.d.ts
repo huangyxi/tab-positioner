@@ -1,4 +1,4 @@
-import 'chrome-types'
+import 'chrome-types';
 
 declare global {
 	// defined in /utils/vite.ts

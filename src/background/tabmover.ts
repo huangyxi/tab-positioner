@@ -1,9 +1,9 @@
-import { DEBUG } from "../shared/debug";
-import { TabCreationPosition } from "../shared/settings";
-import { FIRST_ACTIVATION_DELAY_MS } from "../shared/constants";
-import { errorHandler } from "../shared/logging";
+import { DEBUG } from '../shared/debug';
+import type { TabCreationPosition } from '../shared/settings';
+import { FIRST_ACTIVATION_DELAY_MS } from '../shared/constants';
+import { errorHandler } from '../shared/logging';
 
-import { TabsInfo } from "./tabsinfo";
+import type { TabsInfo } from './tabsinfo';
 
 export async function tabMover(
 	apiTabs: typeof api.tabs,
@@ -55,7 +55,7 @@ export async function tabMover(
 				tabsInfo.activateTab(
 					windowId,
 					tabId,
-					newIndex
+					newIndex,
 				);
 			}
 		}

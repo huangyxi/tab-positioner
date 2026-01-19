@@ -112,17 +112,17 @@ export default function (
 	const plugin = new VitePlugin(eleventyConfig, options);
 
 	eleventyConfig.on('eleventy.before', async ({
-		directories, runMode, outputMode
+		directories, runMode, outputMode,
 	}: any) => {
 		if (
 			runMode === 'serve' ||
-			outputMode === "json" ||
-			outputMode === "ndjson"
+			outputMode === 'json' ||
+			outputMode === 'ndjson'
 		) {
 			return;
 		}
 		await plugin.build();
-	})
+	});
 
 	// import EleventyVitePlugin from '@11ty/eleventy-plugin-vite';
 	// eleventyConfig.addPlugin(EleventyVitePlugin, {

@@ -49,7 +49,7 @@ async function main() {
 
 	const failedLocales = Object.keys(localeErrors);
 	if (failedLocales.length === 0) {
-		return
+		return;
 	}
 	console.error('\nLocale validation errors:');
 	for (const loc of failedLocales) {

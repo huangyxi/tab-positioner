@@ -1,7 +1,7 @@
 import { DEBUG } from '../shared/debug';
 import type { TabCreationPositionKey } from '../shared/settings';
 import { NEW_PAGE_URIS } from '../shared/constants';
-import { Listeners } from '../shared/listeners';
+import type { Listeners } from '../shared/listeners';
 
 import { SyncSettings } from './syncsettings';
 import { TabsInfo } from './tabsinfo';
@@ -27,7 +27,7 @@ async function getTabCreationSetting(
 		setting: settings.get(settingKey),
 		settingKey,
 		tabBatchThresholdMs: settings.get('_tab_batch_creation_threshold_ms'),
-	}
+	};
 }
 
 async function createdTabMover(
@@ -83,6 +83,6 @@ export async function registerTabCreatedListener(
 	apiWindows: typeof api.windows,
 ) {
 	listeners.add(apiTabs.onCreated,
-		createdTabMover.bind(null, apiTabs, apiWindows)
+		createdTabMover.bind(null, apiTabs, apiWindows),
 	);
 }

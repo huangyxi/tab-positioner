@@ -1,5 +1,5 @@
 import { DEBUG } from '../shared/debug';
-import { Listeners } from '../shared/listeners';
+import type { Listeners } from '../shared/listeners';
 import { errorHandler } from '../shared/logging';
 
 import { TabsInfo } from './tabsinfo';
@@ -108,6 +108,6 @@ export function registerTabRemovedListener(
 	apiTabs: typeof api.tabs,
 ) {
 	listeners.add(apiTabs.onRemoved,
-		tabRemovedActivater.bind(null, apiTabs)
+		tabRemovedActivater.bind(null, apiTabs),
 	);
 }

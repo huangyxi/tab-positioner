@@ -73,7 +73,7 @@ export const expect = baseExpect.extend({
 			.map(uri => pageId(uri));
 		pass = actualTabIds.length === expectedPageIds.length &&
 			actualTabIds.every((value, index) =>
-				String(value) === String(expectedPageIds[index])
+				String(value) === String(expectedPageIds[index]),
 			);
 		if (this.isNot) {
 			pass = !pass;
@@ -262,7 +262,7 @@ export async function idleExtensionWorker(
 			if (target.type === 'service_worker' && isExtensionUri(target.url)) {
 				console.log(`[TEST] Stopping service worker: ${target.url}`);
 				await (client as any).send('Target.closeTarget', {
-					targetId: target.targetId
+					targetId: target.targetId,
 				});
 			}
 		}

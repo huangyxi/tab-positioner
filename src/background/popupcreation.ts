@@ -2,7 +2,7 @@ import { DEBUG } from '../shared/debug';
 import type { TabCreationPosition } from '../shared/settings';
 
 import { SyncSettings } from './syncsettings';
-import { TabsInfo } from './tabsinfo';
+import type { TabsInfo } from './tabsinfo';
 import { tabMover } from './tabmover';
 
 export async function createdPopupMover(

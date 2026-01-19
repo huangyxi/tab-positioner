@@ -64,7 +64,7 @@ test.describe('Tab Creation Behavior', () => {
 			settings: { background_link_position: 'window_first' } as const,
 			action: 'new_background' as const,
 			expectedOrder: ['new', 0, 1, 2, 3] as PageId[],
-		}
+		},
 	].forEach(({ title, settings, action, expectedOrder }) => {
 		test(title, async ({ context, configureSettings, getTabs }) => {
 			await verifyTabCreation(

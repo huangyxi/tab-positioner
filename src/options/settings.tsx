@@ -1,6 +1,6 @@
 
 import { getMessage as _, createI18nAttribute as _a } from '../shared/i18n';
-import type { SettingKey, SettingSchemas, SettingText, ExtensionSettings } from '../shared/settings';
+import type { SettingKey, SettingSchemas, SettingText } from '../shared/settings';
 import { SETTING_SCHEMAS, DEFAULT_SETTINGS } from '../shared/settings';
 
 function _t(
@@ -139,8 +139,9 @@ function ChoicesSetting<K extends TypeKey<'choices'>>({
 	const forId = `${settingKey}-select`;
 	const defaultChoiceKey = DEFAULT_SETTINGS[settingKey];
 	const defaultChoice: SettingText = setting.choices[defaultChoiceKey];
+	// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 	const otherChoices = (Object.entries(setting.choices) as Array<[string, SettingText]>).filter(
-		([choiceKey, _]) => choiceKey !== defaultChoiceKey
+		([choiceKey, _]) => choiceKey !== defaultChoiceKey,
 	);
 	return <>
 		<form
@@ -176,7 +177,7 @@ function ChoicesSetting<K extends TypeKey<'choices'>>({
 							>
 								{_(choice.i18nKey)}
 							</option>
-						)
+						),
 					)}
 				</select>
 				<button
@@ -192,7 +193,7 @@ function ChoicesSetting<K extends TypeKey<'choices'>>({
 function Setting<T extends SettingSchemas[SettingKey]['type']>({
 	settingKey,
 	setting,
-}: SettingPair<T>
+}: SettingPair<T>,
 ): JSX.Element {
 	const type = setting.type;
 	switch (type) {
@@ -218,7 +219,7 @@ export function Settings<K extends SettingKey>({
 		: settings.filter(([settingKey, _]) => !settingKey.startsWith('_'));
 	return <>
 		{filteredSettings.map(([settingKey, setting]) => <>
-				<Setting settingKey={settingKey as any} setting={setting as any} />
+			<Setting settingKey={settingKey as any} setting={setting as any} />
 		</>)}
 	</>;
 }

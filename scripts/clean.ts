@@ -18,10 +18,10 @@ export async function main(argv: string[]) {
 				console.log(`       npm run clean -- [options]`);
 				console.log(`\nOptions:` +
 					'\n  -h, --help      Show this help message' +
-					'\n  --output <path> Specify output directory to clean'
+					'\n  --output <path> Specify output directory to clean',
 				);
 				console.log(`\nDefaults:` +
-					`\n  output: Defined in 'eleventy.config.mjs'`)
+					`\n  output: Defined in 'eleventy.config.mjs'`);
 				process.exit(0);
 			case '--output':
 				output = args.shift();

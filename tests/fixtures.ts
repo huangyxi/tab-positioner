@@ -81,7 +81,7 @@ export const test = base.extend<Fixtures>({
 		await extensionPage.waitForLoadState();
 		const debug_mode_setting: keyof ExtensionSettings = '_debug_mode';
 		const debug_mode_element = extensionPage.locator(
-			`input[name="${debug_mode_setting}"]`
+			`input[name="${debug_mode_setting}"]`,
 		);
 		await debug_mode_element.setChecked(true);
 
@@ -112,7 +112,7 @@ export const test = base.extend<Fixtures>({
 	},
 	extensionPage: async ({ context, extensionOrigin }, use) => {
 		const extensionPage = context.pages().find(
-			tab => tab.url().startsWith(extensionOrigin)
+			tab => tab.url().startsWith(extensionOrigin),
 		) ?? await context.newPage();
 		if (!extensionPage.url().startsWith(extensionOrigin)) {
 			await extensionPage.goto(`${extensionOrigin}/${manifest.options_page}`);
@@ -166,5 +166,5 @@ export const test = base.extend<Fixtures>({
 			});
 			return tabs;
 		});
-	}
+	},
 });

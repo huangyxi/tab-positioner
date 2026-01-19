@@ -42,7 +42,7 @@ export abstract class SessionSingleton {
 	public constructor() { }
 
 	private skipProperty(property: string): boolean {
-		return property.startsWith('_')
+		return property.startsWith('_');
 	}
 
 	public static hasLoaded<T extends typeof SessionSingleton>(

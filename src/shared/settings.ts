@@ -1,4 +1,4 @@
-import { I18nKey } from './i18n';
+import type { I18nKey } from './i18n';
 import { errorHandler } from './logging';
 import * as C from './constants';
 const DEFAULT_VALUE = 'default';
@@ -202,7 +202,7 @@ export function sanitizeSettings<T extends Partial<Record<SettingKey, any>>>(
 				const _exhaustive: never = type;
 		}
 		errorHandler(
-			`Invalid setting value for ${key}: ${value}${settingName ? ` in '${settingName}'` : ''}`
+			`Invalid setting value for ${key}: ${value}${settingName ? ` in '${settingName}'` : ''}`,
 		);
 		sanitizedSettings[key] = DEFAULT_SETTINGS[key];
 	}

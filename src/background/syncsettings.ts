@@ -1,4 +1,4 @@
-import { Listeners } from '../shared/listeners';
+import type { Listeners } from '../shared/listeners';
 import { SessionSingleton } from '../shared/session';
 import { loadSettings, saveSettings } from '../shared/storage';
 import { DEFAULT_SETTINGS } from '../shared/settings';
@@ -12,7 +12,7 @@ export class SyncSettings extends SessionSingleton {
 	private _keepAliveController = new AbortController();
 
 	public get<T extends keyof typeof DEFAULT_SETTINGS>(
-		key: T
+		key: T,
 	): typeof DEFAULT_SETTINGS[T] {
 		return this.settings[key];
 	}

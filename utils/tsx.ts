@@ -90,7 +90,7 @@ class TsxPlugin {
 		this.logger.logWithOptions({
 			message: `${TsxPlugin.LOGGER_PREFIX} No input directory set, using '${inputDir}' as default.`,
 			level: 'warn',
-		})
+		});
 		return inputDir;
 	}
 

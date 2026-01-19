@@ -1,0 +1,13 @@
+*.ts
+*.tsx
+*.mjs
+*.js
+*.scss
+*.json
+*.md
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+pnpm-lock.yaml

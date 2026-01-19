@@ -1,7 +1,7 @@
 import { DEBUG } from '../shared/debug';
-import { Listeners } from "../shared/listeners";
-import { SessionSingleton } from "../shared/session";
-import { FIRST_ACTIVATION_DELAY_MS } from "../shared/constants";
+import type { Listeners } from '../shared/listeners';
+import { SessionSingleton } from '../shared/session';
+import { FIRST_ACTIVATION_DELAY_MS } from '../shared/constants';
 import { errorHandler } from '../shared/logging';
 
 type WindowId = number;
@@ -45,7 +45,7 @@ export class TabsInfo extends SessionSingleton {
 	private removedTab: RemovedTabInfo = {
 		id: -1,
 		windowId: -1,
-	}
+	};
 
 	// Used to skip tab processing in batches.
 	private currentCreatedAt: DateTime = Date.now();
@@ -83,7 +83,7 @@ export class TabsInfo extends SessionSingleton {
 		return this.recentTabs[windowId] ?? {
 			id: -1,
 			index: -1,
-		}
+		};
 	}
 
 	/**
