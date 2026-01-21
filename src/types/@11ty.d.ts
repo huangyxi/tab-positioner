@@ -1,9 +1,26 @@
-// import type { Eleventy } from '@11ty/eleventy';
 declare module '@11ty/eleventy' {
-	const Eleventy: any;
+	export class Eleventy {
+		constructor(input?: string, output?: string, options?: {
+			dryRun?: boolean;
+			config?: string;
+		});
+		initializeConfig(): Promise<void>;
+		eleventyConfig: {
+			directories: {
+				input: string;
+				output: string;
+			};
+			logger: {
+				logWithOptions(options: {
+					prefix?: string;
+					message: string;
+					type: 'info' | 'warn' | 'error' | 'log';
+				}): void;
+			};
+		};
+	}
 }
 
-// import '@11ty/eleventy-utils';
 declare module '@11ty/eleventy-utils' {
-	export function Merge(output: any, ...inputs: any[]): any;
+	export function Merge<T>(target: Partial<T>, ...sources: Partial<T>[]): T;
 }

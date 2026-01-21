@@ -69,7 +69,7 @@ export const expect = baseExpect.extend({
 		const actualTabIds = currentTabs
 			.filter(t => isTestTabUri(t.url ?? ''))
 			.sort((a, b) => (a.index - b.index))
-			.map(t => t.url!)
+			.map(t => t.url ?? '')
 			.map(uri => pageId(uri));
 		pass = actualTabIds.length === expectedPageIds.length &&
 			actualTabIds.every((value, index) =>
@@ -109,7 +109,7 @@ export const expect = baseExpect.extend({
 	) {
 		const assertionName = 'toMatchActiveTab';
 		const activeTab = currentTabs.find(t => t.active && isTestTabUri(t.url ?? ''));
-		const actualPageId = activeTab ? pageId(activeTab.url!) : null;
+		const actualPageId = activeTab ? pageId(activeTab.url ?? '') : null;
 		const uriHint = actualPageId === null ? ` (URI: ${activeTab?.url})` : '';
 		let pass = actualPageId !== null && String(actualPageId) === String(expectedPageId);
 		if (this.isNot) {
@@ -257,11 +257,11 @@ export async function idleExtensionWorker(
 	const client = await context.newCDPSession(page);
 
 	try {
-		const { targetInfos } = await (client as any).send('Target.getTargets');
+		const { targetInfos } = await client.send('Target.getTargets');
 		for (const target of (targetInfos || [])) {
-			if (target.type === 'service_worker' && isExtensionUri(target.url as string)) {
+			if (target.type === 'service_worker' && isExtensionUri(target.url)) {
 				console.log(`[TEST] Stopping service worker: ${target.url}`);
-				await (client as any).send('Target.closeTarget', {
+				await client.send('Target.closeTarget', {
 					targetId: target.targetId,
 				});
 			}

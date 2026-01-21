@@ -59,7 +59,7 @@ export async function tabMover(
 				);
 			}
 		}
-	} catch (error: any) {
+	} catch (error) {
 		errorHandler(error);
 	}
 	DEBUG && console.log('  c3->X. Tab moved');

@@ -85,10 +85,11 @@ class VitePlugin {
 				message: `Built assets with Vite to ${this.directories.output}`,
 				type: 'info',
 			});
-		} catch (error: any) {
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
 			this.logger.logWithOptions({
 				prefix: VitePlugin.LOGGER_PREFIX,
-				message: `Failed to build with Vite: ${error.message}`,
+				message: `Failed to build with Vite: ${message}`,
 				type: 'error',
 				color: 'red',
 			});

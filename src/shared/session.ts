@@ -16,7 +16,7 @@ async function getSessionState(key: string): Promise<unknown> {
 
 async function setSessionState(
 	key: string,
-	value: any,
+	value: unknown,
 ): Promise<void> {
 	try {
 		await storageSession.set({ [key]: value });
@@ -51,8 +51,8 @@ export abstract class SessionSingleton {
 		if (this === SessionSingleton) {
 			return true;
 		}
-		const superCls = Object.getPrototypeOf(this);
-		return this._instances.has(this) && superCls.hasLoaded() as boolean;
+		const superCls = Object.getPrototypeOf(this) as typeof SessionSingleton;
+		return this._instances.has(this) && superCls.hasLoaded();
 	}
 
 	public static getLoadedInstance<T extends typeof SessionSingleton>(
@@ -85,7 +85,8 @@ export abstract class SessionSingleton {
 				if (DEBUG) {
 					console.log(`_${this.name}: Creating new instance`);
 				}
-				const instance = new (this as any)(...args) as InstanceType<T>;
+				type Constructor = new (...args: ConstructorParameters<T>) => InstanceType<T>;
+				const instance = new (this as unknown as Constructor)(...args);
 				if (await instance.isStateSaved()) {
 					await instance.loadState();
 				}
@@ -103,7 +104,7 @@ export abstract class SessionSingleton {
 		properties?: Array<keyof this & string>,
 	) {
 		if (properties === undefined) {
-			properties = this.properties() as any[];
+			properties = this.properties() as Array<keyof this & string>;
 		}
 		if (properties.length === 0) return;
 		const cls = this.constructor as typeof SessionSingleton;
@@ -111,7 +112,7 @@ export abstract class SessionSingleton {
 		const previousLock = cls._saveLocks.get(cls) ?? Promise.resolve();
 		const controller = new AbortController();
 		cls._saveControllers.set(cls, controller);
-		let release: () => void;
+		let release!: () => void;
 		const currentLock = new Promise<void>((resolve) => {
 			release = resolve;
 		});
@@ -133,7 +134,7 @@ export abstract class SessionSingleton {
 			for (const property of properties) {
 				if (controller.signal.aborted) throw abortException;
 				if (this.skipProperty(property)) continue;
-				const value = (this as any)[property];
+				const value = this[property];
 				if (value === undefined) continue;
 				await setSessionState(this.sessionKeyFor(property), JSON.stringify(value));
 			}
@@ -150,7 +151,7 @@ export abstract class SessionSingleton {
 				errorHandler(`_${this.name}: Save error:`, error);
 			}
 		} finally {
-			release!();
+			release();
 		}
 	}
 
@@ -165,7 +166,7 @@ export abstract class SessionSingleton {
 			}
 			const value = await getSessionState(this.sessionKeyFor(property));
 			if (value === undefined) continue;
-			(this as any)[property] = JSON.parse(value as string);
+			(this as Record<string, unknown>)[property] = JSON.parse(value as string);
 		}
 		if (DEBUG) {
 			console.log(`_${this.name}: State loaded in ${Date.now() - timestamp}ms`);

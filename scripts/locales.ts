@@ -42,8 +42,9 @@ async function main() {
 			} else {
 				console.log(`✓ ${locale}`);
 			}
-		} catch (e: any) {
-			localeErrors[locale] = [`File/parse error: ${e.message}`];
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			localeErrors[locale] = [`File/parse error: ${message}`];
 		}
 	}
 

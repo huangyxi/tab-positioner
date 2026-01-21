@@ -174,7 +174,7 @@ export function sanitizeSettings<T extends Partial<Record<SettingKey, unknown>>>
 	settingName?: string,
 ): T extends Record<SettingKey, unknown> ? ExtensionSettings : Partial<ExtensionSettings> {
 	const sanitizedSettings: Partial<Record<keyof T, unknown>> = {};
-	for (const [key, value] of Object.entries(settings) as Array<[SettingKey, any]>) {
+	for (const [key, value] of Object.entries(settings) as Array<[SettingKey, unknown]>) {
 		const setting = SETTING_SCHEMAS[key];
 		const type = setting.type;
 		switch (type) {
@@ -194,7 +194,7 @@ export function sanitizeSettings<T extends Partial<Record<SettingKey, unknown>>>
 				}
 				break;
 			case 'choices':
-				if (value in setting.choices) {
+				if (value as string in setting.choices) {
 					sanitizedSettings[key] = value;
 					continue;
 				}
@@ -203,7 +203,7 @@ export function sanitizeSettings<T extends Partial<Record<SettingKey, unknown>>>
 				const _exhaustive: never = type;
 		}
 		errorHandler(
-			`Invalid setting value for ${key}: ${value}${settingName ? ` in '${settingName}'` : ''}`,
+			`Invalid setting value for ${key}: ${String(value)}${settingName ? ` in '${settingName}'` : ''}`,
 		);
 		sanitizedSettings[key] = DEFAULT_SETTINGS[key];
 	}

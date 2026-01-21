@@ -202,9 +202,9 @@ function Setting<T extends SettingSchemas[SettingKey]['type']>({
 		case 'boolean':
 			return BooleanSetting({settingKey, setting} as SettingPair<'boolean'>);
 		case 'number':
-			return <NumberSetting settingKey={settingKey as any} setting={setting as any} />;
+			return NumberSetting({settingKey, setting} as SettingPair<'number'>);
 		case 'choices':
-			return <ChoicesSetting settingKey={settingKey as any} setting={setting as any} />;
+			return ChoicesSetting({settingKey, setting} as SettingPair<'choices'>);
 		default:
 			const _exhaustive: never = type;
 	}
@@ -221,7 +221,7 @@ export function Settings<K extends SettingKey>({
 		: settings.filter(([settingKey, _]) => !settingKey.startsWith('_'));
 	return <>
 		{filteredSettings.map(([settingKey, setting]) => <>
-			<Setting settingKey={settingKey as any} setting={setting as any} />
+			<Setting settingKey={settingKey} setting={setting as SettingSchemas[SettingKey]} />
 		</>)}
 	</>;
 }

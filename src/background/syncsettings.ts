@@ -27,10 +27,10 @@ export class SyncSettings extends SessionSingleton {
 		this._keepAliveController.abort();
 		const controller = new AbortController();
 		this._keepAliveController = controller;
-		let timeout: NodeJS.Timeout;
-		let rejectFn: (reason?: any) => void = () => { };
+		let timeout!: NodeJS.Timeout;
+		let rejectFn: (reason?: unknown) => void = () => { };
 		controller.signal.addEventListener('abort', () => {
-			clearTimeout(timeout!);
+			clearTimeout(timeout);
 			rejectFn(abortException);
 		}, { once: true });
 		try {
@@ -44,7 +44,7 @@ export class SyncSettings extends SessionSingleton {
 					rejectFn = reject;
 				});
 			}
-		} catch (error: any) {
+		} catch (error) {
 			if (error === abortException) {
 				if (DEBUG) {
 					console.log(' syncSettings: Keep alive aborted due to a new request');

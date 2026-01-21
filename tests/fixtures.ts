@@ -54,7 +54,7 @@ export const test = base.extend<Fixtures>({
 	context: async ({ }, use) => {
 		const pathToExtension = path.join(__dirname, '../dist');
 		const pathToTestExtension = path.join(__dirname, 'ext');
-		const headless = JSON.parse(process.env.CI ?? 'false');
+		const headless: unknown = JSON.parse(process.env.CI ?? 'false');
 		const args = [
 			`--disable-extensions-except=${pathToExtension},${pathToTestExtension}`,
 			`--load-extension=${pathToExtension},${pathToTestExtension}`,
@@ -94,9 +94,9 @@ export const test = base.extend<Fixtures>({
 				await fs.mkdir(coveragePath, { recursive: true });
 				await fs.writeFile(path.join(coveragePath, `coverage-${Date.now()}.json`), JSON.stringify(coverage));
 			}
-		} catch (error: any) {
+		} catch (error) {
 			// Worker might have been terminated, skip coverage collection
-			if (error.message?.includes('Execution context was destroyed')) {
+			if (error instanceof Error && error.message.includes('Execution context was destroyed')) {
 				console.log('[TEST] Skipping coverage collection - worker was terminated');
 			} else {
 				throw error;

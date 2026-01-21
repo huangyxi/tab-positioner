@@ -87,10 +87,11 @@ export async function getGitInfo(
 		}
 		version = `${version}${buildNumber}`;
 		tag = tag.endsWith(dirty) ? `v${version}${dirty}` : `v${version}`;
-	} catch (error: any) {
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
 		logger.logWithOptions({
 			prefix: LOGGER_PREFIX,
-			message: `Failed to get git version, using default version ${version}, ${error.message}`,
+			message: `Failed to get git version, using default version ${version}, ${message}`,
 			type: 'warn',
 			color: 'yellow',
 		});

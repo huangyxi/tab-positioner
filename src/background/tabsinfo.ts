@@ -172,7 +172,7 @@ export class TabsInfo extends SessionSingleton {
 		}
 		for (const tab of normalActiveTabs) {
 			this.recentTabs[tab.windowId] = {
-				id: tab.id!,
+				id: tab.id ?? api.tabs.TAB_ID_NONE,
 				index: tab.index,
 			};
 		}
@@ -323,9 +323,10 @@ export class TabsInfo extends SessionSingleton {
 			let tab: api.tabs.Tab;
 			try {
 				tab = await apiTabs.get(activeInfo.tabId);
-			} catch (error: any) {
+			} catch (error) {
 				if (DEBUG) {
-					if (error.message.startsWith('No tab with id:')) {
+					const message = error instanceof Error ? error.message : String(error);
+					if (message.startsWith('No tab with id:')) {
 						console.log(` tabsInfo: Tab ${activeInfo.tabId} not found`);
 					}
 					else {

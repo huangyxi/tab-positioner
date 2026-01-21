@@ -169,8 +169,9 @@ export async function main(argv: string[]) {
 			process.exit(1);
 		}
 
-	} catch (error: any) {
-		console.error('❌ Failed to create zip:', error.message);
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		console.error('❌ Failed to create zip:', message);
 		process.exit(1);
 	}
 }

@@ -82,16 +82,17 @@ async function tabRemovedActivater(
 			index: newIndex,
 		});
 		if (newTabIds.length === 0) return; // No tab found at the specified index
-		newTabId = newTabIds[0].id!;
+		newTabId = newTabIds[0].id ?? api.tabs.TAB_ID_NONE;
 	}
 	if (DEBUG) {
 		console.log('  R8. New tab ID:', newTabId, 'New index:', newIndex);
 	}
 	try {
 		await apiTabs.update(newTabId, { active: true });
-	} catch (error: any) {
+	} catch (error) {
 		if (DEBUG) {
-			if (error.message.startsWith('No tab with id:')) {
+			const message = error instanceof Error ? error.message : String(error);
+			if (message.startsWith('No tab with id:')) {
 				console.log(`  R8a. Tab ${newTabId} not found, skipping activation.`);
 			} else {
 				errorHandler(error);

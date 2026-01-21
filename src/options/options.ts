@@ -123,7 +123,7 @@ defaultSettings: ExtensionSettings = DEFAULT_SETTINGS,
 	if (forms instanceof HTMLElement) {
 		forms = [forms];
 	}
-	const settings: Partial<Record<SettingKey, any>> = {};
+	const settings: Partial<Record<SettingKey, unknown>> = {};
 	for (const form of forms) {
 		toggleResetButton(form);
 		const settingKey = form.id as SettingKey;
@@ -138,7 +138,7 @@ defaultSettings: ExtensionSettings = DEFAULT_SETTINGS,
 		}
 		settings[settingKey] = setting;
 	}
-	await saveSettings(settings, true);
+	await saveSettings(settings as Partial<ExtensionSettings>, true);
 	showStatus('status_settings_saved');
 }
 
