@@ -88,7 +88,7 @@ export const test = base.extend<Fixtures>({
 		await use(context);
 
 		try {
-			const coverage = await extensionWorker.evaluate(() => self.__coverage__ as object);
+			const coverage = await extensionWorker.evaluate(() => self.__coverage__ as unknown);
 			if (coverage) {
 				const coveragePath = path.join(__dirname, '../.nyc_output');
 				await fs.mkdir(coveragePath, { recursive: true });
