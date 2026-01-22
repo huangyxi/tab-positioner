@@ -30,6 +30,8 @@ jobs:
         run: pnpm install
       - name: Check files
         run: pnpm run check
+      - name: Clean build directory
+        run: pnpm run clean --output ${{ vars.OUTDIR }}
       - name: Build project
         run: |
           pnpm run build --output ${{ vars.OUTDIR }}
