@@ -53,7 +53,7 @@ export class SyncSettings extends SessionSingleton {
 	private async saveSettings() {
 		const settings = await loadSettings();
 		this.settings = settings;
-		log('info', ' syncSettings: Settings loaded:', settings);
+		log('info', ' syncSettings: Settings reloaded and saved:', settings);
 		void this.saveState();
 		await saveSettings(settings);
 	}

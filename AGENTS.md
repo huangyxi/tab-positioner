@@ -52,6 +52,7 @@ The project is organized as follows:
 		- `session.ts`: Base class for synchronizing singleton state with `chrome.storage.session`.
 		- `settings.ts`: **Critical File**. Defines `ExtensionSettings`, `SETTING_SCHEMAS`, and default values.
 		- `storage.ts`: Handles reading/writing to `chrome.storage`.
+		- `logging.ts`: Centralized logging with configurable log levels.
 	- **`types/`**: TypeScript type definitions.
 - **`scripts/`**: Build and maintenance scripts.
 	- `clean.ts`: Cleans the `dist/` directory.
@@ -59,6 +60,7 @@ The project is organized as follows:
 	- `package.ts`: Packages the extension into a `.zip` for the Chrome Web Store.
 	- `package.sh`: Bash alternative to `package.ts` (NOT preferred).
 - **`tests/`**: Automated Playwright tests.
+	- **`ext/`**: A helper extension used in tests to access `chrome` APIs.
 	- `fixtures.ts`: Test fixtures.
 	- `helpers.ts`: Test helper functions.
 	- `constants.ts`: Test constants (e.g., delays, URIs).
