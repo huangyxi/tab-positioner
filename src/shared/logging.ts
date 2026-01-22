@@ -16,11 +16,16 @@ function shouldLog(level: LogLevel): boolean {
 	return compareLogLevels(level, LOG_LEVEL) >= 0;
 }
 
+type LogMethodLevel = 'debug' | 'info' | 'warn' | 'error';
+
 export function log(level: LogLevel, ...args: unknown[]) {
 	if (!shouldLog(level)) {
 		return;
 	}
-	const logFun = (console as unknown as Record<LogLevel, (...args: unknown[]) => void>)[level];
+	if (level === 'none') {
+		return;
+	}
+	const logFun = (console as unknown as Record<LogMethodLevel, (...args: unknown[]) => void>)[level];
 	logFun(...args);
 }
 
