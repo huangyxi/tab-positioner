@@ -53,11 +53,7 @@ test.describe('Tab Activation Behavior', () => {
 		},
 	].forEach(({ title, activationSetting, expectedActivePage }) => {
 		test(title, async ({ context, configureSettings, getTabs }) => {
-			await verifyTabActivation(
-				{ context, configureSettings, getTabs },
-				activationSetting,
-				expectedActivePage,
-			);
+			await verifyTabActivation({ context, configureSettings, getTabs }, activationSetting, expectedActivePage);
 		});
 	});
 });

@@ -11,7 +11,7 @@ const storageSync = api.storage.sync;
 export async function loadSettings(): Promise<ExtensionSettings> {
 	try {
 		// filter out invalid settings
-		const settings = await storageSync.get(DEFAULT_SETTINGS) as Record<keyof ExtensionSettings, string>;
+		const settings = (await storageSync.get(DEFAULT_SETTINGS)) as Record<keyof ExtensionSettings, string>;
 		const sanitizedSettings = sanitizeSettings(settings);
 		return sanitizedSettings;
 	} catch (error) {

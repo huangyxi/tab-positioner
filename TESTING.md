@@ -7,8 +7,8 @@ This document outlines the key steps for manually testing the application before
 ### User Interface
 
 - [ ] Verify that all UI elements are responsive and accessible in both the **popup** and the **options page** across all supported languages. Pay special attention to:
-	- [ ] The `min-width` of the popup in languages with longer text to ensure the popup is not too narrow.
-	- [ ] Fonts available in the browser are used correctly, especially for languages that require specific fonts.
+  - [ ] The `min-width` of the popup in languages with longer text to ensure the popup is not too narrow.
+  - [ ] Fonts available in the browser are used correctly, especially for languages that require specific fonts.
 - [ ] Ensure that UI elements are properly styled and functional across all supported operating systems and in both light and dark modes.
 - [ ] Ensure that the default values for inputs other than existing `input[type="checkbox"]`, `input[type="number"]`, and `select` elements are correctly set in the options page, so that settings can be properly restored in the `form`.
 - [ ] Ensure that the `padding-bottom` of the `body` element is set correctly in the options page CSS to accommodate the `footer`.

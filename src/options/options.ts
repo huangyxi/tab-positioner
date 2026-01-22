@@ -28,10 +28,7 @@ function getFormSetting(form: HTMLFormElement): ExtensionSettings[SettingKey] | 
 	}
 }
 
-function setFormSetting(
-	form: HTMLFormElement,
-	settings: ExtensionSettings = DEFAULT_SETTINGS,
-) {
+function setFormSetting(form: HTMLFormElement, settings: ExtensionSettings = DEFAULT_SETTINGS) {
 	const settingKey = form.id as SettingKey;
 	if (!(settingKey in settings)) return;
 	const element = form[settingKey] as SettingElement;
@@ -52,10 +49,7 @@ function setFormSetting(
 	}
 }
 
-function toggleResetButton(
-	form: HTMLFormElement,
-	unchanged?: boolean,
-): void {
+function toggleResetButton(form: HTMLFormElement, unchanged?: boolean): void {
 	const settingKey = form.id as SettingKey;
 	if (!(settingKey in DEFAULT_SETTINGS)) return;
 	const setting = getFormSetting(form);
@@ -95,9 +89,9 @@ function showStatus(
 
 function localizeHtmlPage() {
 	// Localize elements with data-i18n attributes
-	I18N_HTML_PROPERTIES.forEach(property => {
+	I18N_HTML_PROPERTIES.forEach((property) => {
 		const attribute = getI18nAttribute(property);
-		document.querySelectorAll(`[${attribute}]`).forEach(elem => {
+		document.querySelectorAll(`[${attribute}]`).forEach((elem) => {
 			if (!(elem instanceof HTMLElement)) return;
 			const messageKey = elem.getAttribute(attribute);
 			if (!messageKey) return;
@@ -114,11 +108,9 @@ async function restoreFormSettings(forms: NodeListOf<HTMLFormElement>) {
 	}
 }
 
-async function saveFormSettings(forms:
-	| HTMLFormElement
-	| HTMLFormElement[]
-	| NodeListOf<HTMLFormElement>,
-defaultSettings: ExtensionSettings = DEFAULT_SETTINGS,
+async function saveFormSettings(
+	forms: HTMLFormElement | HTMLFormElement[] | NodeListOf<HTMLFormElement>,
+	defaultSettings: ExtensionSettings = DEFAULT_SETTINGS,
 ) {
 	if (forms instanceof HTMLElement) {
 		forms = [forms];
@@ -163,7 +155,7 @@ async function resetFormSettings(forms: NodeListOf<HTMLFormElement>) {
 
 function isOptionsPage() {
 	const manifest = api.runtime.getManifest();
-	const optionsURI = api.runtime.getURL(manifest.options_page as string ?? 'options.html');
+	const optionsURI = api.runtime.getURL((manifest.options_page as string) ?? 'options.html');
 	const isOptionsPage = window.location.href === optionsURI;
 	return isOptionsPage;
 }
@@ -174,7 +166,6 @@ function openDetails() {
 	details.open = true;
 }
 
-
 async function main() {
 	localizeHtmlPage();
 
@@ -182,11 +173,11 @@ async function main() {
 
 	await restoreFormSettings(forms);
 
-	forms.forEach(form => {
+	forms.forEach((form) => {
 		form.addEventListener('change', () => void saveFormSettings(form));
 	});
 
-	forms.forEach(form => {
+	forms.forEach((form) => {
 		form.addEventListener('reset', () => void resetFormSetting(form));
 	});
 

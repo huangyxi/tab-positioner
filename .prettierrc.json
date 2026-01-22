@@ -1,17 +1,28 @@
 {
 	"$schema": "https://json.schemastore.org/prettierrc.json",
+	"plugins": [
+		"prettier-plugin-multiline-arrays"
+	],
 	"useTabs": true,
+	"tabWidth": 4,
 	"semi": true,
 	"singleQuote": true,
 	"quoteProps": "as-needed",
-	"trailingComma": "es5",
+	"trailingComma": "all",
 	"bracketSpacing": true,
 	"arrowParens": "always",
 	"endOfLine": "lf",
 	"printWidth": 120,
+	"multilineArraysWrapThreshold": 3,
 	"overrides": [
 		{
-			"files": ["*.yaml", "*.yml"],
+			"files": ["*.scss"],
+			"options": {
+				"singleQuote": false
+			}
+		},
+		{
+			"files": ["*.md", "*.yaml", "*.yml"],
 			"options": {
 				"useTabs": false,
 				"tabWidth": 2

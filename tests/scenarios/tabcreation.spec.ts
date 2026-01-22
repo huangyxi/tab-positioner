@@ -50,34 +50,53 @@ test.describe('Tab Creation Behavior', () => {
 			title: 'foreground_link_position: after_active',
 			settings: { foreground_link_position: 'after_active' } as const,
 			action: 'new_foreground' as const,
-			expectedOrder: [0, 1, 'new', 2, 3] as PageId[],
+			expectedOrder: [
+				0,
+				1,
+				'new',
+				2,
+				3,
+			] as PageId[],
 		},
 		{
 			title: 'foreground_link_position: before_active',
 			settings: { foreground_link_position: 'before_active' } as const,
 			action: 'new_foreground' as const,
-			expectedOrder: [0, 'new', 1, 2, 3] as PageId[],
+			expectedOrder: [
+				0,
+				'new',
+				1,
+				2,
+				3,
+			] as PageId[],
 		},
 		{
 			title: 'foreground_link_position: window_last',
 			settings: { foreground_link_position: 'window_last' } as const,
 			action: 'new_foreground' as const,
-			expectedOrder: [0, 1, 2, 3, 'new'] as PageId[],
+			expectedOrder: [
+				0,
+				1,
+				2,
+				3,
+				'new',
+			] as PageId[],
 		},
 		{
 			title: 'background_link_position: window_first',
 			settings: { background_link_position: 'window_first' } as const,
 			action: 'new_background' as const,
-			expectedOrder: ['new', 0, 1, 2, 3] as PageId[],
+			expectedOrder: [
+				'new',
+				0,
+				1,
+				2,
+				3,
+			] as PageId[],
 		},
 	].forEach(({ title, settings, action, expectedOrder }) => {
 		test(title, async ({ context, configureSettings, getTabs }) => {
-			await verifyTabCreation(
-				{ context, configureSettings, getTabs },
-				settings,
-				action,
-				expectedOrder,
-			);
+			await verifyTabCreation({ context, configureSettings, getTabs }, settings, action, expectedOrder);
 		});
 	});
 

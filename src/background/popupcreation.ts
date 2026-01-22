@@ -10,7 +10,6 @@ export async function createdPopupMover(
 	tabsInfo: TabsInfo,
 	tabId: number,
 	hasLoaded: boolean,
-
 ) {
 	const logger = logClosure('  popupCreation');
 	logger.debug('Popup created mover called');
@@ -36,15 +35,7 @@ export async function createdPopupMover(
 	logger.debug('Determined tab creation setting for popup:', tabCreationSetting);
 	if (tabCreationSetting === 'default') return;
 	logger.info('Moving created popup tab according to setting');
-	await tabMover(
-		apiTabs,
-		tabsInfo,
-		tabId,
-		windowId,
-		tabCreationSetting,
-		undefined,
-		hasLoaded,
-	);
+	await tabMover(apiTabs, tabsInfo, tabId, windowId, tabCreationSetting, undefined, hasLoaded);
 	if (setting === 'new_foreground_tab') {
 		logger.info('Activating new foreground tab');
 		await apiTabs.update(tabId, { active: true });

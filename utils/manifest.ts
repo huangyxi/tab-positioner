@@ -24,7 +24,12 @@ const DEFAULT_OPTIONS: ManifestPluginOptions = {
 	manifestInPath: './manifest.json',
 	manifestOutPath: 'manifest.json',
 	iconInPath: './icon.svg',
-	iconOutSizes: [16, 32, 48, 128],
+	iconOutSizes: [
+		16,
+		32,
+		48,
+		128,
+	],
 	iconOutFilename: (size) => `icon-${size.toFixed()}.png`,
 	version: '0.0.0.1',
 	version_name: '',
@@ -60,10 +65,7 @@ class ManifestPlugin {
 		for (const size of this.options.iconOutSizes) {
 			const iconOutputFilename = this.options.iconOutFilename(size);
 			const iconOutputPath = path.join(outDir, iconOutputFilename);
-			await sharp(this.options.iconInPath)
-				.resize(size, size)
-				.png()
-				.toFile(iconOutputPath);
+			await sharp(this.options.iconInPath).resize(size, size).png().toFile(iconOutputPath);
 			icons[size] = iconOutputFilename;
 		}
 		const manifestData = await fs.readFile(this.options.manifestInPath, 'utf8');
@@ -77,8 +79,9 @@ class ManifestPlugin {
 		await fs.writeFile(manifestOutputPath, JSON.stringify(manifest, null, '\t'), 'utf8');
 		this.logger.logWithOptions({
 			prefix: ManifestPlugin.LOGGER_PREFIX,
-			message: `Icons and ${this.options.manifestOutPath} generated ` +
-			`with version ${this.options.version} (${this.options.version_name})`,
+			message:
+				`Icons and ${this.options.manifestOutPath} generated ` +
+				`with version ${this.options.version} (${this.options.version_name})`,
 			type: 'info',
 		});
 	}
@@ -98,17 +101,10 @@ export default function (
 ) {
 	const plugin = new ManifestPlugin(eleventyConfig, options);
 
-	eleventyConfig.once('eleventy.before', async ({
-		directories, runMode, outputMode,
-	}: any) => {
-		if (
-			runMode === 'serve' ||
-			outputMode === 'json' ||
-			outputMode === 'ndjson'
-		) {
+	eleventyConfig.once('eleventy.before', async ({ directories, runMode, outputMode }: any) => {
+		if (runMode === 'serve' || outputMode === 'json' || outputMode === 'ndjson') {
 			return;
 		}
 		await plugin.patch();
-
 	});
 }

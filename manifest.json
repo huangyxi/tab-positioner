@@ -6,10 +6,7 @@
 	"homepage_url": "https://github.com/huangyxi/tab-positioner",
 	"default_locale": "en",
 	"version": "0.1.0",
-	"permissions": [
-		"storage",
-		"tabs"
-	],
+	"permissions": ["storage", "tabs"],
 	"background": {
 		"service_worker": "background.js",
 		"type": "module"

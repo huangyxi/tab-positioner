@@ -109,24 +109,20 @@ class TsxPlugin {
 
 	public async getIgnores(): Promise<string[]> {
 		const files = await this.walkDirectory(this.inputDir);
-		const ignores = files.filter(file => {
-			return !this.entries.includes(file)
-				&& (this.ignoreOthers || path.extname(file) === '.tsx');
+		const ignores = files.filter((file) => {
+			return !this.entries.includes(file) && (this.ignoreOthers || path.extname(file) === '.tsx');
 		});
 		return ignores;
 	}
 
 	public tsxCompile(inputContent: any, inputPath: any) {
 		const banner = this.banner;
-		return async function (
-			this: { defaultRenderer: (input: any) => Promise<any> },
-			data: any,
-		) {
+		return async function (this: { defaultRenderer: (input: any) => Promise<any> }, data: any) {
 			const content = await this.defaultRenderer(inputContent);
 			const result = await jsxToString(content);
 			return `${banner}<!DOCTYPE html>\n${result}`;
 		};
-	};
+	}
 }
 
 /**
@@ -139,9 +135,9 @@ export default async function (
 		logger: any;
 		ignores: {
 			add: (path: string) => void;
-		}
+		};
 		addTemplateFormats: (formats: string | string[]) => void;
-		addExtension: (extensions: string| string[], options: any) => void;
+		addExtension: (extensions: string | string[], options: any) => void;
 	},
 	options: TsxPluginOptions = {} as TsxPluginOptions,
 ) {

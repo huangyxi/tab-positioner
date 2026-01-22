@@ -8,9 +8,7 @@ import { TabsInfo } from './tabsinfo';
 import { tabMover } from './tabmover';
 import { createdPopupMover } from './popupcreation';
 
-async function getTabCreationSetting(
-	newTab: api.tabs.Tab,
-) {
+async function getTabCreationSetting(newTab: api.tabs.Tab) {
 	const isNewTabPage = NEW_PAGE_URIS.includes(newTab.pendingUrl ?? newTab.url ?? '');
 	let settingKey: TabCreationPositionKey;
 	if (isNewTabPage) {
@@ -30,11 +28,7 @@ async function getTabCreationSetting(
 	};
 }
 
-async function createdTabMover(
-	apiTabs: typeof api.tabs,
-	apiWindows: typeof api.windows,
-	newTab: api.tabs.Tab,
-) {
+async function createdTabMover(apiTabs: typeof api.tabs, apiWindows: typeof api.windows, newTab: api.tabs.Tab) {
 	const logger = logClosure('  tabCreation');
 	logger.debug('Tab creation process started');
 	const tabsInfo = await TabsInfo.getInstance();
@@ -49,17 +43,12 @@ async function createdTabMover(
 		const window = await apiWindows.get(newTab.windowId);
 		if (window.type === 'popup') {
 			logger.info('Popup window, dispatching to popup mover');
-			await createdPopupMover(
-				apiTabs,
-				tabsInfo,
-				tabId,
-				hasLoaded,
-			);
+			await createdPopupMover(apiTabs, tabsInfo, tabId, hasLoaded);
 			return;
 		}
 		return;
 	}
-	const {setting, settingKey: _, tabBatchThresholdMs} = await getTabCreationSetting(newTab);
+	const { setting, settingKey: _, tabBatchThresholdMs } = await getTabCreationSetting(newTab);
 	logger.debug('Tab creation setting:', setting);
 	if (setting === 'default') return;
 	const delay = tabsInfo.getCreationDelay();
@@ -68,15 +57,7 @@ async function createdTabMover(
 		return;
 	}
 	logger.info('Normal window, moving tab');
-	await tabMover(
-		apiTabs,
-		tabsInfo,
-		tabId,
-		newTab.windowId,
-		setting,
-		newTab.index,
-		hasLoaded,
-	);
+	await tabMover(apiTabs, tabsInfo, tabId, newTab.windowId, setting, newTab.index, hasLoaded);
 }
 
 export function registerTabCreatedListener(
@@ -84,7 +65,5 @@ export function registerTabCreatedListener(
 	apiTabs: typeof api.tabs,
 	apiWindows: typeof api.windows,
 ) {
-	listeners.add(apiTabs.onCreated,
-		createdTabMover.bind(null, apiTabs, apiWindows),
-	);
+	listeners.add(apiTabs.onCreated, createdTabMover.bind(null, apiTabs, apiWindows));
 }

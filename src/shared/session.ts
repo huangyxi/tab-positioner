@@ -14,10 +14,7 @@ async function getSessionState(key: string): Promise<unknown> {
 	}
 }
 
-async function setSessionState(
-	key: string,
-	value: unknown,
-): Promise<void> {
+async function setSessionState(key: string, value: unknown): Promise<void> {
 	try {
 		await storageSession.set({ [key]: value });
 	} catch (error) {
@@ -39,15 +36,13 @@ export abstract class SessionSingleton {
 
 	// DO NOT call this constructor directly.
 	// Use `getInstance()` to get the singleton instance.
-	public constructor() { }
+	public constructor() {}
 
 	private skipProperty(property: string): boolean {
 		return property.startsWith('_');
 	}
 
-	public static hasLoaded<T extends typeof SessionSingleton>(
-		this: T,
-	): boolean {
+	public static hasLoaded<T extends typeof SessionSingleton>(this: T): boolean {
 		if (this === SessionSingleton) {
 			return true;
 		}
@@ -55,12 +50,9 @@ export abstract class SessionSingleton {
 		return this._instances.has(this) && superCls.hasLoaded();
 	}
 
-	public static getLoadedInstance<T extends typeof SessionSingleton>(
-		this: T,
-	): InstanceType<T> {
+	public static getLoadedInstance<T extends typeof SessionSingleton>(this: T): InstanceType<T> {
 		return this._instances.get(this) as InstanceType<T>;
 	}
-
 
 	/**
 	 * Gets the singleton instance of the class.
@@ -98,9 +90,7 @@ export abstract class SessionSingleton {
 		return loadingPromise;
 	}
 
-	protected async saveState(
-		properties?: (keyof this & string)[],
-	) {
+	protected async saveState(properties?: (keyof this & string)[]) {
 		properties ??= this.properties() as (keyof this & string)[];
 		if (properties.length === 0) return;
 		const cls = this.constructor as typeof SessionSingleton;
@@ -121,10 +111,14 @@ export abstract class SessionSingleton {
 			const timestamp = DEBUG ? Date.now() : 0;
 			await new Promise((resolve, reject) => {
 				const timeout = setTimeout(resolve, STATE_SAVE_DELAY_MS);
-				controller.signal.addEventListener('abort', () => {
-					clearTimeout(timeout);
-					reject(abortException);
-				}, { once: true });
+				controller.signal.addEventListener(
+					'abort',
+					() => {
+						clearTimeout(timeout);
+						reject(abortException);
+					},
+					{ once: true },
+				);
 			});
 			for (const property of properties) {
 				if (controller.signal.aborted) throw abortException;
