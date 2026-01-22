@@ -6,10 +6,7 @@ import { ZipWriter, BlobWriter, Uint8ArrayReader } from '@zip.js/zip.js';
 
 const DEFAULT_OUTPUT = 'chrome-extension.zip';
 const DEFAULT_INPUTS = './dist';
-const SKIP_FILES = [
-	/^\..*/,
-	/.*\.map$/,
-];
+const SKIP_FILES = [/^\..*/, /.*\.map$/];
 const SCRIPT_FILENAME = path.basename(process.argv[1]);
 
 function toRelPath(p: string): string {
@@ -17,9 +14,7 @@ function toRelPath(p: string): string {
 	return path.relative(process.cwd(), p);
 }
 
-function parseArgs(
-	argv: string[],
-) {
+function parseArgs(argv: string[]) {
 	const args = [...argv]; // Copy to avoid modifying the original array
 	const inputPaths: string[] = [];
 	let outputPath = DEFAULT_OUTPUT;
@@ -35,17 +30,13 @@ function parseArgs(
 				console.log(`       npm run package -- [options] <inputs>...`);
 				console.log(
 					`\nArguments:` +
-					'\n  -h, --help,         Show this help message' +
-					'\n  -o, --output <path> Specify output zip file' +
-					'\n  -p, --preserve-root Preserve root directory structure' +
-					'\n  -v, --verbose       Enable verbose output' +
-					'\n  <inputs>            One or more input files or directories to zip',
+						'\n  -h, --help,         Show this help message' +
+						'\n  -o, --output <path> Specify output zip file' +
+						'\n  -p, --preserve-root Preserve root directory structure' +
+						'\n  -v, --verbose       Enable verbose output' +
+						'\n  <inputs>            One or more input files or directories to zip',
 				);
-				console.log(
-					'\nDefaults:' +
-					`\n  inputs: ${DEFAULT_INPUTS}` +
-					`\n  output: ${DEFAULT_OUTPUT}`,
-				);
+				console.log('\nDefaults:' + `\n  inputs: ${DEFAULT_INPUTS}` + `\n  output: ${DEFAULT_OUTPUT}`);
 				process.exit(0);
 			case '--output':
 			case '-o':
@@ -79,15 +70,12 @@ interface WalkDirEntry {
 }
 
 // Walk a directory and yield { absPath, relPath } for all visible files
-async function* walkDir(
-	rootDir: string,
-	baseDir: string = '',
-): AsyncGenerator<WalkDirEntry> {
+async function* walkDir(rootDir: string, baseDir: string = ''): AsyncGenerator<WalkDirEntry> {
 	const entries = await fs.readdir(rootDir, { withFileTypes: true });
 	for (const entry of entries) {
 		const absPath = path.join(rootDir, entry.name);
 		const relPath = path.join(baseDir, entry.name);
-		if (SKIP_FILES.some(pattern => pattern.test(entry.name))) {
+		if (SKIP_FILES.some((pattern) => pattern.test(entry.name))) {
 			yield { absPath, relPath, skip: true };
 			continue;
 		}
@@ -95,18 +83,13 @@ async function* walkDir(
 			yield { absPath, relPath, skip: false };
 			continue;
 		}
-		if(entry.isDirectory()) {
+		if (entry.isDirectory()) {
 			yield* walkDir(absPath, relPath);
 		}
 	}
 }
 
-async function zipAppend<T>(
-	zipWriter: ZipWriter<T>,
-	fsPath: string,
-	zipPath: string,
-	verbose: boolean,
-) {
+async function zipAppend<T>(zipWriter: ZipWriter<T>, fsPath: string, zipPath: string, verbose: boolean) {
 	const data = await fs.readFile(fsPath);
 	await zipWriter.add(zipPath, new Uint8ArrayReader(data));
 	if (data.length === 0) {
@@ -115,7 +98,6 @@ async function zipAppend<T>(
 	}
 	return 0;
 }
-
 
 async function zipInputs(
 	inputPaths: string[],
@@ -129,7 +111,7 @@ async function zipInputs(
 		const stats = await fs.stat(input);
 		const base = path.basename(input);
 		if (stats.isFile()) {
-			ret = await zipAppend(zipWriter, input, base, verbose) === 0 ? ret : 1;
+			ret = (await zipAppend(zipWriter, input, base, verbose)) === 0 ? ret : 1;
 			if (verbose) console.log('📄 Adding file:', toRelPath(input));
 			continue;
 		}
@@ -141,7 +123,7 @@ async function zipInputs(
 					if (verbose) console.log(' ⊘', toRelPath(entry.absPath), '[skipped]');
 					continue;
 				}
-				ret = await zipAppend(zipWriter, entry.absPath, entry.relPath, verbose) === 0 ? ret : 1;
+				ret = (await zipAppend(zipWriter, entry.absPath, entry.relPath, verbose)) === 0 ? ret : 1;
 				if (verbose) console.log(' +', toRelPath(entry.absPath));
 			}
 		}
@@ -154,7 +136,7 @@ async function zipInputs(
 export async function main(argv: string[]) {
 	const { inputPaths, outputPath, preserveRoot, verbose } = parseArgs(argv);
 	try {
-		const resolvedInputs = inputPaths.map(p => path.resolve(p));
+		const resolvedInputs = inputPaths.map((p) => path.resolve(p));
 		const resolvedOutput = path.resolve(outputPath);
 		if (verbose) {
 			console.log('📦 Zipping the following:');
@@ -168,7 +150,6 @@ export async function main(argv: string[]) {
 			console.log('⚠️ Some empty files inside the extension, please check.');
 			process.exit(1);
 		}
-
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
 		console.error('❌ Failed to create zip:', message);

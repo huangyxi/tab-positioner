@@ -1,6 +1,4 @@
-export const NEW_PAGE_URIS = [
-	'chrome://newtab/',
-];
+export const NEW_PAGE_URIS = ['chrome://newtab/'];
 
 export const TAB_BATCH_CREATION_THRESHOLD_MS = 20; // ms
 export const TAB_BATCH_ACTIVATION_THRESHOLD_MS = 50; // ms

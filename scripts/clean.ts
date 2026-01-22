@@ -16,12 +16,12 @@ export async function main(argv: string[]) {
 			case '-h':
 				console.log(`Usage: node ${SCRIPT_FILENAME} [options]`);
 				console.log(`       npm run clean -- [options]`);
-				console.log(`\nOptions:` +
-					'\n  -h, --help      Show this help message' +
-					'\n  --output <path> Specify output directory to clean',
+				console.log(
+					`\nOptions:` +
+						'\n  -h, --help      Show this help message' +
+						'\n  --output <path> Specify output directory to clean',
 				);
-				console.log(`\nDefaults:` +
-					`\n  output: Defined in 'eleventy.config.mjs'`);
+				console.log(`\nDefaults:` + `\n  output: Defined in 'eleventy.config.mjs'`);
 				process.exit(0);
 			case '--output':
 				output = args.shift();
@@ -36,13 +36,9 @@ export async function main(argv: string[]) {
 				process.exit(1);
 		}
 	}
-	const eleventy = new Eleventy(
-		undefined,
-		output ?? undefined,
-		{
-			dryRun: true,
-		},
-	);
+	const eleventy = new Eleventy(undefined, output ?? undefined, {
+		dryRun: true,
+	});
 	try {
 		await eleventy.initializeConfig();
 	} catch (error) {

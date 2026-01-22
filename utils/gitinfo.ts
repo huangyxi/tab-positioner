@@ -21,11 +21,7 @@ const LOGGER_PREFIX = '[GitInfo]';
  * @param {string} dirty
  * @returns
  */
-export async function getGitInfo(
-	logger: any,
-	since: keyof typeof TAG_MATCH = 'minor',
-	dirty = '+dirty',
-) {
+export async function getGitInfo(logger: any, since: keyof typeof TAG_MATCH = 'minor', dirty = '+dirty') {
 	try {
 		const ret = await execCmd('git rev-parse --is-inside-work-tree');
 		if (ret !== 'true') {
@@ -34,8 +30,7 @@ export async function getGitInfo(
 	} catch {
 		logger.logWithOptions({
 			prefix: LOGGER_PREFIX,
-			message: `Not in a git repository, or git is not installed, ` +
-				`using default version '0.0.0.1'`,
+			message: `Not in a git repository, or git is not installed, ` + `using default version '0.0.0.1'`,
 			type: 'warn',
 			color: 'yellow',
 		});
@@ -47,20 +42,17 @@ export async function getGitInfo(
 	const versionPattern = TAG_MATCH[since] ?? TAG_MATCH.patch;
 	let buildNumber = '.0';
 	try {
-		const stdout = await execCmd(
-			`git tag --list "${versionPattern}" --sort=-creatordate`,
-		);
+		const stdout = await execCmd(`git tag --list "${versionPattern}" --sort=-creatordate`);
 		const baseTags = stdout.split('\n').filter(Boolean);
 		if (baseTags.length > 0) {
 			const baseTag = baseTags[0];
-			const count = await execCmd(
-				`git rev-list --count ${baseTag}..HEAD`,
-			);
+			const count = await execCmd(`git rev-list --count ${baseTag}..HEAD`);
 			buildNumber = `.${count}`;
 		} else {
 			logger.logWithOptions({
 				prefix: LOGGER_PREFIX,
-				message: `No tags found matching pattern '${versionPattern}', ` +
+				message:
+					`No tags found matching pattern '${versionPattern}', ` +
 					`using default build number ${buildNumber}`,
 				type: 'warn',
 				color: 'yellow',
@@ -69,8 +61,7 @@ export async function getGitInfo(
 	} catch {
 		logger.logWithOptions({
 			prefix: LOGGER_PREFIX,
-			message: `Failed to get git build number, ` +
-				`using default build number ${buildNumber}`,
+			message: `Failed to get git build number, ` + `using default build number ${buildNumber}`,
 			type: 'warn',
 			color: 'yellow',
 		});
@@ -78,9 +69,7 @@ export async function getGitInfo(
 	let tag = 'v0.0.0';
 	let version = '0.0.0.1';
 	try {
-		tag = await execCmd(
-			`git describe --tags --match "v[0-9]*\\.[0-9]*\\.[0-9]*" --abbrev=0 --dirty=${dirty}`,
-		);
+		tag = await execCmd(`git describe --tags --match "v[0-9]*\\.[0-9]*\\.[0-9]*" --abbrev=0 --dirty=${dirty}`);
 		version = tag.startsWith('v') ? tag.slice(1) : tag;
 		if (version.endsWith(dirty)) {
 			version = version.slice(0, -dirty.length);
@@ -98,9 +87,7 @@ export async function getGitInfo(
 	}
 	let version_name = `${tag}-unknown`;
 	try {
-		const stdout = await execCmd(
-			`git rev-parse HEAD`,
-		);
+		const stdout = await execCmd(`git rev-parse HEAD`);
 		const commit = stdout.slice(0, 8);
 		version_name = `${tag}-${commit}`;
 	} catch {

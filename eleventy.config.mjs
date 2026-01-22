@@ -4,10 +4,10 @@ import TsxPlugin from './utils/tsx.ts';
 import ManifestPlugin from './utils/manifest.ts';
 import VitePlugin from './utils/vite.ts';
 
-import manifest from './manifest.json' with { type: "json" };
+import manifest from './manifest.json' with { type: 'json' };
 
 /** @param {import('@11ty/eleventy/UserConfig').default} eleventyConfig */
-async function eleventySetup(eleventyConfig){
+async function eleventySetup(eleventyConfig) {
 	const logger = eleventyConfig.logger;
 	eleventyConfig.setOutputDirectory('./dist');
 	eleventyConfig.setInputDirectory('./src');
@@ -21,18 +21,14 @@ async function eleventySetup(eleventyConfig){
 		`MIT License. ${manifest.homepage_url}`,
 		`${manifest.name} ${version_name}`,
 		`Build date: ${datetime}`,
-	]
-	if (true
-		&& process.env.GITHUB_SERVER_URL
-		&& process.env.GITHUB_REPOSITORY
-		&& process.env.GITHUB_RUN_ID
-	) {
-		comments.push(`GitHub Actions Build URI: ${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`);
+	];
+	if (process.env.GITHUB_SERVER_URL && process.env.GITHUB_REPOSITORY && process.env.GITHUB_RUN_ID) {
+		comments.push(
+			`GitHub Actions Build URI: ${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`,
+		);
 	}
 	eleventyConfig.addPlugin(TsxPlugin, {
-		entries: [
-			'./src/options/index.tsx',
-		],
+		entries: ['./src/options/index.tsx'],
 		banner: xmlComments(comments),
 	});
 	eleventyConfig.addPlugin(ManifestPlugin, {
@@ -43,8 +39,8 @@ async function eleventySetup(eleventyConfig){
 	});
 	eleventyConfig.addPlugin(VitePlugin, {
 		entries: {
-			'background': './src/background/main.ts',
-			'options': './src/options/options.ts',
+			background: './src/background/main.ts',
+			options: './src/options/options.ts',
 			'options.css': './src/options/options.scss',
 		},
 		minify: false, // Disable minification for potential faster reviews

@@ -1,9 +1,13 @@
 declare module '@11ty/eleventy' {
 	export class Eleventy {
-		constructor(input?: string, output?: string, options?: {
-			dryRun?: boolean;
-			config?: string;
-		});
+		constructor(
+			input?: string,
+			output?: string,
+			options?: {
+				dryRun?: boolean;
+				config?: string;
+			},
+		);
 		initializeConfig(): Promise<void>;
 		eleventyConfig: {
 			directories: {

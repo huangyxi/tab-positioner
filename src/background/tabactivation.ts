@@ -5,21 +5,18 @@ import { TabsInfo } from './tabsinfo';
 import { SyncSettings } from './syncsettings';
 
 async function getTabActivationSetting() {
-	const settings = (await SyncSettings.getInstance());
+	const settings = await SyncSettings.getInstance();
 	return {
 		setting: settings.get('after_close_activation'),
 		tabBatchThresholdMs: settings.get('_tab_batch_activation_threshold_ms'),
 	};
 }
 
-async function tabRemovedActivater(
-	apiTabs: typeof api.tabs,
-	tabId: number,
-) {
+async function tabRemovedActivater(apiTabs: typeof api.tabs, tabId: number) {
 	const logger = logClosure('  tabActivation');
 	logger.debug('Tab removal activation process started for tab ID:', tabId);
 	const tabsInfo = await TabsInfo.getInstance();
-	const {setting, tabBatchThresholdMs} = await getTabActivationSetting();
+	const { setting, tabBatchThresholdMs } = await getTabActivationSetting();
 	logger.debug('Tab activation setting:', setting);
 	if (setting === 'default') return;
 	const delay = tabsInfo.getRemovalDelay();
@@ -85,11 +82,6 @@ async function tabRemovedActivater(
 	logger.debug('Tab removal activation process completed');
 }
 
-export function registerTabRemovedListener(
-	listeners: Listeners,
-	apiTabs: typeof api.tabs,
-) {
-	listeners.add(apiTabs.onRemoved,
-		tabRemovedActivater.bind(null, apiTabs),
-	);
+export function registerTabRemovedListener(listeners: Listeners, apiTabs: typeof api.tabs) {
+	listeners.add(apiTabs.onRemoved, tabRemovedActivater.bind(null, apiTabs));
 }

@@ -6,7 +6,7 @@ const DEFAULT_VALUE = 'default';
 /**
  * @note Advanced settings (collapsed by default) are started with `_`.
  */
-export type SettingKey = never
+export type SettingKey =
 	| 'new_tab_position'
 	| 'foreground_link_position'
 	| 'background_link_position'
@@ -16,7 +16,7 @@ export type SettingKey = never
 	| '_tab_batch_activation_threshold_ms'
 	| '_persistent_background'
 	| '_debug_mode'
-	;
+	| never;
 
 export interface SettingText {
 	i18nKey: I18nKey;
@@ -30,7 +30,8 @@ type SettingChoices<T extends string> = {
 	};
 };
 
-export type TabCreationPosition = typeof DEFAULT_VALUE
+export type TabCreationPosition =
+	| typeof DEFAULT_VALUE
 	| 'before_active'
 	| 'after_active'
 	| 'window_first'
@@ -44,17 +45,15 @@ const TAB_CREATION_POSITION_CHOICES: SettingChoices<TabCreationPosition> = {
 	window_last: { i18nKey: 'option_window_last_creation' },
 } as const;
 
-export type PopupCreationPosition = typeof DEFAULT_VALUE
-	| 'new_foreground_tab'
-	| 'new_background_tab'
-	| never;
+export type PopupCreationPosition = typeof DEFAULT_VALUE | 'new_foreground_tab' | 'new_background_tab';
 const POPUP_POSITION_CHOICES: SettingChoices<PopupCreationPosition> = {
 	[DEFAULT_VALUE]: { i18nKey: 'option_default' },
 	new_foreground_tab: { i18nKey: 'option_new_foreground_tab_popup' },
 	new_background_tab: { i18nKey: 'option_new_background_tab_popup' },
 } as const;
 
-export type TabActivationPosition = typeof DEFAULT_VALUE
+export type TabActivationPosition =
+	| typeof DEFAULT_VALUE
 	| 'before_removed'
 	| 'after_removed'
 	| 'window_first'
@@ -98,26 +97,32 @@ export type PopupCreationPositionKey = SettingKeys<PopupCreationPosition>;
 export type TabActivationPositionKey = SettingKeys<TabActivationPosition>;
 
 type SettingValue<K extends SettingKey> =
-	| ExtensionSettings[K] extends boolean ? {
-		i18nKey: `label_${K}`,
-		type: 'boolean',
-	} : never
-	| ExtensionSettings[K] extends number ? { // Integer only
-		i18nKey: `label_${K}`,
-		type: 'number',
-		min?: number,
-		max?: number,
-		step?: number,
-	} : never
-	| ExtensionSettings[K] extends string ? {
-		i18nKey: `label_${K}`,
-		type: 'choices',
-		choices: SettingChoices<ExtensionSettings[K]>,
-	} : never
+	| (ExtensionSettings[K] extends boolean
+			? {
+					i18nKey: `label_${K}`;
+					type: 'boolean';
+				}
+			: never)
+	| (ExtensionSettings[K] extends number
+			? {
+					// Integer only
+					i18nKey: `label_${K}`;
+					type: 'number';
+					min?: number;
+					max?: number;
+					step?: number;
+				}
+			: never)
+	| (ExtensionSettings[K] extends string
+			? {
+					i18nKey: `label_${K}`;
+					type: 'choices';
+					choices: SettingChoices<ExtensionSettings[K]>;
+				}
+			: never);
 
 export type SettingSchemas = {
-	[K in keyof ExtensionSettings]:
-		SettingText & SettingValue<K>
+	[K in keyof ExtensionSettings]: SettingText & SettingValue<K>;
 };
 
 export const SETTING_SCHEMAS: SettingSchemas = {
@@ -193,7 +198,7 @@ export function sanitizeSettings<T extends Partial<Record<SettingKey, unknown>>>
 				}
 				break;
 			case 'choices':
-				if (value as string in setting.choices) {
+				if ((value as string) in setting.choices) {
 					sanitizedSettings[key] = value;
 					continue;
 				}
@@ -201,9 +206,7 @@ export function sanitizeSettings<T extends Partial<Record<SettingKey, unknown>>>
 			default:
 				const _exhaustive: never = type;
 		}
-		console.error(
-			`Invalid setting value for ${key}: ${String(value)}${settingName ? ` in '${settingName}'` : ''}`,
-		);
+		console.error(`Invalid setting value for ${key}: ${String(value)}${settingName ? ` in '${settingName}'` : ''}`);
 		sanitizedSettings[key] = DEFAULT_SETTINGS[key];
 	}
 	return sanitizedSettings as T extends Record<SettingKey, unknown> ? ExtensionSettings : Partial<ExtensionSettings>;

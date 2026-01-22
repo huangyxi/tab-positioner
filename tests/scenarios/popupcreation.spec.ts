@@ -39,15 +39,15 @@ test.describe('Popup Behavior', () => {
 		},
 	].forEach(({ title, settings, expectedIndex }) => {
 		test(title, async ({ context, configureSettings, getTabs }) => {
-			await verifyPopupPosition(
-				{ context, configureSettings, getTabs },
-				settings,
-				expectedIndex,
-			);
+			await verifyPopupPosition({ context, configureSettings, getTabs }, settings, expectedIndex);
 		});
 	});
 
-	test('[IDLE] popup_position: new_foreground_tab -> window_first', async ({ context, configureSettings, getTabs }) => {
+	test('[IDLE] popup_position: new_foreground_tab -> window_first', async ({
+		context,
+		configureSettings,
+		getTabs,
+	}) => {
 		await configureSettings({ _popup_position: 'new_foreground_tab', foreground_link_position: 'window_first' });
 		const page0 = await createPage(context, 0);
 		await idleExtensionWorker(context);

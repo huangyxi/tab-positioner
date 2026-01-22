@@ -4,7 +4,6 @@ import { TabsInfo } from './tabsinfo';
 import { registerTabCreatedListener } from './tabcreation';
 import { registerTabRemovedListener } from './tabactivation';
 
-
 // MUST be Synchronous to ensure the listeners are registered before any events are fired.
 function main() {
 	console.log('Tab Positioner background script started', VERSION);

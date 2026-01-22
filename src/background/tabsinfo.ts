@@ -17,7 +17,6 @@ interface RemovedTabInfo {
 type DateTime = number;
 
 export class TabsInfo extends SessionSingleton {
-
 	private recentNormalWindowId: WindowId = -1;
 
 	// Updating the indexes of all current tabs immediately after each event may cause performance issues,
@@ -26,7 +25,6 @@ export class TabsInfo extends SessionSingleton {
 
 	// The current tabs in a window, sorted with the most recently accessed tabs last.
 	private currentTabs: Record<WindowId, TabId[]> = {};
-
 
 	// Switching windows does not trigger any event if no other tab becomes active,
 	// so we need to track the recent tab info for each window to store the index of the removed tab,
@@ -49,16 +47,13 @@ export class TabsInfo extends SessionSingleton {
 	// Used to track if the background worker has been offloaded.
 	private _hasTabActivated = false;
 
-
 	/**
 	 * Get the **current** tabs in a window.
 	 * The result is updated immediately after each event, but **before** other events in the event queue.
 	 * @param windowId - The ID of the window to retrieve tabs for.
 	 * @returns An array of TabInfo objects, sorted with the most recently accessed tabs first.
 	 */
-	public getCurrentTabs(
-		windowId: WindowId,
-	): TabId[] {
+	public getCurrentTabs(windowId: WindowId): TabId[] {
 		const windowTabs = this.currentTabs[windowId];
 		if (!windowTabs) {
 			return [];
@@ -74,10 +69,12 @@ export class TabsInfo extends SessionSingleton {
 	 * @returns The recent tab info, or an object with -1 values if no tab is active.
 	 */
 	public getRecentTab(windowId: WindowId): RecentTabInfo {
-		return this.recentTabs[windowId] ?? {
-			id: -1,
-			index: -1,
-		};
+		return (
+			this.recentTabs[windowId] ?? {
+				id: -1,
+				index: -1,
+			}
+		);
 	}
 
 	/**
@@ -135,10 +132,7 @@ export class TabsInfo extends SessionSingleton {
 	 * @param normalTabs Tabs with `windowType: 'normal'` to initialize the TabsInfo,
 	 * where the `windowId` and `id` are defined.
 	 */
-	private initialize(
-		normalTabs: api.tabs.Tab[],
-		recentNormalWindowId: WindowId,
-	) {
+	private initialize(normalTabs: api.tabs.Tab[], recentNormalWindowId: WindowId) {
 		log('debug', ' tabsInfo: Initializing with current tabs');
 		this.currentTabs = {};
 		this.recentTabs = {};
@@ -158,7 +152,8 @@ export class TabsInfo extends SessionSingleton {
 				index: tab.index,
 			};
 		}
-		if (recentNormalWindowId !== -1) { // api.windows.WINDOW_ID_NONE
+		if (recentNormalWindowId !== -1) {
+			// api.windows.WINDOW_ID_NONE
 			this.recentNormalWindowId = recentNormalWindowId;
 		}
 		void this.saveState();
@@ -171,9 +166,7 @@ export class TabsInfo extends SessionSingleton {
 	 * @param normalActiveTabs - Tabs with `windowType: 'normal'` and 'active: true` to update the recent tabs,
 	 * where the `windowId` and `id` are defined.
 	 */
-	private updateRecentTabs(
-		normalActiveTabs: api.tabs.Tab[],
-	) {
+	private updateRecentTabs(normalActiveTabs: api.tabs.Tab[]) {
 		log('debug', ' tabsInfo: Updating recent tabs');
 		for (const tab of normalActiveTabs) {
 			this.recentTabs[tab.windowId] = {
@@ -184,11 +177,7 @@ export class TabsInfo extends SessionSingleton {
 		void this.saveState();
 	}
 
-	private addTab(
-		windowId: WindowId,
-		tabId: TabId,
-		openerTabId?: TabId,
-	) {
+	private addTab(windowId: WindowId, tabId: TabId, openerTabId?: TabId) {
 		log('debug', ' tabsInfo: Adding tab', tabId, 'to window', windowId);
 		this.recentCreatedAt = this.currentCreatedAt;
 		this.currentCreatedAt = Date.now();
@@ -199,11 +188,7 @@ export class TabsInfo extends SessionSingleton {
 		void this.saveState();
 	}
 
-	private removeTab(
-		windowId: WindowId,
-		tabId: TabId,
-		isWindowClosing: boolean,
-	) {
+	private removeTab(windowId: WindowId, tabId: TabId, isWindowClosing: boolean) {
 		log('debug', ' tabsInfo: Removing tab', tabId, 'from window', windowId);
 		this.recentRemovedAt = this.currentRemovedAt;
 		this.currentRemovedAt = Date.now();
@@ -217,7 +202,7 @@ export class TabsInfo extends SessionSingleton {
 			windowId: windowId,
 		};
 		// 'detach' the last tab would not fire onRemoved event, so compare the size
-		this.currentTabs[windowId] = windowTabs.filter(id => id !== tabId);
+		this.currentTabs[windowId] = windowTabs.filter((id) => id !== tabId);
 		if (isWindowClosing || this.currentTabs[windowId].length === 0) {
 			delete this.currentTabs[windowId];
 			delete this.recentTabs[windowId];
@@ -226,17 +211,13 @@ export class TabsInfo extends SessionSingleton {
 		void this.saveState();
 	}
 
-	public activateTab(
-		windowId: WindowId,
-		tabId: TabId,
-		index: TabIndex,
-	) {
+	public activateTab(windowId: WindowId, tabId: TabId, index: TabIndex) {
 		log('debug', ' tabsInfo: Activating tab', tabId, 'in window', windowId, 'at index', index);
 		const windowTabs = this.currentTabs[windowId];
 		if (!windowTabs) {
 			return;
 		}
-		this.currentTabs[windowId] = windowTabs.filter(id => id !== tabId);
+		this.currentTabs[windowId] = windowTabs.filter((id) => id !== tabId);
 		this.currentTabs[windowId].push(tabId);
 		this.recentTabs[windowId] = {
 			id: tabId,
@@ -245,9 +226,7 @@ export class TabsInfo extends SessionSingleton {
 		void this.saveState();
 	}
 
-	private focusWindow(
-		windowId: WindowId,
-	) {
+	private focusWindow(windowId: WindowId) {
 		log('debug', ' tabsInfo: Focusing window', windowId);
 		if (windowId === -1) {
 			return; // api.windows.WINDOW_ID_NONE
@@ -260,10 +239,7 @@ export class TabsInfo extends SessionSingleton {
 	 * Ensures initialization after the background script starts,
 	 * when api.runtime.onStartup and api.runtime.onInstalled events are not fired after restoring from suspension or being disabled.
 	 */
-	public static async startup(
-		apiTabs: typeof api.tabs,
-		apiWindows: typeof api.windows,
-	) {
+	public static async startup(apiTabs: typeof api.tabs, apiWindows: typeof api.windows) {
 		const instance = await this.getInstance();
 		log('info', ' TabsInfo: Instance created at startup');
 		const normalTabs = await apiTabs.query({ windowType: 'normal' });
@@ -275,16 +251,9 @@ export class TabsInfo extends SessionSingleton {
 		instance.initialize(normalTabs, recentNormalWindowId);
 	}
 
-	public static registerListeners(
-		listeners: Listeners,
-		apiTabs: typeof api.tabs,
-		apiWindows: typeof api.windows,
-	) {
+	public static registerListeners(listeners: Listeners, apiTabs: typeof api.tabs, apiWindows: typeof api.windows) {
 		listeners.add(apiTabs.onCreated, async (tab) => {
-			if (false
-				|| tab.id === undefined
-				|| tab.id === apiTabs.TAB_ID_NONE
-			) {
+			if (tab.id === undefined || tab.id === apiTabs.TAB_ID_NONE) {
 				return;
 			}
 			const instance = await this.getInstance();
@@ -333,7 +302,7 @@ export class TabsInfo extends SessionSingleton {
 			}
 			const instance = await this.getInstance();
 			if (!instance._hasTabActivated) {
-				await new Promise(resolve => setTimeout(resolve, FIRST_ACTIVATION_DELAY_MS));
+				await new Promise((resolve) => setTimeout(resolve, FIRST_ACTIVATION_DELAY_MS));
 				instance._hasTabActivated = true;
 			}
 			instance.activateTab(activeInfo.windowId, activeInfo.tabId, tab.index);
@@ -365,10 +334,13 @@ export class TabsInfo extends SessionSingleton {
 			instance.initialize(normalTabs, recentNormalWindowId);
 		});
 
-		listeners.add(apiWindows.onFocusChanged, async (windowId) => {
-			const instance = await this.getInstance();
-			instance.focusWindow(windowId);
-		}, { windowTypes: ['normal'] });
+		listeners.add(
+			apiWindows.onFocusChanged,
+			async (windowId) => {
+				const instance = await this.getInstance();
+				instance.focusWindow(windowId);
+			},
+			{ windowTypes: ['normal'] },
+		);
 	}
-
 }

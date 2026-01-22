@@ -26,10 +26,7 @@ export interface Fixtures {
 const EXTENSION_SERVICE_WORKER = manifest.background.service_worker;
 const TEST_SERVICE_WORKER = test_manifest.background.service_worker;
 
-export function isExtensionUri(
-	uri: string,
-	service_worker: string = EXTENSION_SERVICE_WORKER,
-): boolean {
+export function isExtensionUri(uri: string, service_worker: string = EXTENSION_SERVICE_WORKER): boolean {
 	return uri.split('/').pop() === service_worker;
 }
 
@@ -38,8 +35,8 @@ async function getExtensionWorker(
 	service_worker: string = EXTENSION_SERVICE_WORKER,
 ): Promise<Worker> {
 	const serviceWorkers = context.serviceWorkers();
-	let extensionWorker = serviceWorkers.find(sw => isExtensionUri(sw.url(), service_worker));
-	extensionWorker ??= await context.waitForEvent('serviceworker', sw => isExtensionUri(sw.url(), service_worker));
+	let extensionWorker = serviceWorkers.find((sw) => isExtensionUri(sw.url(), service_worker));
+	extensionWorker ??= await context.waitForEvent('serviceworker', (sw) => isExtensionUri(sw.url(), service_worker));
 	return extensionWorker;
 }
 
@@ -47,9 +44,8 @@ async function getTestWorker(context: BrowserContext): Promise<Worker> {
 	return getExtensionWorker(context, TEST_SERVICE_WORKER);
 }
 
-
 export const test = base.extend<Fixtures>({
-	context: async ({ }, use) => {
+	context: async ({}, use) => {
 		const pathToExtension = path.join(__dirname, '../dist');
 		const pathToTestExtension = path.join(__dirname, 'ext');
 		const headless: unknown = JSON.parse(process.env.CI ?? 'false');
@@ -66,21 +62,21 @@ export const test = base.extend<Fixtures>({
 			args,
 		});
 		const extensionWorker = await getExtensionWorker(context);
-		extensionWorker.on('console', msg => {
+		extensionWorker.on('console', (msg) => {
 			console.log(`[EXTENSION][${msg.type()}] ${msg.text()}`);
 		});
 
 		const pages = context.pages();
 		const extensionPage = await context.newPage();
-		await extensionPage.goto(extensionWorker.url().replace(manifest.background.service_worker, manifest.options_page));
+		await extensionPage.goto(
+			extensionWorker.url().replace(manifest.background.service_worker, manifest.options_page),
+		);
 		for (const page of pages) {
 			await page.close();
 		}
 		await extensionPage.waitForLoadState();
 		const debug_mode_setting: keyof ExtensionSettings = '_debug_mode';
-		const debug_mode_element = extensionPage.locator(
-			`input[name="${debug_mode_setting}"]`,
-		);
+		const debug_mode_element = extensionPage.locator(`input[name="${debug_mode_setting}"]`);
 		await debug_mode_element.setChecked(true);
 
 		await use(context);
@@ -109,9 +105,8 @@ export const test = base.extend<Fixtures>({
 		await use(extensionOrigin);
 	},
 	extensionPage: async ({ context, extensionOrigin }, use) => {
-		const extensionPage = context.pages().find(
-			tab => tab.url().startsWith(extensionOrigin),
-		) ?? await context.newPage();
+		const extensionPage =
+			context.pages().find((tab) => tab.url().startsWith(extensionOrigin)) ?? (await context.newPage());
 		if (!extensionPage.url().startsWith(extensionOrigin)) {
 			await extensionPage.goto(`${extensionOrigin}/${manifest.options_page}`);
 		}

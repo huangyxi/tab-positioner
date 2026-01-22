@@ -52,11 +52,7 @@ export async function tabMover(
 			});
 			if (tab?.id === tabId) {
 				logger.info('Re-activating moved tab');
-				tabsInfo.activateTab(
-					windowId,
-					tabId,
-					newIndex,
-				);
+				tabsInfo.activateTab(windowId, tabId, newIndex);
 			}
 		}
 	} catch (error) {

@@ -17,7 +17,7 @@
 		// 	"./src/types",
 		// 	"./node_modules/@types",
 		// ],
-		"strict": true,
+		"strict": true
 		// "verbatimModuleSyntax": true,
 	},
 	"include": [
@@ -26,9 +26,7 @@
 		"scripts",
 		"tests",
 		"playwright.config.ts",
-		"_locales/*/messages.json",
+		"_locales/*/messages.json"
 	],
-	"exclude": [
-		"node_modules",
-	],
+	"exclude": ["node_modules"]
 }

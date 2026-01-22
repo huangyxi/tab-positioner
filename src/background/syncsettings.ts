@@ -5,14 +5,11 @@ import { DEFAULT_SETTINGS } from '../shared/settings';
 import { KEEP_ALIVE_TIMEOUT_MS } from '../shared/constants';
 import { setGlobalLogLevel, log } from '../shared/logging';
 
-
 export class SyncSettings extends SessionSingleton {
 	private settings = DEFAULT_SETTINGS;
 	private _keepAliveController = new AbortController();
 
-	public get<T extends keyof typeof DEFAULT_SETTINGS>(
-		key: T,
-	): typeof DEFAULT_SETTINGS[T] {
+	public get<T extends keyof typeof DEFAULT_SETTINGS>(key: T): (typeof DEFAULT_SETTINGS)[T] {
 		return this.settings[key];
 	}
 
@@ -28,10 +25,14 @@ export class SyncSettings extends SessionSingleton {
 		this._keepAliveController = controller;
 		let timeout!: NodeJS.Timeout;
 		let rejectFn: (reason?: unknown) => void = () => {};
-		controller.signal.addEventListener('abort', () => {
-			clearTimeout(timeout);
-			rejectFn(abortException);
-		}, { once: true });
+		controller.signal.addEventListener(
+			'abort',
+			() => {
+				clearTimeout(timeout);
+				rejectFn(abortException);
+			},
+			{ once: true },
+		);
 		try {
 			while (this.get('_persistent_background')) {
 				log('debug', ' syncSettings: pinging runtime API');

@@ -52,8 +52,8 @@ class VitePlugin {
 		try {
 			await viteBuild({
 				define: {
-					'api': 'chrome',
-					'VERSION': JSON.stringify(this.options.version),
+					api: 'chrome',
+					VERSION: JSON.stringify(this.options.version),
 					// 'DEBUG': JSON.stringify(process.env.DEBUG),
 				},
 				build: {
@@ -72,12 +72,14 @@ class VitePlugin {
 				},
 				plugins: [
 					banner(this.options.banner),
-					this.options.coverage ? istanbul({
-						include: 'src/**',
-						extension: ['.ts', '.tsx'],
-						requireEnv: false,
-						forceBuildInstrument: true,
-					}) : undefined,
+					this.options.coverage
+						? istanbul({
+								include: 'src/**',
+								extension: ['.ts', '.tsx'],
+								requireEnv: false,
+								forceBuildInstrument: true,
+							})
+						: undefined,
 				].filter(Boolean) as PluginOption[],
 			});
 			this.logger.logWithOptions({
@@ -112,14 +114,8 @@ export default function (
 ) {
 	const plugin = new VitePlugin(eleventyConfig, options);
 
-	eleventyConfig.on('eleventy.before', async ({
-		directories, runMode, outputMode,
-	}: any) => {
-		if (
-			runMode === 'serve' ||
-			outputMode === 'json' ||
-			outputMode === 'ndjson'
-		) {
+	eleventyConfig.on('eleventy.before', async ({ directories, runMode, outputMode }: any) => {
+		if (runMode === 'serve' || outputMode === 'json' || outputMode === 'ndjson') {
 			return;
 		}
 		await plugin.build();

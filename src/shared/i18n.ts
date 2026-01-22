@@ -14,7 +14,7 @@ export function getI18nMessage(key: I18nKey, args?: string[]): string {
 }
 
 export const I18N_HTML_PROPERTIES = ['textContent', 'title'] as const;
-type I18nHtmlProperty = typeof I18N_HTML_PROPERTIES[number];
+type I18nHtmlProperty = (typeof I18N_HTML_PROPERTIES)[number];
 
 export function getI18nAttribute(property: I18nHtmlProperty) {
 	return `data-i18n-${property}`;

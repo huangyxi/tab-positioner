@@ -42,26 +42,33 @@ export default [
 			...tseslint.configs['recommended-type-checked'].rules,
 			// ...tseslint.configs['strict-type-checked'].rules,
 			// ...tseslint.configs['stylistic-type-checked'].rules,
-			'semi': ['error', 'always'],
+			semi: ['error', 'always'],
 			'no-trailing-spaces': 'error',
 			'comma-dangle': ['error', 'always-multiline'],
 			'eol-last': ['error', 'always'],
-			'indent': ['error', 'tab', {
-				SwitchCase: 1,
-			}],
-			'quotes': ['error', 'single', {
-				avoidEscape: true,
-				allowTemplateLiterals: true,
-			}],
+			quotes: [
+				'error',
+				'single',
+				{
+					avoidEscape: true,
+					allowTemplateLiterals: true,
+				},
+			],
 			'no-unused-vars': 'off',
-			'@typescript-eslint/no-unused-vars': ['error', {
-				argsIgnorePattern: '.*',
-				varsIgnorePattern: '^_',
-			}],
-			'@typescript-eslint/consistent-type-imports': ['error', {
-				prefer: 'type-imports',
-				disallowTypeAnnotations: false,
-			}],
+			'@typescript-eslint/no-unused-vars': [
+				'error',
+				{
+					argsIgnorePattern: '.*',
+					varsIgnorePattern: '^_',
+				},
+			],
+			'@typescript-eslint/consistent-type-imports': [
+				'error',
+				{
+					prefer: 'type-imports',
+					disallowTypeAnnotations: false,
+				},
+			],
 			'@typescript-eslint/no-import-type-side-effects': 'error',
 
 			'@typescript-eslint/switch-exhaustiveness-check': 'error',
