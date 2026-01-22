@@ -39,7 +39,7 @@
 		"message": "⚠️ 實驗功能。啟用後，彈出視窗將依所選選項按與連結相同的規則開啟。"
 	},
 	"label__duplicate_tab_position": {
-		"message": "複製分頁時，放置在："
+		"message": "複製分頁時，放置於："
 	},
 	"label_after_close_activation": {
 		"message": "關閉分頁後，焦點移至："

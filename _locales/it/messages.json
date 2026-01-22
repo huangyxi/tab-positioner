@@ -39,7 +39,7 @@
 		"message": "⚠️ Funzione sperimentale. I popup si apriranno seguendo le stesse regole dei link, secondo l’opzione selezionata."
 	},
 	"label__duplicate_tab_position": {
-		"message": "Quando si duplica una scheda, posizionala:"
+		"message": "Posizionare scheda duplicata:"
 	},
 	"label_after_close_activation": {
 		"message": "Dopo chiusura, focus su:"

@@ -39,7 +39,7 @@
 		"message": "⚠️ Función experimental. Los popups se abrirán según las mismas reglas que los enlaces, según la opción seleccionada."
 	},
 	"label__duplicate_tab_position": {
-		"message": "Al duplicar una pestaña, colóquela:"
+		"message": "Colocar pestaña duplicada:"
 	},
 	"label_after_close_activation": {
 		"message": "Después de cerrar, enfocar en:"
