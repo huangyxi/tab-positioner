@@ -90,7 +90,7 @@ The project is organized as follows:
   - Sets up `SyncSettings` (replicates storage in memory/session for sync access) and `TabsInfo` (tracks tab state).
   - Registers event listeners: `onCreated` -> `createdTabMover`, `onRemoved` -> `tabRemovedActivater`.
 - **Tab Creation** (`src/background/tabcreation.ts`):
-  - Determines if a new tab is a "foreground link", "background link", or "new tab page".
+  - Determines if a new tab is a "foreground link", "background link", "new tab page", "duplicate tab", or "popup".
   - Checks `tabsInfo` for creation delay to prevent conflicts with batch operations.
   - Moves the tab to the configured position using `tabMover` (or `createdPopupMover` for popups).
 - **Tab Activation** (`src/background/tabactivation.ts`):

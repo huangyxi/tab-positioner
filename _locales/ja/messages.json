@@ -38,6 +38,9 @@
 	"title__popup_position": {
 		"message": "⚠️ 実験機能。有効にすると、ポップアップは選択されたオプションに従い、リンクと同じルールで開きます。"
 	},
+	"label__duplicate_tab_position": {
+		"message": "タブを複製するときの位置："
+	},
 	"label_after_close_activation": {
 		"message": "タブを閉じた後にフォーカスする場所："
 	},

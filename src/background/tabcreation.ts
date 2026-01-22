@@ -10,9 +10,16 @@ import { createdPopupMover } from './popupcreation';
 
 async function getTabCreationSetting(newTab: api.tabs.Tab) {
 	const isNewTabPage = NEW_PAGE_URIS.includes(newTab.pendingUrl ?? newTab.url ?? '');
+	const isDuplicate =
+		newTab.openerTabId !== undefined && (newTab.url === newTab.pendingUrl || newTab.pendingUrl === undefined);
+
 	let settingKey: TabCreationPositionKey;
 	if (isNewTabPage) {
+		// The New Tab Page rule applies superiorly
 		settingKey = 'new_tab_position';
+	} else if (isDuplicate) {
+		// When duplicating a tab, it has an openerTabId and usually shares the same URL
+		settingKey = '_duplicate_tab_position';
 	} else {
 		if (newTab.active) {
 			settingKey = 'foreground_link_position';

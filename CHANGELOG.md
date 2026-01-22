@@ -1,3 +1,4 @@
+- v0.4.4: Added a new setting to control duplicate tab position, allowing you to specify where duplicated tabs appear.
 - v0.4.3: Fixed an issue where popups were not opening in the correct position when configured to open as background tabs.
 - v0.4.2: Added a new experimental feature to open popups as tabs.
 - v0.4.1: Improved robustness when re-enabling the extension after it has been disabled, and refined i18n text on the settings page.

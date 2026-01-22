@@ -38,6 +38,9 @@
 	"title__popup_position": {
 		"message": "⚠️ Experimentelles Feature. Öffnet Popups nach denselben Regeln wie Links, gemäß gewählter Option."
 	},
+	"label__duplicate_tab_position": {
+		"message": "Duplizierter Tab platzieren:"
+	},
 	"label_after_close_activation": {
 		"message": "Nach Schließen, Fokus auf:"
 	},

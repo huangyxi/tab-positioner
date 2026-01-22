@@ -1,4 +1,4 @@
-import type { BrowserContext, Page } from '@playwright/test';
+import type { BrowserContext, Page, Worker } from '@playwright/test';
 import { expect as baseExpect } from '@playwright/test';
 import { isExtensionUri } from './fixtures';
 
@@ -220,6 +220,36 @@ export async function openPopup(
 	const popup = await popupPromise;
 	await popup.waitForLoadState();
 	return popup;
+}
+
+/**
+ * Duplicates a tab using chrome.tabs.duplicate API via the test extension.
+ *
+ * @param context - The browser context
+ * @param testWorker - The test extension service worker
+ * @param pageId - The page identifier of the tab to duplicate
+ * @returns The newly created duplicated page
+ */
+export async function duplicateTab(context: BrowserContext, testWorker: Worker, pageId: PageId): Promise<Page> {
+	const uri = pageUri(pageId);
+	const newPagePromise = context.waitForEvent('page');
+
+	// Use the test extension's service worker to call chrome.tabs.duplicate
+	await testWorker.evaluate(async (targetUri: string) => {
+		const tabs = await chrome.tabs.query({ url: targetUri });
+		if (tabs.length === 0) {
+			throw new Error(`Tab with URI ${targetUri} not found`);
+		}
+		const tabId = tabs[0].id;
+		if (tabId === undefined) {
+			throw new Error('Tab ID is undefined');
+		}
+		await chrome.tabs.duplicate(tabId);
+	}, uri);
+
+	const newPage = await newPagePromise;
+	await newPage.waitForLoadState();
+	return newPage;
 }
 
 /**
