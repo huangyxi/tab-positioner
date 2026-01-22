@@ -1,7 +1,7 @@
-import { DEBUG } from '../shared/debug';
 import type { TabCreationPositionKey } from '../shared/settings';
 import { NEW_PAGE_URIS } from '../shared/constants';
 import type { Listeners } from '../shared/listeners';
+import { logClosure } from '../shared/logging';
 
 import { SyncSettings } from './syncsettings';
 import { TabsInfo } from './tabsinfo';
@@ -35,19 +35,20 @@ async function createdTabMover(
 	apiWindows: typeof api.windows,
 	newTab: api.tabs.Tab,
 ) {
-	DEBUG && console.log('  C1. Tab created');
+	const logger = logClosure('  tabCreation');
+	logger.debug('Tab creation process started');
 	const tabsInfo = await TabsInfo.getInstance();
 	const hasLoaded = tabsInfo.hasTabActivated();
 	// The above line should be executed ASAP before the new tab is activated
 	const tabId = newTab.id;
-	DEBUG && console.log('  C2. Tab ID:', tabId);
+	logger.debug('New tab ID:', tabId);
 	if (!tabId || tabId === -1) return; // api.tabs.TAB_ID_NONE
 	const nTabs = tabsInfo.getCurrentTabs(newTab.windowId).length;
-	DEBUG && console.log('  C3. Current tabs count:', nTabs);
+	logger.debug('Current tabs count in window:', nTabs);
 	if (nTabs <= 1) {
 		const window = await apiWindows.get(newTab.windowId);
 		if (window.type === 'popup') {
-			DEBUG && console.log('  C6->P. Popup window, dispatching to popup mover');
+			logger.info('Popup window, dispatching to popup mover');
 			return await createdPopupMover(
 				apiTabs,
 				tabsInfo,
@@ -58,14 +59,14 @@ async function createdTabMover(
 		return;
 	}
 	const {setting, settingKey: _, tabBatchThresholdMs} = await getTabCreationSetting(newTab);
-	DEBUG && console.log('  C4. Tab creation setting:', setting);
+	logger.debug('Tab creation setting:', setting);
 	if (setting === 'default') return;
 	const delay = tabsInfo.getCreationDelay();
-	DEBUG && console.log('  C5. Creation delay:', delay);
+	logger.debug('Creation delay:', delay);
 	if (delay < tabBatchThresholdMs) {
 		return;
 	}
-	DEBUG && console.log('  C6->c. Normal window, moving tab');
+	logger.info('Normal window, moving tab');
 	await tabMover(
 		apiTabs,
 		tabsInfo,

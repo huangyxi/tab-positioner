@@ -1,5 +1,5 @@
-import { DEBUG } from '../shared/debug';
 import type { TabCreationPosition } from '../shared/settings';
+import { logClosure } from '../shared/logging';
 
 import { SyncSettings } from './syncsettings';
 import type { TabsInfo } from './tabsinfo';
@@ -12,12 +12,13 @@ export async function createdPopupMover(
 	hasLoaded: boolean,
 
 ) {
-	DEBUG && console.log('  P1. Popup created');
+	const logger = logClosure('  popupCreation');
+	logger.debug('Popup created mover called');
 	const windowId = tabsInfo.getRecentNormalWindowId();
-	DEBUG && console.log('  P2 Window ID for opener tab:', windowId);
+	logger.debug('Opener window ID:', windowId);
 	const settings = await SyncSettings.getInstance();
 	const setting = settings.get('_popup_position');
-	DEBUG && console.log('  P3. Popup creation setting:', setting);
+	logger.debug('Popup creation setting:', setting);
 	if (setting === 'default') return;
 	// Should get the window again with populate: true to ensure tabs are included.
 	// const newTab = newWindow.tabs?.[0];
@@ -32,8 +33,9 @@ export async function createdPopupMover(
 		default:
 			const _exhaustive: never = setting;
 	}
-	DEBUG && console.log('  P4->c. Tab creation setting for popup:', tabCreationSetting);
+	logger.debug('Determined tab creation setting for popup:', tabCreationSetting);
 	if (tabCreationSetting === 'default') return;
+	logger.info('Moving created popup tab according to setting');
 	await tabMover(
 		apiTabs,
 		tabsInfo,
@@ -44,7 +46,8 @@ export async function createdPopupMover(
 		hasLoaded,
 	);
 	if (setting === 'new_foreground_tab') {
-		DEBUG && console.log('  P5. Activating new foreground tab');
+		logger.info('Activating new foreground tab');
 		await apiTabs.update(tabId, { active: true });
 	}
+	logger.debug('Popup created mover process completed');
 }

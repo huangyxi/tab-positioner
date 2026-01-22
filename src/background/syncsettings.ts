@@ -2,10 +2,9 @@ import type { Listeners } from '../shared/listeners';
 import { SessionSingleton } from '../shared/session';
 import { loadSettings, saveSettings } from '../shared/storage';
 import { DEFAULT_SETTINGS } from '../shared/settings';
-import { errorHandler } from '../shared/logging';
 import { KEEP_ALIVE_TIMEOUT_MS } from '../shared/constants';
+import { setGlobalLogLevel, log } from '../shared/logging';
 
-export let DEBUG = true;
 
 export class SyncSettings extends SessionSingleton {
 	private settings = DEFAULT_SETTINGS;
@@ -35,9 +34,7 @@ export class SyncSettings extends SessionSingleton {
 		}, { once: true });
 		try {
 			while (this.get('_persistent_background')) {
-				if (DEBUG) {
-					console.log(' syncSettings: Keeping alive');
-				}
+				log('debug', ' syncSettings: pinging runtime API');
 				await apiRuntime.getPlatformInfo(); // ping API
 				await new Promise((resolve, reject) => {
 					timeout = setTimeout(resolve, KEEP_ALIVE_TIMEOUT_MS);
@@ -46,11 +43,9 @@ export class SyncSettings extends SessionSingleton {
 			}
 		} catch (error) {
 			if (error === abortException) {
-				if (DEBUG) {
-					console.log(' syncSettings: Keep alive aborted due to a new request');
-				}
+				log('debug', ' syncSettings: Keep alive aborted due to a new request');
 			} else {
-				errorHandler('syncSettings: Keep alive error:', error);
+				log('error', ' syncSettings: Keep alive error:', error);
 			}
 		}
 	}
@@ -58,9 +53,7 @@ export class SyncSettings extends SessionSingleton {
 	private async saveSettings() {
 		const settings = await loadSettings();
 		this.settings = settings;
-		if (DEBUG) {
-			console.log(' syncSettings: Settings saved:', settings);
-		}
+		log('info', ' syncSettings: Settings loaded:', settings);
 		void this.saveState();
 		await saveSettings(settings);
 	}
@@ -70,7 +63,7 @@ export class SyncSettings extends SessionSingleton {
 			const settings = await loadSettings();
 			debugMode = settings['_debug_mode'];
 		}
-		DEBUG = debugMode;
+		setGlobalLogLevel(debugMode ? 'debug' : 'error');
 	}
 
 	/**
@@ -80,9 +73,7 @@ export class SyncSettings extends SessionSingleton {
 	public static async startup(apiRuntime: typeof api.runtime) {
 		await this.setDebugMode();
 		const instance = await this.getInstance();
-		if (DEBUG) {
-			console.log(' syncSettings: Instance created at startup');
-		}
+		log('info', ' syncSettings: Instance created at startup');
 		await instance.saveSettings();
 		void instance.keepAlive(apiRuntime);
 	}
@@ -99,9 +90,7 @@ export class SyncSettings extends SessionSingleton {
 			const instance = await this.getInstance();
 			const debugModeKey: keyof typeof DEFAULT_SETTINGS = '_debug_mode';
 			if (debugModeKey in changes) await this.setDebugMode(changes[debugModeKey].newValue as boolean);
-			if (DEBUG) {
-				console.log(' syncSettings: Settings changed:', changes);
-			}
+			log('info', ' syncSettings: Settings changed:', changes);
 			await instance.saveSettings();
 			void instance.keepAlive(apiRuntime);
 		});

@@ -1,4 +1,3 @@
-import { DEBUG } from '../shared/debug';
 import { Listeners } from '../shared/listeners';
 import { SyncSettings } from './syncsettings';
 import { TabsInfo } from './tabsinfo';
@@ -8,9 +7,7 @@ import { registerTabRemovedListener } from './tabactivation';
 
 // MUST be Synchronous to ensure the listeners are registered before any events are fired.
 function main() {
-	if (DEBUG) {
-		console.log('Tab Positioner background script started', VERSION);
-	}
+	console.log('Tab Positioner background script started', VERSION);
 
 	const listeners = new Listeners();
 

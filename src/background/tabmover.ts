@@ -1,7 +1,6 @@
-import { DEBUG } from '../shared/debug';
 import type { TabCreationPosition } from '../shared/settings';
 import { FIRST_ACTIVATION_DELAY_MS } from '../shared/constants';
-import { errorHandler } from '../shared/logging';
+import { logClosure } from '../shared/logging';
 
 import type { TabsInfo } from './tabsinfo';
 
@@ -14,7 +13,8 @@ export async function tabMover(
 	index: number | undefined,
 	hasLoaded: boolean,
 ) {
-	DEBUG && console.log('  c0. Tab mover called');
+	const logger = logClosure('  tabMover');
+	logger.debug('Tab mover called');
 	let newIndex: number = -1;
 	const currentTab = tabsInfo.getRecentTab(windowId);
 	const currentIndex = currentTab.index;
@@ -36,14 +36,14 @@ export async function tabMover(
 		default:
 			const _exhaustive: never = setting;
 	}
-	DEBUG && console.log('  c1. New index:', newIndex);
+	logger.debug('Determined new index:', newIndex);
 	if (newIndex === index) return;
-	DEBUG && console.log('  c2. Moving tab');
 	try {
 		await apiTabs.move(tabId, {
 			index: newIndex,
 			windowId: windowId === -1 ? undefined : windowId,
 		});
+		logger.info('Tab moved to index:', newIndex);
 		if (!hasLoaded) {
 			await new Promise((resolve) => setTimeout(resolve, FIRST_ACTIVATION_DELAY_MS));
 			const [tab] = await apiTabs.query({
@@ -51,7 +51,7 @@ export async function tabMover(
 				windowId: windowId,
 			});
 			if (tab?.id === tabId) {
-				DEBUG && console.log('  c2a. Active tab again');
+				logger.info('Re-activating moved tab');
 				tabsInfo.activateTab(
 					windowId,
 					tabId,
@@ -60,7 +60,7 @@ export async function tabMover(
 			}
 		}
 	} catch (error) {
-		errorHandler(error);
+		logger.error(error);
 	}
-	DEBUG && console.log('  c3->X. Tab moved');
+	logger.debug('Tab move process completed');
 }
