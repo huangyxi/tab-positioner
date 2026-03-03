@@ -46,10 +46,9 @@ export async function main(argv: string[]) {
 		console.error('Failed to setup Eleventy:', error);
 		process.exit(1);
 	}
-	const eleventyConfig = eleventy.eleventyConfig;
-	const outDir = output ?? eleventyConfig.directories.output;
+	const outDir = output ?? (eleventy.directories.output as string);
 	await fs.rm(outDir, { force: true, recursive: true });
-	eleventyConfig.logger.logWithOptions({
+	eleventy.logger.logWithOptions({
 		prefix: '[Clean]',
 		message: `Cleaned output directory ${outDir}`,
 		type: 'info',

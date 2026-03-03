@@ -1,8 +1,15 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
+import type { Eleventy } from '@11ty/eleventy/';
+import type UserConfig from '@11ty/eleventy/UserConfig';
 import { Merge } from '@11ty/eleventy-utils';
 import sharp from 'sharp';
+
+type Manifest = typeof import('../manifest.json') & {
+	icons: Record<number, string>;
+	version_name: string;
+};
 
 interface ManifestPluginOptions {
 	/** Relative to the project root */
@@ -39,28 +46,18 @@ const DEFAULT_OPTIONS: ManifestPluginOptions = {
 class ManifestPlugin {
 	static LOGGER_PREFIX = '[Manifest]';
 
-	/** @type {import("@11ty/eleventy/src/Util/ProjectDirectories.js").default} */
-	directories;
+	private readonly directories: Eleventy['directories'];
+	private readonly logger: Eleventy['logger'];
+	private readonly options: ManifestPluginOptions;
 
-	/** @type {import("@11ty/eleventy/src/Util/ConsoleLogger.js").default} */
-	logger;
-
-	options: ManifestPluginOptions;
-
-	constructor(
-		elventyConfig: {
-			directories: any;
-			logger: any;
-		},
-		options: ManifestPluginOptions = {} as ManifestPluginOptions,
-	) {
+	constructor(elventyConfig: Eleventy, options: Partial<ManifestPluginOptions> = {}) {
 		this.directories = elventyConfig.directories;
 		this.logger = elventyConfig.logger;
 		this.options = Merge({}, DEFAULT_OPTIONS, options);
 	}
 
 	async patch() {
-		const outDir = this.directories.output;
+		const outDir = this.directories.output as string;
 		const icons: { [size: number]: string } = {};
 		await fs.mkdir(outDir, { recursive: true });
 		for (const size of this.options.iconOutSizes) {
@@ -70,7 +67,7 @@ class ManifestPlugin {
 			icons[size] = iconOutputFilename;
 		}
 		const manifestData = await fs.readFile(this.options.manifestInPath, 'utf8');
-		const manifest = JSON.parse(manifestData);
+		const manifest = JSON.parse(manifestData) as Manifest;
 		manifest.icons = icons;
 		manifest.version = this.options.version;
 		if (this.options.version_name) {
@@ -88,20 +85,9 @@ class ManifestPlugin {
 	}
 }
 
-/**
- * @param {import("@11ty/eleventy/UserConfig").default} eleventyConfig
- * @param {ManifestPluginOptions} options
- */
-export default function (
-	eleventyConfig: {
-		directories: any;
-		logger: any;
-		once: (event: string, callback: Function) => void;
-	},
-	options: ManifestPluginOptions = {} as ManifestPluginOptions,
-) {
-	const plugin = new ManifestPlugin(eleventyConfig, options);
-
+export default function (eleventyConfig: UserConfig, options: Partial<ManifestPluginOptions> = {}) {
+	const plugin = new ManifestPlugin(eleventyConfig as unknown as Eleventy, options);
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	eleventyConfig.once('eleventy.before', async ({ directories, runMode, outputMode }: any) => {
 		if (runMode === 'serve' || outputMode === 'json' || outputMode === 'ndjson') {
 			return;

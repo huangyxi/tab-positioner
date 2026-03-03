@@ -1,8 +1,10 @@
 import { exec } from 'node:child_process';
 import { promisify } from 'node:util';
 
+import type { Eleventy } from '@11ty/eleventy/';
+
 const execAsync = promisify(exec);
-async function execCmd(cmd: any) {
+async function execCmd(cmd: string) {
 	const { stdout } = await execAsync(cmd);
 	return stdout.trim();
 }
@@ -14,14 +16,11 @@ const TAG_MATCH = {
 };
 const LOGGER_PREFIX = '[GitInfo]';
 
-/**
- *
- * @param {*} logger
- * @param {'major' | 'minor' | 'patch'} since
- * @param {string} dirty
- * @returns
- */
-export async function getGitInfo(logger: any, since: keyof typeof TAG_MATCH = 'minor', dirty = '+dirty') {
+export async function getGitInfo(
+	logger: Eleventy['logger'],
+	since: keyof typeof TAG_MATCH = 'minor',
+	dirty = '+dirty',
+) {
 	try {
 		const ret = await execCmd('git rev-parse --is-inside-work-tree');
 		if (ret !== 'true') {

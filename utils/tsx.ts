@@ -3,6 +3,8 @@ import 'tsx/esm';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
+import type { Eleventy } from '@11ty/eleventy';
+import type UserConfig from '@11ty/eleventy/UserConfig';
 import { Merge } from '@11ty/eleventy-utils';
 import { jsxToString } from 'jsx-async-runtime';
 
@@ -24,31 +26,22 @@ const DEFAULT_OPTIONS: TsxPluginOptions = {
 class TsxPlugin {
 	static LOGGER_PREFIX = '[TSX]';
 
-	/** @type {import("@11ty/eleventy/src/Util/ProjectDirectories.js").default} */
-	directories;
+	private readonly directories: Eleventy['directories'];
+	private readonly logger: Eleventy['logger'];
 
-	/** @type {import("@11ty/eleventy/src/Util/ConsoleLogger.js").default} */
-	logger;
+	private readonly entries: string[];
+	private readonly inputDir: string;
+	private readonly banner: string;
+	private readonly ignoreOthers: boolean;
 
-	entries: string[];
-	inputDir: string;
-	banner: string;
-	ignoreOthers: boolean;
-
-	constructor(
-		elventyConfig: {
-			directories: any;
-			logger: any;
-		},
-		options: TsxPluginOptions = {} as TsxPluginOptions,
-	) {
+	constructor(elventyConfig: Eleventy, options: Partial<TsxPluginOptions> = {}) {
 		this.directories = elventyConfig.directories;
 		this.logger = elventyConfig.logger;
-		options = Merge({}, DEFAULT_OPTIONS, options);
-		this.entries = this.normalizeEntries(options.entries);
+		const _options = Merge({}, DEFAULT_OPTIONS, options);
+		this.entries = this.normalizeEntries(_options.entries);
 		this.inputDir = this.getInputDirectory();
-		this.banner = options.banner ? `${options.banner}\n` : '';
-		this.ignoreOthers = options.ignoreOthers;
+		this.banner = _options.banner ? `${_options.banner}\n` : '';
+		this.ignoreOthers = _options.ignoreOthers;
 	}
 
 	private normalizeEntries(entries: string[]) {
@@ -69,7 +62,7 @@ class TsxPlugin {
 		if (entries.length === 0) {
 			this.logger.logWithOptions({
 				message: `${TsxPlugin.LOGGER_PREFIX} No input directory set, using './' as default.`,
-				level: 'warn',
+				type: 'warn',
 			});
 			return './';
 		}
@@ -91,7 +84,7 @@ class TsxPlugin {
 		const inputDir = commonDir;
 		this.logger.logWithOptions({
 			message: `${TsxPlugin.LOGGER_PREFIX} No input directory set, using '${inputDir}' as default.`,
-			level: 'warn',
+			type: 'warn',
 		});
 		return inputDir;
 	}
@@ -117,33 +110,21 @@ class TsxPlugin {
 		return ignores;
 	}
 
-	public tsxCompile(inputContent: any, inputPath: any) {
+	public tsxCompile(_inputContent: string, _inputPath: string) {
 		const banner = this.banner;
-		return async function (this: { defaultRenderer: (input: any) => Promise<any> }, data: any) {
-			const content = await this.defaultRenderer(inputContent);
+		return async function (
+			this: { defaultRenderer: (_data: Record<string, unknown>) => Promise<string> },
+			data: Record<string, unknown>,
+		) {
+			const content = await this.defaultRenderer(data);
 			const result = await jsxToString(content);
 			return `${banner}<!DOCTYPE html>\n${result}`;
 		};
 	}
 }
 
-/**
- * @param {import("@11ty/eleventy/src/EleventyConfig.js").default} elventyConfig
- * @param {TsxPluginOptions} options
- */
-export default async function (
-	elventyConfig: {
-		directories: any;
-		logger: any;
-		ignores: {
-			add: (path: string) => void;
-		};
-		addTemplateFormats: (formats: string | string[]) => void;
-		addExtension: (extensions: string | string[], options: any) => void;
-	},
-	options: TsxPluginOptions = {} as TsxPluginOptions,
-) {
-	const plugin = new TsxPlugin(elventyConfig, options);
+export default async function (elventyConfig: UserConfig, options: Partial<TsxPluginOptions> = {}) {
+	const plugin = new TsxPlugin(elventyConfig as unknown as Eleventy, options);
 	elventyConfig.addTemplateFormats('tsx');
 	elventyConfig.addExtension('tsx', {
 		key: '11ty.js',

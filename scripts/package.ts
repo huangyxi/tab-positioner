@@ -102,7 +102,7 @@ async function zipAppend<T>(zipWriter: ZipWriter<T>, fsPath: string, zipPath: st
 
 async function zipInputs(
 	inputPaths: string[],
-	outputZipPath: any,
+	outputZipPath: string,
 	preserveRoot: boolean = false,
 	verbose: boolean = false,
 ) {

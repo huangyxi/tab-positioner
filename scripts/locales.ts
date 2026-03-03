@@ -8,7 +8,15 @@ import messages from '../_locales/en/messages.json' with { type: 'json' };
 const LOCALES_DIR = path.resolve('_locales');
 const BASE_LOCALE = 'en';
 
-function validateLocale(json: any, locale: string): string[] {
+type Messages = Record<
+	string,
+	{
+		message: string;
+		[key: string]: unknown;
+	}
+>;
+
+function validateLocale(json: Messages, locale: string): string[] {
 	const errors: string[] = [];
 	for (const key in messages) {
 		if (!(key in json)) {
@@ -36,7 +44,7 @@ async function main() {
 		const filePath = path.join(LOCALES_DIR, locale, 'messages.json');
 		try {
 			const raw = await fs.readFile(filePath, 'utf-8');
-			const json = JSON.parse(raw);
+			const json = JSON.parse(raw) as Messages;
 			const errs = validateLocale(json, locale);
 			if (errs.length) {
 				localeErrors[locale] = errs;

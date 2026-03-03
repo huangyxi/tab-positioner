@@ -1,3 +1,5 @@
+import type { Eleventy } from '@11ty/eleventy';
+import type UserConfig from '@11ty/eleventy/UserConfig';
 import { Merge } from '@11ty/eleventy-utils';
 import type { PluginOption } from 'vite';
 import { build as viteBuild } from 'vite';
@@ -28,21 +30,12 @@ const DEFAULT_OPTIONS: VitePluginOptions = {
 class VitePlugin {
 	static LOGGER_PREFIX = '[Vite]';
 
-	/** @type {import("@11ty/eleventy/src/Util/ProjectDirectories.js").default} */
-	directories;
+	private readonly directories: Eleventy['directories'];
+	private readonly logger: Eleventy['logger'];
 
-	/** @type {import("@11ty/eleventy/src/Util/ConsoleLogger.js").default} */
-	logger;
+	private readonly options: VitePluginOptions;
 
-	options: VitePluginOptions;
-
-	constructor(
-		elventyConfig: {
-			directories: any;
-			logger: any;
-		},
-		options: VitePluginOptions = {} as VitePluginOptions,
-	) {
+	constructor(elventyConfig: Eleventy, options: Partial<VitePluginOptions> = {}) {
 		this.directories = elventyConfig.directories;
 		this.logger = elventyConfig.logger;
 		this.options = Merge({}, DEFAULT_OPTIONS, options);
@@ -57,7 +50,7 @@ class VitePlugin {
 					// 'DEBUG': JSON.stringify(process.env.DEBUG),
 				},
 				build: {
-					outDir: this.directories.output,
+					outDir: this.directories.output as string,
 					emptyOutDir: false, // Keep Eleventy passthroughed files
 					minify: this.options.minify, // Disable minification for potential faster reviews
 					sourcemap: this.options.coverage,
@@ -100,20 +93,10 @@ class VitePlugin {
 	}
 }
 
-/**
- * @param {import("@11ty/eleventy/UserConfig").default} eleventyConfig
- * @param {VitePluginOptions} options
- */
-export default function (
-	eleventyConfig: {
-		directories: any;
-		logger: any;
-		on: (event: string, callback: Function) => void;
-	},
-	options: VitePluginOptions = {} as VitePluginOptions,
-) {
-	const plugin = new VitePlugin(eleventyConfig, options);
+export default function (eleventyConfig: UserConfig, options: Partial<VitePluginOptions> = {}) {
+	const plugin = new VitePlugin(eleventyConfig as unknown as Eleventy, options);
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	eleventyConfig.on('eleventy.before', async ({ directories, runMode, outputMode }: any) => {
 		if (runMode === 'serve' || outputMode === 'json' || outputMode === 'ndjson') {
 			return;

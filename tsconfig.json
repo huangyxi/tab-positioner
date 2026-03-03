@@ -8,7 +8,9 @@
 		"jsx": "react-jsx",
 		"jsxImportSource": "jsx-async-runtime",
 		"esModuleInterop": true,
-		// "skipLibCheck": true,
+		"allowJs": true,
+		"skipLibCheck": true,
+		"maxNodeModuleJsDepth": 3,
 		"rewriteRelativeImportExtensions": true, // Allow import *.ts from *.js
 		"erasableSyntaxOnly": true,
 		// "resolveJsonModule": true, // use `with { type: "json" }`
