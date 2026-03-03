@@ -2,7 +2,8 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { ZipWriter, BlobWriter, Uint8ArrayReader } from '@zip.js/zip.js';
+
+import { BlobWriter, Uint8ArrayReader, ZipWriter } from '@zip.js/zip.js';
 
 const DEFAULT_OUTPUT = 'chrome-extension.zip';
 const DEFAULT_INPUTS = './dist';

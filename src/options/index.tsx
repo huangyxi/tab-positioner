@@ -3,7 +3,7 @@ export const data = {
 	permalink: 'options.html',
 };
 
-import { getMessage as _, createI18nAttribute as _a } from '../shared/i18n';
+import { createI18nAttribute as _a, getMessage as _ } from '../shared/i18n';
 import { Settings } from './settings';
 
 export default function OptionsPage(): JSX.Element {

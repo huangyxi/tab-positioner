@@ -1,6 +1,6 @@
-import { test, type Fixtures, type ExtensionSettings } from '../fixtures';
-import { expect, createPage, openLink, idleExtensionWorker, type PageId } from '../helpers';
 import { TEST_TIMEOUT_MS } from '../constants';
+import { type ExtensionSettings, type Fixtures, test } from '../fixtures';
+import { createPage, expect, idleExtensionWorker, openLink, type PageId } from '../helpers';
 
 async function verifyTabCreation(
 	fixtures: Partial<Fixtures>,

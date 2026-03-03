@@ -2,6 +2,7 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
+
 import { Eleventy } from '@11ty/eleventy';
 
 const SCRIPT_FILENAME = path.basename(process.argv[1]);

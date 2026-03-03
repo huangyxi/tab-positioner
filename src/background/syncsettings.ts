@@ -1,9 +1,9 @@
-import type { Listeners } from '../shared/listeners';
-import { SessionSingleton } from '../shared/session';
-import { loadSettings, saveSettings } from '../shared/storage';
-import { DEFAULT_SETTINGS } from '../shared/settings';
 import { KEEP_ALIVE_TIMEOUT_MS } from '../shared/constants';
-import { setGlobalLogLevel, log } from '../shared/logging';
+import type { Listeners } from '../shared/listeners';
+import { log, setGlobalLogLevel } from '../shared/logging';
+import { SessionSingleton } from '../shared/session';
+import { DEFAULT_SETTINGS } from '../shared/settings';
+import { loadSettings, saveSettings } from '../shared/storage';
 
 export class SyncSettings extends SessionSingleton {
 	private settings = DEFAULT_SETTINGS;

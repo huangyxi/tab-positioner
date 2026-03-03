@@ -1,6 +1,6 @@
 import { STATE_SAVE_DELAY_MS } from './constants';
 import { LOG_LEVEL } from './logging';
-import { log, compareLogLevels } from './logging';
+import { compareLogLevels, log } from './logging';
 
 const storageSession = api.storage.session;
 

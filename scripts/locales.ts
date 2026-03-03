@@ -2,6 +2,7 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
+
 import messages from '../_locales/en/messages.json' with { type: 'json' };
 
 const LOCALES_DIR = path.resolve('_locales');

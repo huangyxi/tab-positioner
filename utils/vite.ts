@@ -1,6 +1,6 @@
 import { Merge } from '@11ty/eleventy-utils';
-import { build as viteBuild } from 'vite';
 import type { PluginOption } from 'vite';
+import { build as viteBuild } from 'vite';
 import banner from 'vite-plugin-banner';
 import istanbul from 'vite-plugin-istanbul';
 

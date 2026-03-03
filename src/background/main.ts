@@ -1,8 +1,8 @@
 import { Listeners } from '../shared/listeners';
 import { SyncSettings } from './syncsettings';
-import { TabsInfo } from './tabsinfo';
-import { registerTabCreatedListener } from './tabcreation';
 import { registerTabRemovedListener } from './tabactivation';
+import { registerTabCreatedListener } from './tabcreation';
+import { TabsInfo } from './tabsinfo';
 
 // MUST be Synchronous to ensure the listeners are registered before any events are fired.
 function main() {

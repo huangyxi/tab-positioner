@@ -1,5 +1,6 @@
 import tseslint from '@typescript-eslint/eslint-plugin';
 import tsparser from '@typescript-eslint/parser';
+import simpleImportSort from 'eslint-plugin-simple-import-sort';
 
 /**
  * @type {import('eslint').Linter.Config[]}
@@ -37,6 +38,7 @@ export default [
 		},
 		plugins: {
 			'@typescript-eslint': tseslint,
+			'simple-import-sort': simpleImportSort,
 		},
 		rules: {
 			...tseslint.configs['recommended-type-checked'].rules,
@@ -70,8 +72,9 @@ export default [
 				},
 			],
 			'@typescript-eslint/no-import-type-side-effects': 'error',
-
 			'@typescript-eslint/switch-exhaustiveness-check': 'error',
+			'simple-import-sort/imports': 'error',
+			'simple-import-sort/exports': 'error',
 		},
 	},
 	{

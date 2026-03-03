@@ -1,8 +1,7 @@
 import type { Listeners } from '../shared/listeners';
 import { logClosure } from '../shared/logging';
-
-import { TabsInfo } from './tabsinfo';
 import { SyncSettings } from './syncsettings';
+import { TabsInfo } from './tabsinfo';
 
 async function getTabActivationSetting() {
 	const settings = await SyncSettings.getInstance();

@@ -1,5 +1,6 @@
 import type { BrowserContext, Page } from '@playwright/test';
 import { expect as baseExpect } from '@playwright/test';
+
 import { isExtensionUri } from './fixtures';
 
 export type PageId = number | string;

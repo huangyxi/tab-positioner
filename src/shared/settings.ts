@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-redundant-type-constituents */
-import type { I18nKey } from './i18n';
 import * as C from './constants';
+import type { I18nKey } from './i18n';
 const DEFAULT_VALUE = 'default';
 
 /**

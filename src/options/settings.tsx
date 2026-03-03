@@ -1,6 +1,6 @@
-import { getMessage as _, createI18nAttribute as _a } from '../shared/i18n';
+import { createI18nAttribute as _a, getMessage as _ } from '../shared/i18n';
 import type { SettingKey, SettingSchemas, SettingText } from '../shared/settings';
-import { SETTING_SCHEMAS, DEFAULT_SETTINGS } from '../shared/settings';
+import { DEFAULT_SETTINGS, SETTING_SCHEMAS } from '../shared/settings';
 
 function _t(key: Parameters<typeof _a>[0]) {
 	const property = 'title';

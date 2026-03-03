@@ -1,12 +1,12 @@
-import path from 'node:path';
 import fs from 'node:fs/promises';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { test as base, chromium } from '@playwright/test';
-import type { BrowserContext, Worker, Page } from '@playwright/test';
+import type { BrowserContext, Page, Worker } from '@playwright/test';
+import { chromium, test as base } from '@playwright/test';
 
-import { type ExtensionSettings, SETTING_SCHEMAS } from '../src/shared/settings';
 import manifest from '../manifest.json' with { type: 'json' };
+import { type ExtensionSettings, SETTING_SCHEMAS } from '../src/shared/settings';
 import test_manifest from './ext/manifest.json' with { type: 'json' };
 
 export type { ExtensionSettings };

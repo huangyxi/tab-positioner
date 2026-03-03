@@ -1,12 +1,11 @@
-import type { TabCreationPositionKey } from '../shared/settings';
 import { NEW_PAGE_URIS } from '../shared/constants';
 import type { Listeners } from '../shared/listeners';
 import { logClosure } from '../shared/logging';
-
-import { SyncSettings } from './syncsettings';
-import { TabsInfo } from './tabsinfo';
-import { tabMover } from './tabmover';
+import type { TabCreationPositionKey } from '../shared/settings';
 import { createdPopupMover } from './popupcreation';
+import { SyncSettings } from './syncsettings';
+import { tabMover } from './tabmover';
+import { TabsInfo } from './tabsinfo';
 
 async function getTabCreationSetting(newTab: api.tabs.Tab) {
 	const isNewTabPage = NEW_PAGE_URIS.includes(newTab.pendingUrl ?? newTab.url ?? '');

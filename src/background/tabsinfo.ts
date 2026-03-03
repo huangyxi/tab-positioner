@@ -1,7 +1,7 @@
-import type { Listeners } from '../shared/listeners';
-import { SessionSingleton } from '../shared/session';
 import { FIRST_ACTIVATION_DELAY_MS } from '../shared/constants';
+import type { Listeners } from '../shared/listeners';
 import { log } from '../shared/logging';
+import { SessionSingleton } from '../shared/session';
 
 type WindowId = number;
 type TabId = number;

@@ -1,9 +1,8 @@
-import type { TabCreationPosition } from '../shared/settings';
 import { logClosure } from '../shared/logging';
-
+import type { TabCreationPosition } from '../shared/settings';
 import { SyncSettings } from './syncsettings';
-import type { TabsInfo } from './tabsinfo';
 import { tabMover } from './tabmover';
+import type { TabsInfo } from './tabsinfo';
 
 export async function createdPopupMover(
 	apiTabs: typeof api.tabs,

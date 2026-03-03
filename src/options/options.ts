@@ -1,9 +1,9 @@
 // The filename should be different from .tsx for the linter to work correctly
 import type { I18nKey } from '../shared/i18n';
-import { getI18nMessage, getI18nAttribute, I18N_HTML_PROPERTIES } from '../shared/i18n';
-import type { SettingKey, ExtensionSettings } from '../shared/settings';
+import { getI18nAttribute, getI18nMessage, I18N_HTML_PROPERTIES } from '../shared/i18n';
+import type { ExtensionSettings, SettingKey } from '../shared/settings';
 import { DEFAULT_SETTINGS } from '../shared/settings';
-import { loadSettings, saveSettings, clearSettings } from '../shared/storage';
+import { clearSettings, loadSettings, saveSettings } from '../shared/storage';
 
 type SettingElement = HTMLSelectElement | HTMLInputElement;
 

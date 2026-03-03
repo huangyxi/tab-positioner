@@ -1,5 +1,6 @@
-import path from 'node:path';
 import fs from 'node:fs/promises';
+import path from 'node:path';
+
 import { Merge } from '@11ty/eleventy-utils';
 import sharp from 'sharp';
 

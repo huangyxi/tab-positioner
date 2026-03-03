@@ -32,6 +32,7 @@
 		"chrome-types": "^0.1.416",
 		"editorconfig-checker": "^6.1.1",
 		"eslint": "^10.0.2",
+		"eslint-plugin-simple-import-sort": "^12.1.1",
 		"jsx-async-runtime": "^2.0.2",
 		"npm-run-all2": "^8.0.4",
 		"nyc": "^17.1.0",

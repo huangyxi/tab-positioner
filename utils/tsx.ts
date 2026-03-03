@@ -1,7 +1,9 @@
+import 'tsx/esm';
+
 import fs from 'node:fs/promises';
 import path from 'node:path';
+
 import { Merge } from '@11ty/eleventy-utils';
-import 'tsx/esm';
 import { jsxToString } from 'jsx-async-runtime';
 
 interface TsxPluginOptions {

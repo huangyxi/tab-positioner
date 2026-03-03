@@ -1,6 +1,6 @@
-import { test, type Fixtures, type ExtensionSettings } from '../fixtures';
-import { expect, createPage, openPopup, idleExtensionWorker, type PageId } from '../helpers';
 import { TEST_TIMEOUT_MS } from '../constants';
+import { type ExtensionSettings, type Fixtures, test } from '../fixtures';
+import { createPage, expect, idleExtensionWorker, openPopup, type PageId } from '../helpers';
 
 async function verifyPopupPosition(
 	fixtures: Partial<Fixtures>,

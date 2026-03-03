@@ -1,7 +1,6 @@
-import type { TabCreationPosition } from '../shared/settings';
 import { FIRST_ACTIVATION_DELAY_MS } from '../shared/constants';
 import { logClosure } from '../shared/logging';
-
+import type { TabCreationPosition } from '../shared/settings';
 import type { TabsInfo } from './tabsinfo';
 
 export async function tabMover(
