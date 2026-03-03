@@ -1,5 +1,5 @@
 import { test, type Fixtures, type ExtensionSettings } from '../fixtures';
-import { expect, createPage, duplicateTab, type PageId } from '../helpers';
+import { expect, createPage, duplicateTab, openLink, type PageId } from '../helpers';
 import { TEST_TIMEOUT_MS } from '../constants';
 
 async function verifyTabDuplication(
@@ -54,12 +54,12 @@ test.describe('Tab Duplication Behavior', () => {
 			settings: {
 				_duplicate_tab_position: 'after_active',
 			} satisfies Partial<ExtensionSettings>,
-			duplicatePageId: 2,
+			duplicatePageId: 1,
 			// Duplicate appears right after currently active tab (1)
 			expectedOrder: [
 				0,
 				1,
-				2,
+				1,
 				2,
 				3,
 			],
@@ -69,11 +69,11 @@ test.describe('Tab Duplication Behavior', () => {
 			settings: {
 				_duplicate_tab_position: 'before_active',
 			} satisfies Partial<ExtensionSettings>,
-			duplicatePageId: 3,
+			duplicatePageId: 1,
 			// Duplicate appears right before currently active tab (1)
 			expectedOrder: [
 				0,
-				3,
+				1,
 				1,
 				2,
 				3,
@@ -84,10 +84,10 @@ test.describe('Tab Duplication Behavior', () => {
 			settings: {
 				_duplicate_tab_position: 'window_first',
 			} satisfies Partial<ExtensionSettings>,
-			duplicatePageId: 2,
+			duplicatePageId: 1,
 			// Duplicate appears at the beginning
 			expectedOrder: [
-				2,
+				1,
 				0,
 				1,
 				2,
@@ -118,5 +118,61 @@ test.describe('Tab Duplication Behavior', () => {
 				expectedOrder,
 			);
 		});
+	});
+});
+
+async function verifyOpenLinkTwice(fixtures: Partial<Fixtures>, background: boolean) {
+	const { context, configureSettings, getTabs } = fixtures as Fixtures;
+	const _page0 = await createPage(context, 0);
+	const page1 = await createPage(context, 1);
+	// Current: [0, 1(active)]
+
+	// Strategy: Link -> Start, Duplicate -> End
+	await configureSettings({
+		background_link_position: 'window_first',
+		foreground_link_position: 'window_first',
+		_duplicate_tab_position: 'window_last',
+	});
+
+	// 1. Open Link 2
+	// Should be treated as LINK -> window_first
+	await openLink(page1, 2, background);
+	// Expect: [2, 0, 1] (Background order) or [2(active), 0, 1] (Foreground order)
+	// In both cases, page 2 is at index 0.
+	expect(await getTabs()).toMatchPageIds([2, 0, 1]);
+	if (!background) {
+		expect(await getTabs()).toMatchActiveTab(2);
+	}
+
+	// 2. Open Link 2 AGAIN
+	if (!background) {
+		// Go back to Page 1 to open link again
+		await page1.bringToFront();
+		await page1.waitForTimeout(200);
+	}
+
+	// Should be treated as LINK -> window_first
+	// If treated as DUPLICATE -> window_last
+	await openLink(page1, 2, background);
+
+	// Expect Link behavior: [2, 2, 0, 1] (New 2 is at index 0)
+	expect(await getTabs()).toMatchPageIds([
+		2,
+		2,
+		0,
+		1,
+	]);
+	if (!background) {
+		expect(await getTabs()).toMatchActiveTab(2); // The new one
+	}
+}
+
+test.describe('Distinguish Duplicate vs Open Link Twice', () => {
+	test('Open Background Link Twice', async ({ context, configureSettings, getTabs, testWorker }) => {
+		await verifyOpenLinkTwice({ context, configureSettings, getTabs, testWorker }, true);
+	});
+
+	test('Open Foreground Link Twice', async ({ context, configureSettings, getTabs, testWorker }) => {
+		await verifyOpenLinkTwice({ context, configureSettings, getTabs, testWorker }, false);
 	});
 });

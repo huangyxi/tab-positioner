@@ -11,9 +11,7 @@ import { createdPopupMover } from './popupcreation';
 async function getTabCreationSetting(newTab: api.tabs.Tab, apiTabs: typeof api.tabs) {
 	const isNewTabPage = NEW_PAGE_URIS.includes(newTab.pendingUrl ?? newTab.url ?? '');
 
-	// Check if this is a duplicate tab
-	// When a tab is duplicated, it appears right after the source tab at index sourceIndex + 1
-	// and has the same URL. We can detect this by finding a tab at newTab.index - 1 with the same URL.
+	// Detect duplicates (vs opening a link twice) by further ensuring `openerTabId` matches the previous tab.
 	let isDuplicate = false;
 	const newTabUrl = newTab.pendingUrl ?? newTab.url;
 	if (newTab.index > 0 && newTabUrl) {
@@ -21,7 +19,8 @@ async function getTabCreationSetting(newTab: api.tabs.Tab, apiTabs: typeof api.t
 		const previousTab = allTabs.find((tab) => tab.index === newTab.index - 1);
 		if (previousTab) {
 			const previousUrl = previousTab.pendingUrl ?? previousTab.url;
-			isDuplicate = newTabUrl === previousUrl;
+			const isOpenerMatch = newTab.openerTabId !== undefined && newTab.openerTabId === previousTab.id;
+			isDuplicate = newTabUrl === previousUrl && isOpenerMatch;
 		}
 	}
 
