@@ -75,7 +75,7 @@ jobs:
         run: |
           pnpm run package --verbose --output ${{ vars.EXTENSION_FILENAME }} ${{ vars.OUTDIR }}
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ vars.EXTENSION_FILENAME }}
           path: ${{ vars.OUTDIR }}
