@@ -8,10 +8,16 @@ on:
     secrets:
       CODECOV_TOKEN:
         required: false
+    outputs:
+      lint_result:
+        description: 'Outcome of the lint step (success, failure, or skipped)'
+        value: ${{ jobs.main.outputs.lint_outcome }}
 
 jobs:
   main:
     runs-on: ubuntu-latest
+    outputs:
+      lint_outcome: ${{ steps.lint.outcome }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
