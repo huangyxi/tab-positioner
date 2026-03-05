@@ -1,4 +1,4 @@
-name: Code Validation
+name: Check and Package
 
 permissions:
   contents: read
@@ -8,74 +8,36 @@ on:
   push:
     branches:
       - main
+    tags:
+      - 'v[0-9]+.*'
   workflow_dispatch:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 'latest'
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: '24'
-          cache: 'pnpm'
-      - name: Install pnpm dependencies
-        run: pnpm install
-      - name: Cache editorconfig-checker binary
-        uses: actions/cache@v5
-        with:
-          key: ec-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          path: |
-            node_modules/editorconfig-checker/bin/latest
-      - name: Install Playwright dependencies
-        run: pnpm run test:deps
-      - name: Lint files
-        run: |
-          pnpm run lint
-      - name: Run TypeScript typecheck
-        run: |
-          pnpm run typecheck
-      - name: Run Playwright tests
-        run: |
-          pnpm run test
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+    name: Lint, Typecheck, and Test
+    uses: ./.github/workflows/_check.yml
+    secrets: inherit
 
-  build:
+  package:
+    name: Build and Package
+    uses: ./.github/workflows/_package.yml
+
+  if-release:
+    name: Check lint outcome for release
+    needs:
+      - check
+      - package
+    if: always() && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
-    needs: check
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 'latest'
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: '24'
-          cache: 'pnpm'
-      - name: Install dependencies
-        run: pnpm install
-      - name: Build project
-        run: |
-          pnpm run build --output ${{ vars.OUTDIR }}
-      - name: Package extension
-        run: |
-          pnpm run package --verbose --output ${{ vars.EXTENSION_FILENAME }} ${{ vars.OUTDIR }}
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          name: ${{ vars.EXTENSION_FILENAME }}
-          path: ${{ vars.OUTDIR }}
+      - name: Check lint come
+        run: test "${{ needs.check.outputs.lint_outcome }}" = 'success'
+      - name: Check package outcome
+        run: test "${{ needs.package.result }}" = 'success'
+
+  release:
+    name: Create GitHub Release
+    needs: if-release
+    permissions:
+      contents: write
+    uses: ./.github/workflows/_release.yml
