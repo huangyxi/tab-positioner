@@ -7,7 +7,6 @@ on:
   push:
     tags:
       - 'v[0-9]+.*'
-  workflow_dispatch:
 
 jobs:
   ci:
@@ -33,6 +32,16 @@ jobs:
         if: always()
         run: |
           TAG="${{ github.ref_name }}"
+          TMP_DIR=$(mktemp -d)
+          ZIP_FILE="${{ vars.EXTENSION_NAME }}.zip"
+          if [[ -f "${ZIP_FILE}" ]]; then
+            unzip "${ZIP_FILE}" manifest.json -d "${TMP_DIR}"
+            VERSION=$(jq -r '.version' < "${TMP_DIR}/manifest.json")
+          else
+            echo "Warning: ZIP file '${ZIP_FILE}' not found; setting VERSION to 'unknown'." >&2
+            VERSION="unknown"
+          fi
+          rm -rf "${TMP_DIR}"
           REPO_URI="${{ github.server_url }}/${{ github.repository }}"
           RELEASE_URI="${{ steps.release.outputs.url }}"
           DOWNLOAD_LINK="[${{ vars.EXTENSION_NAME }}-${TAG}.zip](${REPO_URI}/releases/download/${TAG}/${{ vars.EXTENSION_NAME }}.zip)"
@@ -42,6 +51,7 @@ jobs:
             echo "| Item | Details |"
             echo "| --- | --- |"
             echo "| 🏷️ Tag | \`${TAG}\` |"
+            echo "| 📦 Version | \`${VERSION}\` |"
             if [[ -n "${RELEASE_URI}" ]]; then
               echo "| 📋 Release page | [${RELEASE_URI}](${RELEASE_URI}) |"
               echo "| 📥 Download | ${DOWNLOAD_LINK} |"

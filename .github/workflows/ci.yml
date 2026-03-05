@@ -41,7 +41,7 @@ jobs:
       - name: Job summary
         if: always()
         run: |
-          VERSION=$(node -p "require('${{ vars.OUTDIR }}/manifest.json').version")
+          VERSION=$(jq -r '.version' < "${{ vars.OUTDIR }}/manifest.json")
           status() {
             case "$1" in
               success) echo "✅ Passed" ;;
@@ -56,7 +56,7 @@ jobs:
             PASSED=$(jq '.stats.expected' playwright-results.json)
             FAILED=$(jq '.stats.unexpected' playwright-results.json)
             TOTAL=$((PASSED + FAILED))
-            TESTS_DETAIL=" ($PASSED / $TOTAL passed)"
+            TESTS_DETAIL="(${PASSED} / ${TOTAL} passed)"
           else
             TESTS_DETAIL=""
           fi
@@ -65,7 +65,7 @@ jobs:
             STMTS=$(jq '.total.statements.pct' coverage/coverage-summary.json)
             FUNCS=$(jq '.total.functions.pct' coverage/coverage-summary.json)
             BRANCHES=$(jq '.total.branches.pct' coverage/coverage-summary.json)
-            COVERAGE_DETAIL="(lines: ${LINES}%, stmts: ${STMTS}%, funcs: ${FUNCS}%, branches: ${BRANCHES}%)"
+            COVERAGE_DETAIL="lines: ${LINES}%, stmts: ${STMTS}%, funcs: ${FUNCS}%, branches: ${BRANCHES}%"
           else
             COVERAGE_DETAIL="Coverage data not available"
           fi
