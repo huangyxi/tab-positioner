@@ -23,8 +23,27 @@ jobs:
         with:
           skip-decompress: true
       - name: Release to GitHub
+        id: release
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
           files: |
             ${{ vars.EXTENSION_NAME }}.zip
+      - name: Job summary
+        if: always()
+        run: |
+          TAG="${{ github.ref_name }}"
+          REPO_URI="${{ github.server_url }}/${{ github.repository }}"
+          RELEASE_URI="${{ steps.release.outputs.url }}"
+          DOWNLOAD_LINK="[${{ vars.EXTENSION_NAME }}-${TAG}.zip](${REPO_URI}/releases/download/${TAG}/${{ vars.EXTENSION_NAME }}.zip)"
+          {
+            echo "## 🚀 Released — ${TAG}"
+            echo ""
+            echo "| Item | Details |"
+            echo "| --- | --- |"
+            echo "| 🏷️ Tag | \`${TAG}\` |"
+            if [[ -n "${RELEASE_URI}" ]]; then
+              echo "| 📋 Release page | [${RELEASE_URI}](${RELEASE_URI}) |"
+              echo "| 📥 Download | ${DOWNLOAD_LINK} |"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

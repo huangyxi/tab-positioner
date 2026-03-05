@@ -26,15 +26,59 @@ jobs:
       - name: Install Playwright dependencies
         run: pnpm run test:deps
       - name: Lint files
+        id: lint
         run: pnpm run lint
       - name: Run TypeScript typecheck
+        id: typecheck
         run: pnpm run typecheck
       - name: Run Playwright tests
+        id: tests
         run: pnpm run test
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Job summary
+        if: always()
+        run: |
+          VERSION=$(node -p "require('./manifest.json').version")
+          status() {
+            case "$1" in
+              success) echo "✅ Passed" ;;
+              failure) echo "❌ Failed" ;;
+              *) echo "⏭️ Skipped" ;;
+            esac
+          }
+          LINT_STATUS="${{ steps.lint.outcome }}"
+          TYPECHECK_STATUS="${{ steps.typecheck.outcome }}"
+          TESTS_STATUS="${{ steps.tests.outcome }}"
+          if [[ -f "playwright-results.json" ]]; then
+            PASSED=$(jq '.stats.expected' playwright-results.json)
+            FAILED=$(jq '.stats.unexpected' playwright-results.json)
+            TOTAL=$((PASSED + FAILED))
+            TESTS_DETAIL=" ($PASSED / $TOTAL passed)"
+          else
+            TESTS_DETAIL=""
+          fi
+          if [[ -f "coverage/coverage-summary.json" ]]; then
+            LINES=$(jq '.total.lines.pct' coverage/coverage-summary.json)
+            STMTS=$(jq '.total.statements.pct' coverage/coverage-summary.json)
+            FUNCS=$(jq '.total.functions.pct' coverage/coverage-summary.json)
+            BRANCHES=$(jq '.total.branches.pct' coverage/coverage-summary.json)
+            COVERAGE_DETAIL="(lines: ${LINES}%, stmts: ${STMTS}%, funcs: ${FUNCS}%, branches: ${BRANCHES}%)"
+          else
+            COVERAGE_DETAIL="Coverage data not available"
+          fi
+          {
+            echo "## Check Results — v${VERSION}"
+            echo ""
+            echo "| Check | Status |"
+            echo "| --- | --- |"
+            echo "| 🔍 Lint | $(status "$LINT_STATUS") |"
+            echo "| 📝 TypeScript | $(status "$TYPECHECK_STATUS") |"
+            echo "| 🧪 Tests | $(status "$TESTS_STATUS")${TESTS_DETAIL} |"
+            echo "| 📊 Coverage | ${COVERAGE_DETAIL} |"
+          } >> "$GITHUB_STEP_SUMMARY"
 
   build:
     runs-on: ubuntu-latest
@@ -51,8 +95,26 @@ jobs:
       - name: Package extension
         run: pnpm run package --verbose --output ${{ vars.EXTENSION_NAME }}.zip ${{ vars.OUTDIR }}
       - name: Upload build artifacts
+        id: upload
         uses: actions/upload-artifact@v7
         with:
           name: ${{ vars.EXTENSION_NAME }}.zip
           path: ${{ vars.EXTENSION_NAME }}.zip
           archive: false
+      - name: Job summary
+        if: always()
+        run: |
+          VERSION=$(node -p "require('./manifest.json').version")
+          ARTIFACT_URL="${{ steps.upload.outputs.artifact-url }}"
+          if [ -n "$ARTIFACT_URL" ]; then
+            DOWNLOAD_LINK="[${{ vars.EXTENSION_NAME }}.zip](${ARTIFACT_URL})"
+          else
+            DOWNLOAD_LINK="Artifact not available (upload failed or was skipped)"
+          fi
+          {
+            echo "## Build Artifacts — v${VERSION}"
+            echo ""
+            echo "| Item | Details |"
+            echo "| --- | --- |"
+            echo "| 📦 Package | ${DOWNLOAD_LINK} |"
+          } >> "$GITHUB_STEP_SUMMARY"
