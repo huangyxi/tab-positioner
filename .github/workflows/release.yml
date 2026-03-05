@@ -37,9 +37,11 @@ jobs:
           if [[ -f "${ZIP_FILE}" ]]; then
             unzip "${ZIP_FILE}" manifest.json -d "${TMP_DIR}"
             VERSION=$(jq -r '.version' < "${TMP_DIR}/manifest.json")
+            VERSION_NAME=$(jq -r '.version_name' < "${TMP_DIR}/manifest.json")
           else
             echo "Warning: ZIP file '${ZIP_FILE}' not found; setting VERSION to 'unknown'." >&2
             VERSION="unknown"
+            VERSION_NAME="unknown"
           fi
           rm -rf "${TMP_DIR}"
           REPO_URI="${{ github.server_url }}/${{ github.repository }}"
@@ -52,6 +54,7 @@ jobs:
             echo "| --- | --- |"
             echo "| 🏷️ Tag | \`${TAG}\` |"
             echo "| 📦 Version | \`${VERSION}\` |"
+            echo "| 📝 Version Name | \`${VERSION_NAME}\` |"
             if [[ -n "${RELEASE_URI}" ]]; then
               echo "| 📋 Release page | [${RELEASE_URI}](${RELEASE_URI}) |"
               echo "| 📥 Download | ${DOWNLOAD_LINK} |"

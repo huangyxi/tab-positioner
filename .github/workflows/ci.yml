@@ -44,7 +44,7 @@ jobs:
       - name: Job summary
         if: always()
         run: |
-          VERSION=$(jq -r '.version' < "${{ vars.OUTDIR }}/manifest.json")
+          VERSION_NAME=$(jq -r '.version_name' < "${{ vars.OUTDIR }}/manifest.json")
           status() {
             case "$1" in
               success) echo "✅ Passed" ;;
@@ -73,7 +73,7 @@ jobs:
             COVERAGE_DETAIL="Coverage data not available"
           fi
           {
-            echo "## Check Results — v${VERSION}"
+            echo "## Check Results — ${VERSION_NAME}"
             echo ""
             echo "| Check | Status |"
             echo "| --- | --- |"
