@@ -14,7 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+        with:
+          # Need full history for version calculation in in ./utils/gitinfo.ts
+          fetch-depth: 0
       - name: Setup environment
         uses: ./.github/actions/setup-env
       - name: Cache editorconfig-checker binary
@@ -85,7 +88,10 @@ jobs:
     needs: check
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+        with:
+          # Need full history for version calculation in in ./utils/gitinfo.ts
+          fetch-depth: 0
       - name: Setup environment
         uses: ./.github/actions/setup-env
       - name: Clean build directory
