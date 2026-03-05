@@ -4,105 +4,25 @@ permissions:
   contents: read
 
 on:
-  workflow_call:
-    secrets:
-      CODECOV_TOKEN:
-        required: false
+  pull_request:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v[0-9]+.*'
+  workflow_dispatch:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          # Need full history for version calculation in in ./utils/gitinfo.ts
-          fetch-depth: 0
-      - name: Setup environment
-        uses: ./.github/actions/setup-env
-      - name: Cache editorconfig-checker binary
-        uses: actions/cache@v5
-        with:
-          key: ec-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          path: |
-            node_modules/editorconfig-checker/bin/latest
-      - name: Install Playwright dependencies
-        run: pnpm run test:deps
-      - name: Lint files
-        id: lint
-        run: pnpm run lint
-      - name: Run TypeScript typecheck
-        id: typecheck
-        run: pnpm run typecheck
-      - name: Run Playwright tests
-        id: tests
-        run: pnpm run test
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-      - name: Job summary
-        if: always()
-        run: |
-          VERSION_NAME=$(jq -r '.version_name' < "${{ vars.OUTDIR }}/manifest.json")
-          status() {
-            case "$1" in
-              success) echo "✅ Passed" ;;
-              failure) echo "❌ Failed" ;;
-              *) echo "⏭️ Skipped" ;;
-            esac
-          }
-          LINT_STATUS="${{ steps.lint.outcome }}"
-          TYPECHECK_STATUS="${{ steps.typecheck.outcome }}"
-          TESTS_STATUS="${{ steps.tests.outcome }}"
-          if [[ -f "playwright-results.json" ]]; then
-            PASSED=$(jq '.stats.expected' playwright-results.json)
-            FAILED=$(jq '.stats.unexpected' playwright-results.json)
-            TOTAL=$((PASSED + FAILED))
-            TESTS_DETAIL="(${PASSED} / ${TOTAL} passed)"
-          else
-            TESTS_DETAIL=""
-          fi
-          if [[ -f "coverage/coverage-summary.json" ]]; then
-            LINES=$(jq '.total.lines.pct' coverage/coverage-summary.json)
-            STMTS=$(jq '.total.statements.pct' coverage/coverage-summary.json)
-            FUNCS=$(jq '.total.functions.pct' coverage/coverage-summary.json)
-            BRANCHES=$(jq '.total.branches.pct' coverage/coverage-summary.json)
-            COVERAGE_DETAIL="lines: ${LINES}%, stmts: ${STMTS}%, funcs: ${FUNCS}%, branches: ${BRANCHES}%"
-          else
-            COVERAGE_DETAIL="Coverage data not available"
-          fi
-          {
-            echo "## Check Results — ${VERSION_NAME}"
-            echo ""
-            echo "| Check | Status |"
-            echo "| --- | --- |"
-            echo "| 🔍 Lint | $(status "$LINT_STATUS") |"
-            echo "| 📝 TypeScript | $(status "$TYPECHECK_STATUS") |"
-            echo "| 🧪 Tests | $(status "$TESTS_STATUS")${TESTS_DETAIL} |"
-            echo "| 📊 Coverage | ${COVERAGE_DETAIL} |"
-          } >> "$GITHUB_STEP_SUMMARY"
+    uses: ./.github/workflows/_check.yml
+    secrets: inherit
 
   package:
-    runs-on: ubuntu-latest
-    needs: check
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          # Need full history for version calculation in in ./utils/gitinfo.ts
-          fetch-depth: 0
-      - name: Setup environment
-        uses: ./.github/actions/setup-env
-      - name: Clean build directory
-        run: pnpm run clean --output ${{ vars.OUTDIR }}
-      - name: Build project
-        run: pnpm run build --output ${{ vars.OUTDIR }}
-      - name: Package extension
-        run: pnpm run package --verbose --output ${{ vars.EXTENSION_NAME }}.zip ${{ vars.OUTDIR }}
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          name: ${{ vars.EXTENSION_NAME }}.zip
-          path: ${{ vars.EXTENSION_NAME }}.zip
-          archive: false
+    uses: ./.github/workflows/_package.yml
+
+  release:
+    needs: package
+    permissions:
+      contents: write
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    uses: ./.github/workflows/_release.yml
