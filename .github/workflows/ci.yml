@@ -14,14 +14,16 @@ on:
 
 jobs:
   check:
+    name: Check
     uses: ./.github/workflows/_check.yml
     secrets: inherit
 
   package:
+    name: Package
     uses: ./.github/workflows/_package.yml
 
   if-release:
-    name: Check lint result for release
+    name: Check lint outcome for release
     needs:
       - check
       - package
@@ -32,6 +34,7 @@ jobs:
         run: test "${{ needs.check.outputs.lint_outcome }}" = 'success'
 
   release:
+    name: Release
     needs: if-release
     permissions:
       contents: write
