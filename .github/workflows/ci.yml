@@ -14,12 +14,12 @@ on:
 
 jobs:
   check:
-    name: Check
+    name: Lint, Typecheck, and Test
     uses: ./.github/workflows/_check.yml
     secrets: inherit
 
   package:
-    name: Package
+    name: Build and Package
     uses: ./.github/workflows/_package.yml
 
   if-release:
@@ -27,14 +27,16 @@ jobs:
     needs:
       - check
       - package
-    if: always() && needs.package.result == 'success' && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    if: always() && github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
-      - name: Check lint result
+      - name: Check lint come
         run: test "${{ needs.check.outputs.lint_outcome }}" = 'success'
+      - name: Check package outcome
+        run: test "${{ needs.package.result }}" = 'success'
 
   release:
-    name: Release
+    name: Create GitHub Release
     needs: if-release
     permissions:
       contents: write
