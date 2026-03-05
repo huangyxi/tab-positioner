@@ -24,6 +24,7 @@ Contributions are always welcome!
 
 - **New Tab Position**: Decide where new tabs open.
 - **Link Tab Position**: Set different rules for tabs opened from links in the foreground or background.
+- **Duplicate Tab Position**: Control where duplicated tabs appear when you duplicate a tab.
 - **Popup Position**: Open popups as tabs, following the same rules as links.
 - **Tab Activation**: Choose which tab gets focus after you close one.
 - **Sync Settings**: Your tab position preferences sync across all your devices with [Chrome's built-in sync feature](https://support.google.com/chrome/answer/185277#zippy=%2Csign-in-turn-on-sync).

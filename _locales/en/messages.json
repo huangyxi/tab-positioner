@@ -51,6 +51,10 @@
 		"message": "⚠️ Experimental feature. If enabled, the extension will open popups using the same rules as links, according to the selected option.",
 		"description": "Tooltip for the popup position setting, related to label_foreground_link_position and label_background_link_position."
 	},
+	"label__duplicate_tab_position": {
+		"message": "When duplicating a tab, place it:",
+		"description": "Label for the setting that controls where a duplicated tab is placed. Should match the context of option_xxx_creation. As short as possible, but still clear."
+	},
 	"label_after_close_activation": {
 		"message": "After closing a tab, focus on:",
 		"description": "Label for the setting that controls which tab receives focus after another is closed. Should match the context of option_xxx_activation. As short as possible, but still clear."

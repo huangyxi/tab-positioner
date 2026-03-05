@@ -11,6 +11,7 @@ export type SettingKey =
 	| 'foreground_link_position'
 	| 'background_link_position'
 	| '_popup_position'
+	| '_duplicate_tab_position'
 	| 'after_close_activation'
 	| '_tab_batch_creation_threshold_ms'
 	| '_tab_batch_activation_threshold_ms'
@@ -74,6 +75,7 @@ export const DEFAULT_SETTINGS = {
 	foreground_link_position: DEFAULT_VALUE as TabCreationPosition,
 	background_link_position: DEFAULT_VALUE as TabCreationPosition,
 	_popup_position: DEFAULT_VALUE as PopupCreationPosition,
+	_duplicate_tab_position: DEFAULT_VALUE as TabCreationPosition,
 	after_close_activation: DEFAULT_VALUE as TabActivationPosition,
 	_tab_batch_creation_threshold_ms: C.TAB_BATCH_CREATION_THRESHOLD_MS,
 	_tab_batch_activation_threshold_ms: C.TAB_BATCH_ACTIVATION_THRESHOLD_MS,
@@ -145,6 +147,11 @@ export const SETTING_SCHEMAS: SettingSchemas = {
 		i18nKey: 'label__popup_position',
 		type: 'choices',
 		choices: POPUP_POSITION_CHOICES,
+	},
+	_duplicate_tab_position: {
+		i18nKey: 'label__duplicate_tab_position',
+		type: 'choices',
+		choices: TAB_CREATION_POSITION_CHOICES,
 	},
 	after_close_activation: {
 		i18nKey: 'label_after_close_activation',

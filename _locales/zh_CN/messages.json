@@ -38,6 +38,9 @@
 	"title__popup_position": {
 		"message": "⚠️ 实验功能。启用后，弹出窗口将按照所选选项与链接相同的规则打开。"
 	},
+	"label__duplicate_tab_position": {
+		"message": "复制标签页时，放置在："
+	},
 	"label_after_close_activation": {
 		"message": "关闭标签页后，聚焦于："
 	},
