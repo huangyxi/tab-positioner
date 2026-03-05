@@ -7,7 +7,7 @@ on:
   workflow_call:
 
 jobs:
-  release:
+  main:
     runs-on: ubuntu-latest
     steps:
       - name: Download build artifacts
