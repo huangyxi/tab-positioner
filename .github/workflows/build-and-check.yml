@@ -13,10 +13,10 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: Setup environment
         uses: ./.github/actions/setup-node-env
-        with:
-          fetch-depth: 1
       - name: Cache editorconfig-checker binary
         uses: actions/cache@v5
         with:
@@ -40,6 +40,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: check
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: Setup environment
         uses: ./.github/actions/setup-node-env
       - name: Clean build directory

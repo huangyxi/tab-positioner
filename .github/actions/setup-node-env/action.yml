@@ -1,17 +1,8 @@
 name: Setup Node Environment
-description: Checks out code, sets up pnpm, and installs dependencies
-inputs:
-  fetch-depth:
-    description: Number of commits to fetch. 0 indicates all history for all branches and tags.
-    required: false
-    default: 0
+description: Sets up pnpm and installs dependencies
 runs:
   using: composite
   steps:
-    - name: Checkout code
-      uses: actions/checkout@v6
-      with:
-        fetch-depth: ${{ inputs.fetch-depth }}
     - name: Set up pnpm
       uses: pnpm/action-setup@v4
       with:
