@@ -1,32 +1,32 @@
 import { TEST_TIMEOUT_MS } from '../constants';
-import { type ExtensionSettings, type Fixtures, test } from '../fixtures';
-import { closeNonTestPages, createPage, expect, type PageId } from '../helpers';
+import type { ExtensionSettings, Fixtures, PageId } from '../fixtures';
+import { expect, test } from '../fixtures';
 
 async function verifyTabActivation(
 	fixtures: Partial<Fixtures>,
 	activationSetting: ExtensionSettings['after_close_activation'],
 	expectedActivePage: PageId,
 ) {
-	const { context, configureSettings, getTabs } = fixtures as Fixtures;
+	const { extensionManager, pageManager } = fixtures as Fixtures;
 
-	await configureSettings({ after_close_activation: activationSetting });
+	await extensionManager.configureSettings({ after_close_activation: activationSetting });
 
 	// Create P0 first (safeguard)
-	const page0 = await createPage(context, 0);
+	const page0 = await pageManager.createPage(0);
 
-	await closeNonTestPages(context);
+	await pageManager.closeNonTestPages();
 
-	const page1 = await createPage(context, 1);
-	const _page2 = await createPage(context, 2);
+	const page1 = await pageManager.createPage(1);
+	const _page2 = await pageManager.createPage(2);
 	await page1.bringToFront();
 	await page0.waitForTimeout(TEST_TIMEOUT_MS); // Sync state
 
-	expect(await getTabs()).toMatchActiveTab(1);
+	await expect(pageManager).toMatchActiveTab(1);
 
 	await page1.close();
 	await page0.waitForTimeout(TEST_TIMEOUT_MS); // Sync state
 
-	expect(await getTabs()).toMatchActiveTab(expectedActivePage);
+	await expect(pageManager).toMatchActiveTab(expectedActivePage);
 }
 
 test.describe('Tab Activation Behavior', () => {
@@ -52,8 +52,8 @@ test.describe('Tab Activation Behavior', () => {
 			expectedActivePage: 2,
 		},
 	].forEach(({ title, activationSetting, expectedActivePage }) => {
-		test(title, async ({ context, configureSettings, getTabs }) => {
-			await verifyTabActivation({ context, configureSettings, getTabs }, activationSetting, expectedActivePage);
+		test(title, async ({ extensionManager, pageManager }) => {
+			await verifyTabActivation({ extensionManager, pageManager }, activationSetting, expectedActivePage);
 		});
 	});
 });

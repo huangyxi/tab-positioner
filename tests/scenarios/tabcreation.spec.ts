@@ -1,6 +1,6 @@
 import { TEST_TIMEOUT_MS } from '../constants';
-import { type ExtensionSettings, type Fixtures, test } from '../fixtures';
-import { createPage, expect, idleExtensionWorker, openLink, type PageId } from '../helpers';
+import type { ExtensionSettings, Fixtures, PageId } from '../fixtures';
+import { expect, test } from '../fixtures';
 
 async function verifyTabCreation(
 	fixtures: Partial<Fixtures>,
@@ -9,17 +9,17 @@ async function verifyTabCreation(
 	// Initial: 0, 1(active), 2(from 1), 3.
 	expectedOrder: PageId[],
 ) {
-	const { context, configureSettings, getTabs } = fixtures as Fixtures;
+	const { extensionManager, pageManager } = fixtures as Fixtures;
 
-	const _page0 = await createPage(context, 0);
-	const page1 = await createPage(context, 1);
-	const _page3 = await createPage(context, 3);
+	const _page0 = await pageManager.createPage(0);
+	const page1 = await pageManager.createPage(1);
+	const _page3 = await pageManager.createPage(3);
 
 	// Open the PAGE2 from PAGE1's background link
 	await page1.bringToFront();
-	const _page2 = await openLink(page1, 2, true);
+	const _page2 = await pageManager.openLink(page1, 2, true);
 
-	await configureSettings(settings);
+	await extensionManager.configureSettings(settings);
 
 	// RE-ACTIVATE after settings page closed
 	await page1.bringToFront();
@@ -29,10 +29,10 @@ async function verifyTabCreation(
 	const newPageId: PageId = 'new';
 	switch (action) {
 		case 'new_foreground':
-			await openLink(page1, newPageId);
+			await pageManager.openLink(page1, newPageId);
 			break;
 		case 'new_background':
-			await openLink(page1, newPageId, true);
+			await pageManager.openLink(page1, newPageId, true);
 			break;
 		default:
 			const _exhaustive: never = action;
@@ -41,7 +41,7 @@ async function verifyTabCreation(
 	await page1.waitForTimeout(TEST_TIMEOUT_MS);
 
 	// We expect the exact URLs in expectedOrder
-	expect(await getTabs()).toMatchPageIds(expectedOrder);
+	await expect(pageManager).toMatchPageIds(expectedOrder);
 }
 
 test.describe('Tab Creation Behavior', () => {
@@ -95,26 +95,26 @@ test.describe('Tab Creation Behavior', () => {
 			] as PageId[],
 		},
 	].forEach(({ title, settings, action, expectedOrder }) => {
-		test(title, async ({ context, configureSettings, getTabs }) => {
-			await verifyTabCreation({ context, configureSettings, getTabs }, settings, action, expectedOrder);
+		test(title, async ({ extensionManager, pageManager }) => {
+			await verifyTabCreation({ extensionManager, pageManager }, settings, action, expectedOrder);
 		});
 	});
 
-	test('[IDLE] foreground_link_position: window_first', async ({ context, configureSettings, getTabs }) => {
-		await configureSettings({ foreground_link_position: 'window_first' });
-		const page0 = await createPage(context, 0);
-		await idleExtensionWorker(context);
-		const page1 = await openLink(page0, 1);
+	test('[IDLE] foreground_link_position: window_first', async ({ extensionManager, pageManager }) => {
+		await extensionManager.configureSettings({ foreground_link_position: 'window_first' });
+		const page0 = await pageManager.createPage(0);
+		await pageManager.idleExtensionWorker();
+		const page1 = await pageManager.openLink(page0, 1);
 		await page1.waitForTimeout(TEST_TIMEOUT_MS);
-		expect(await getTabs()).toMatchPageIds([1, 0]);
+		await expect(pageManager).toMatchPageIds([1, 0]);
 	});
 
-	test('[IDLE] background_link_position: window_first', async ({ context, configureSettings, getTabs }) => {
-		await configureSettings({ background_link_position: 'window_first' });
-		const page0 = await createPage(context, 0);
-		await idleExtensionWorker(context);
-		const page1 = await openLink(page0, 1, true);
+	test('[IDLE] background_link_position: window_first', async ({ extensionManager, pageManager }) => {
+		await extensionManager.configureSettings({ background_link_position: 'window_first' });
+		const page0 = await pageManager.createPage(0);
+		await pageManager.idleExtensionWorker();
+		const page1 = await pageManager.openLink(page0, 1, true);
 		await page1.waitForTimeout(TEST_TIMEOUT_MS);
-		expect(await getTabs()).toMatchPageIds([1, 0]);
+		await expect(pageManager).toMatchPageIds([1, 0]);
 	});
 });
