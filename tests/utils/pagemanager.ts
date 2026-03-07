@@ -245,4 +245,46 @@ export class PageManager {
 			}
 		}
 	}
+
+	/**
+	 * Creates a new tab group with the specified pages.
+	 *
+	 * @param pages - The pages to include in the group
+	 * @returns The ID of the newly created group
+	 */
+	async createGroup(pages: PageId[]): Promise<number> {
+		const tabs = await this.getTabs();
+		const tabIds = pages.map((p) => tabs.find((t) => t.url === pageUri(p))?.id).filter((id) => id !== undefined);
+		const groupId = await this.testWorker.evaluate(
+			async (args) => {
+				return chrome.tabs.group({
+					tabIds: args.tabIds as unknown as number,
+				});
+			},
+			{ tabIds },
+		);
+		return groupId;
+	}
+
+	/**
+	 * Collapses the specified tab group.
+	 *
+	 * @param groupId - The ID of the group to collapse
+	 */
+	async collapseGroup(groupId: number) {
+		await this.testWorker.evaluate(
+			async (args) => {
+				const allTabs = await chrome.tabs.query({});
+				const tabsInGroup = await chrome.tabs.query({ groupId: args.groupId });
+				await chrome.tabGroups.update(args.groupId, {
+					collapsed: true,
+				});
+				// Mock the behavior of auto-creating a new tab when the last tab in a group is collapsed
+				if (tabsInGroup.length === allTabs.length) {
+					await chrome.tabs.create({});
+				}
+			},
+			{ groupId },
+		);
+	}
 }

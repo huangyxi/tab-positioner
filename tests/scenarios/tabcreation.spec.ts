@@ -23,7 +23,7 @@ async function verifyTabCreation(
 
 	// RE-ACTIVATE after settings page closed
 	await page1.bringToFront();
-	await page1.waitForTimeout(500);
+	await page1.waitForTimeout(TEST_TIMEOUT_MS);
 
 	// test a new page's behavior
 	const newPageId: PageId = 'new';
@@ -98,6 +98,29 @@ test.describe('Tab Creation Behavior', () => {
 		test(title, async ({ extensionManager, pageManager }) => {
 			await verifyTabCreation({ extensionManager, pageManager }, settings, action, expectedOrder);
 		});
+	});
+
+	test('Auto New Tab in the last collapsed group', async ({ context, extensionManager, pageManager }) => {
+		const _page0 = await pageManager.createPage(0);
+		const page1 = await pageManager.createPage(1);
+		const _page2 = await pageManager.createPage(2);
+		const groupId = await pageManager.createGroup([0, 1, 2]);
+		await pageManager.closeNonTestPages();
+		await page1.bringToFront();
+		await extensionManager.configureSettings({ new_tab_position: 'after_active' }, true);
+		const newPagePromise = context.waitForEvent('page');
+		await pageManager.collapseGroup(groupId);
+		const newPage = await newPagePromise;
+		await page1.waitForTimeout(TEST_TIMEOUT_MS);
+		await extensionManager.configureSettings({ foreground_link_position: 'after_active' }, true);
+		await pageManager.openLink(newPage, 'new', false);
+		await page1.waitForTimeout(TEST_TIMEOUT_MS);
+		await expect(pageManager).toMatchPageIds([
+			0,
+			1,
+			2,
+			'new',
+		]);
 	});
 
 	test('[IDLE] foreground_link_position: window_first', async ({ extensionManager, pageManager }) => {
