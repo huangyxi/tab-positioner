@@ -49,7 +49,7 @@ test.describe('Popup Behavior', () => {
 			foreground_link_position: 'window_first',
 		});
 		const page0 = await pageManager.createPage(0);
-		await pageManager.idleExtensionWorker();
+		await extensionManager.idleExtensionWorker();
 		const popup = await pageManager.openPopup(page0, 1);
 		await page0.waitForTimeout(TEST_TIMEOUT_MS);
 		await expect(pageManager).toMatchPageIds([1, 0]);

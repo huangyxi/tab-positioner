@@ -3,6 +3,7 @@ import type { BrowserContext, Page, Worker } from '@playwright/test';
 import manifest from '../../manifest.json' with { type: 'json' };
 import { SETTING_SCHEMAS } from '../../src/shared/settings';
 import type { ExtensionSettings } from '../fixtures';
+import { isExtensionUri } from '../fixtures';
 
 export class ExtensionManager {
 	private readonly context: BrowserContext;
@@ -82,6 +83,32 @@ export class ExtensionManager {
 			await this.configureSettingsBackground(settings);
 		} else {
 			await this.configureSettingsForeground(settings);
+		}
+	}
+
+	/**
+	 * Forces the extension service worker to go idle by stopping it via Chrome DevTools Protocol.
+	 * This clears all in-memory variables but keeps event listeners registered at the browser level.
+	 * The next extension event will trigger a cold start with listeners still active.
+	 */
+	async idleExtensionWorker(): Promise<void> {
+		const pages = this.context.pages();
+		const page = pages.length > 0 ? pages[0] : await this.context.newPage();
+
+		const client = await this.context.newCDPSession(page);
+
+		try {
+			const { targetInfos } = await client.send('Target.getTargets');
+			for (const target of targetInfos) {
+				if (target.type === 'service_worker' && isExtensionUri(target.url)) {
+					console.log(`[TEST] Stopping service worker: ${target.url}`);
+					await client.send('Target.closeTarget', {
+						targetId: target.targetId,
+					});
+				}
+			}
+		} finally {
+			await client.detach();
 		}
 	}
 }

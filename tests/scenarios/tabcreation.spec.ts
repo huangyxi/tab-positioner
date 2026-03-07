@@ -103,7 +103,7 @@ test.describe('Tab Creation Behavior', () => {
 	test('[IDLE] foreground_link_position: window_first', async ({ extensionManager, pageManager }) => {
 		await extensionManager.configureSettings({ foreground_link_position: 'window_first' });
 		const page0 = await pageManager.createPage(0);
-		await pageManager.idleExtensionWorker();
+		await extensionManager.idleExtensionWorker();
 		const page1 = await pageManager.openLink(page0, 1);
 		await page1.waitForTimeout(TEST_TIMEOUT_MS);
 		await expect(pageManager).toMatchPageIds([1, 0]);
@@ -112,7 +112,7 @@ test.describe('Tab Creation Behavior', () => {
 	test('[IDLE] background_link_position: window_first', async ({ extensionManager, pageManager }) => {
 		await extensionManager.configureSettings({ background_link_position: 'window_first' });
 		const page0 = await pageManager.createPage(0);
-		await pageManager.idleExtensionWorker();
+		await extensionManager.idleExtensionWorker();
 		const page1 = await pageManager.openLink(page0, 1, true);
 		await page1.waitForTimeout(TEST_TIMEOUT_MS);
 		await expect(pageManager).toMatchPageIds([1, 0]);
