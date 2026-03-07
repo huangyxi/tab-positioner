@@ -2,32 +2,33 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import type { BrowserContext, Page, Worker } from '@playwright/test';
+import type { BrowserContext, Worker } from '@playwright/test';
 import { chromium, test as base } from '@playwright/test';
 
 import manifest from '../manifest.json' with { type: 'json' };
-import { type ExtensionSettings, SETTING_SCHEMAS } from '../src/shared/settings';
+import type { ExtensionSettings } from '../src/shared/settings';
 import test_manifest from './ext/manifest.json' with { type: 'json' };
+import { ExtensionManager } from './utils/extensionmanager';
+import { PageManager } from './utils/pagemanager';
 
 export type { ExtensionSettings };
+export type { PageId } from './utils/pagemanager';
+export { expect } from './utils/pagemanager';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export interface Fixtures {
 	context: BrowserContext;
-	extensionOrigin: string;
-	extensionPage: Page;
-	testWorker: Worker;
-	configureSettings: (settings: Partial<ExtensionSettings>) => Promise<void>;
-	getTabs: () => Promise<chrome.tabs.Tab[]>;
+	extensionManager: ExtensionManager;
+	pageManager: PageManager;
 }
 
 const EXTENSION_SERVICE_WORKER = manifest.background.service_worker;
 const TEST_SERVICE_WORKER = test_manifest.background.service_worker;
 
-export function isExtensionUri(uri: string, service_worker: string = EXTENSION_SERVICE_WORKER): boolean {
-	return uri.split('/').pop() === service_worker;
+export function isExtensionUri(uri: string, serviceWorker: string = EXTENSION_SERVICE_WORKER): boolean {
+	return uri.split('/').pop() === serviceWorker;
 }
 
 async function getExtensionWorker(
@@ -98,66 +99,12 @@ export const test = base.extend<Fixtures>({
 		}
 		await context.close();
 	},
-	extensionOrigin: async ({ context }, use) => {
+	extensionManager: async ({ context }, use) => {
 		const extensionWorker = await getExtensionWorker(context);
-		const extensionUri = extensionWorker.url(); // `chrome-extension://${extensionId}/background.js`;
-		const extensionOrigin = extensionUri.split('/').slice(0, 3).join('/');
-		await use(extensionOrigin);
+		await use(new ExtensionManager(context, extensionWorker));
 	},
-	extensionPage: async ({ context, extensionOrigin }, use) => {
-		const extensionPage =
-			context.pages().find((tab) => tab.url().startsWith(extensionOrigin)) ?? (await context.newPage());
-		if (!extensionPage.url().startsWith(extensionOrigin)) {
-			await extensionPage.goto(`${extensionOrigin}/${manifest.options_page}`);
-		}
-		await use(extensionPage);
-	},
-	testWorker: async ({ context }, use) => {
+	pageManager: async ({ context }, use) => {
 		const testWorker = await getTestWorker(context);
-		await use(testWorker);
-	},
-	configureSettings: async ({ context, extensionPage, extensionOrigin }, use) => {
-		await use(async (settings: Partial<ExtensionSettings>) => {
-			let hasExtensionPage = !extensionPage.isClosed();
-			if (!hasExtensionPage) {
-				extensionPage = await context.newPage();
-				await extensionPage.goto(`${extensionOrigin}/${manifest.options_page}`);
-				await extensionPage.waitForLoadState();
-			}
-			for (const [key, value] of Object.entries(settings)) {
-				if (key.startsWith('_')) {
-					const details = extensionPage.locator('details');
-					if (await details.isVisible()) {
-						if (!(await details.evaluate((el: HTMLDetailsElement) => el.open))) {
-							await details.locator('summary').click();
-						}
-					}
-				}
-				switch (SETTING_SCHEMAS[key as keyof ExtensionSettings].type) {
-					case 'boolean':
-						await extensionPage.locator(`input[name="${key}"]`).setChecked(value as boolean);
-						break;
-					case 'number':
-						await extensionPage.fill(`input[name="${key}"]`, String(value as number));
-						break;
-					case 'choices':
-						await extensionPage.selectOption(`select[name="${key}"]`, String(value), { force: true });
-						break;
-					default:
-						throw new Error(`Unsupported setting type for key: ${key}`);
-				}
-			}
-			if (!hasExtensionPage) {
-				await extensionPage.close();
-			}
-		});
-	},
-	getTabs: async ({ testWorker }, use) => {
-		await use(async () => {
-			const tabs: chrome.tabs.Tab[] = await testWorker.evaluate(async () => {
-				return await chrome.tabs.query({});
-			});
-			return tabs;
-		});
+		await use(new PageManager(context, testWorker));
 	},
 });

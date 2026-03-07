@@ -1,21 +1,19 @@
 import { test } from './fixtures';
-import { expect } from './helpers';
+import { expect } from './fixtures';
 
-test('Options page should load', async ({ context, extensionOrigin }) => {
+test('Options page should load', async ({ context, extensionManager }) => {
 	const page = await context.newPage();
-	await page.goto(`${extensionOrigin}/options.html?context=page`);
+	await page.goto(extensionManager.getOptionsPageUri());
 	await page.waitForLoadState('domcontentloaded');
-	expect(page.url()).toContain('options.html?context=page');
 	const controls = page.locator('form [name]');
 	expect(await controls.count()).toBeGreaterThan(0);
 	await expect(controls.first()).toBeVisible();
 });
 
-test('Popup should load', async ({ context, extensionOrigin }) => {
+test('Popup should load', async ({ context, extensionManager }) => {
 	const page = await context.newPage();
-	await page.goto(`${extensionOrigin}/options.html?context=popup`);
+	await page.goto(extensionManager.getPopupUri());
 	await page.waitForLoadState('domcontentloaded');
-	expect(page.url()).toContain('options.html?context=popup');
 	const controls = page.locator('form [name]');
 	expect(await controls.count()).toBeGreaterThan(0);
 	await expect(controls.first()).toBeVisible();

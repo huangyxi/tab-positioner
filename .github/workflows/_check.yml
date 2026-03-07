@@ -15,6 +15,8 @@ on:
 
 jobs:
   main:
+    env:
+      PLAYWRIGHT_REPORT_DIR: './playwright-report'
     runs-on: ubuntu-latest
     outputs:
       lint_outcome: ${{ steps.lint.outcome }}
@@ -53,6 +55,14 @@ jobs:
       - name: Run Playwright tests
         id: tests
         run: pnpm run test
+      - name: Rename Playwright HTML file
+        run: mv ${{ env.PLAYWRIGHT_REPORT_DIR }}/index.html ${{ env.PLAYWRIGHT_REPORT_DIR }}/playwright-report.html
+      - name: Upload Playwright HTML report
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: ${{ env.PLAYWRIGHT_REPORT_DIR }}/playwright-report.html
+          archive: false
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
@@ -71,9 +81,10 @@ jobs:
           LINT_STATUS="${{ steps.lint.outcome }}"
           TYPECHECK_STATUS="${{ steps.typecheck.outcome }}"
           TESTS_STATUS="${{ steps.tests.outcome }}"
-          if [[ -f "playwright-results.json" ]]; then
-            PASSED=$(jq '.stats.expected' playwright-results.json)
-            FAILED=$(jq '.stats.unexpected' playwright-results.json)
+          PLAYWRIGHT_JSON_FILE="${{ env.PLAYWRIGHT_REPORT_DIR }}/results.json"
+          if [[ -f "${PLAYWRIGHT_JSON_FILE}" ]]; then
+            PASSED=$(jq '.stats.expected' "${PLAYWRIGHT_JSON_FILE}")
+            FAILED=$(jq '.stats.unexpected' "${PLAYWRIGHT_JSON_FILE}")
             TOTAL=$((PASSED + FAILED))
             TESTS_DETAIL="(${PASSED} / ${TOTAL} passed)"
           else

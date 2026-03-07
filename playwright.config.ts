@@ -12,7 +12,7 @@ export default defineConfig({
 		['list'],
 		[ci ? 'github' : 'null'],
 		['html', { open: ci ? 'never' : 'on-failure' }],
-		[ci ? 'json' : 'null', { outputFile: 'playwright-results.json' }],
+		[ci ? 'json' : 'null', { outputFile: 'playwright-report/results.json' }],
 	],
 	use: {
 		trace: 'on-first-retry',
