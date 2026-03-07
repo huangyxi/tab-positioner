@@ -55,11 +55,13 @@ jobs:
       - name: Run Playwright tests
         id: tests
         run: pnpm run test
+      - name: Rename Playwright HTML file
+        run: mv ${{ env.PLAYWRIGHT_REPORT_DIR }}/index.html ${{ env.PLAYWRIGHT_REPORT_DIR }}/playwright-report.html
       - name: Upload Playwright HTML report
         uses: actions/upload-artifact@v7
         with:
-          name: playwright-report.html
-          path: ${{ env.PLAYWRIGHT_REPORT_DIR }}/index.html
+          name: playwright-report
+          path: ${{ env.PLAYWRIGHT_REPORT_DIR }}/playwright-report.html
           archive: false
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
