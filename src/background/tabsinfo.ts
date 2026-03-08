@@ -362,7 +362,7 @@ export class TabsInfo extends SessionSingleton {
 			// Since there is no changeInfo for collapsed state in onUpdated event,
 			// we have to assume that no other new tab is created between collapsing the group and handling the event.
 			if (group.collapsed) {
-				log('error', ' TabsInfo: Group possibly collapsed:', group.id);
+				log('info', ' TabsInfo: Group possibly collapsed:', group.id);
 				const instance = await this.getInstance();
 				instance.lastGroupCollapsedAt = Date.now();
 			}
