@@ -1,4 +1,3 @@
-import { TEST_TIMEOUT_MS } from '../constants';
 import type { ExtensionSettings, Fixtures, PageId } from '../fixtures';
 import { expect, test } from '../fixtures';
 
@@ -8,14 +7,13 @@ async function verifyPopupPosition(
 	expectedIndex: number,
 ) {
 	const { extensionManager, pageManager } = fixtures as Fixtures;
-	const page0 = await pageManager.createPage(0);
 
+	const page0 = await pageManager.createPage(0);
 	await extensionManager.configureSettings(settings);
-	await page0.waitForTimeout(TEST_TIMEOUT_MS);
 
 	const popupPageId: PageId = 'popup';
 	const popup = await pageManager.openPopup(page0, popupPageId);
-	await page0.waitForTimeout(TEST_TIMEOUT_MS);
+	await extensionManager.delayForActionCompletion();
 
 	// Check that tabs are in expected order
 	const expectedOrder: PageId[] = [0];
@@ -50,8 +48,10 @@ test.describe('Popup Behavior', () => {
 		});
 		const page0 = await pageManager.createPage(0);
 		await extensionManager.idleExtensionWorker();
+
 		const popup = await pageManager.openPopup(page0, 1);
-		await page0.waitForTimeout(TEST_TIMEOUT_MS);
+		await extensionManager.delayForActionCompletion();
+
 		await expect(pageManager).toMatchPageIds([1, 0]);
 		if (!popup.isClosed()) await popup.close();
 	});

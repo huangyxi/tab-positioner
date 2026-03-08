@@ -1,4 +1,3 @@
-import { TEST_TIMEOUT_MS } from '../constants';
 import type { ExtensionSettings, Fixtures, PageId } from '../fixtures';
 import { expect, test } from '../fixtures';
 
@@ -23,7 +22,7 @@ async function verifyTabCreation(
 
 	// RE-ACTIVATE after settings page closed
 	await page1.bringToFront();
-	await page1.waitForTimeout(TEST_TIMEOUT_MS);
+	await extensionManager.delayForActionCompletion();
 
 	// test a new page's behavior
 	const newPageId: PageId = 'new';
@@ -37,8 +36,7 @@ async function verifyTabCreation(
 		default:
 			const _exhaustive: never = action;
 	}
-
-	await page1.waitForTimeout(TEST_TIMEOUT_MS);
+	await extensionManager.delayForActionCompletion();
 
 	// We expect the exact URLs in expectedOrder
 	await expect(pageManager).toMatchPageIds(expectedOrder);
@@ -100,15 +98,14 @@ test.describe('Tab Creation Behavior', () => {
 		});
 	});
 
-	test('new_tab_position: after_active', async ({ context, extensionManager, pageManager }) => {
+	test('new_tab_position: after_active', async ({ extensionManager, pageManager }) => {
 		const _page0 = await pageManager.createPage(0);
 		const page1 = await pageManager.createPage(1);
 		const _page2 = await pageManager.createPage(2);
 		await page1.bringToFront();
-		await page1.waitForTimeout(1000);
 		await extensionManager.configureSettings({ new_tab_position: 'after_active' }, true);
 		const newPage = await pageManager.newTab();
-		await page1.waitForTimeout(1000);
+		await extensionManager.delayForActionCompletion();
 		await extensionManager.configureSettings(
 			{
 				new_tab_position: 'default',
@@ -117,14 +114,13 @@ test.describe('Tab Creation Behavior', () => {
 			true,
 		);
 		await pageManager.openLink(newPage, 'new', false);
-		await page1.waitForTimeout(TEST_TIMEOUT_MS);
+		await extensionManager.delayForActionCompletion();
 		await expect(pageManager).toMatchPageIds([
 			0,
 			1,
 			'new',
 			2,
 		]);
-		await page1.waitForTimeout(1000);
 	});
 
 	test('Auto New Tab in the last collapsed group', async ({ context, extensionManager, pageManager }) => {
@@ -138,10 +134,10 @@ test.describe('Tab Creation Behavior', () => {
 		const newPagePromise = context.waitForEvent('page');
 		await pageManager.collapseGroup(groupId);
 		const newPage = await newPagePromise;
-		await page1.waitForTimeout(TEST_TIMEOUT_MS);
+		await extensionManager.delayForActionCompletion();
 		await extensionManager.configureSettings({ foreground_link_position: 'after_active' }, true);
 		await pageManager.openLink(newPage, 'new', false);
-		await page1.waitForTimeout(TEST_TIMEOUT_MS);
+		await extensionManager.delayForActionCompletion();
 		await expect(pageManager).toMatchPageIds([
 			0,
 			1,
@@ -154,8 +150,8 @@ test.describe('Tab Creation Behavior', () => {
 		await extensionManager.configureSettings({ foreground_link_position: 'window_first' });
 		const page0 = await pageManager.createPage(0);
 		await extensionManager.idleExtensionWorker();
-		const page1 = await pageManager.openLink(page0, 1);
-		await page1.waitForTimeout(TEST_TIMEOUT_MS);
+		const _page1 = await pageManager.openLink(page0, 1);
+		await extensionManager.delayForActionCompletion();
 		await expect(pageManager).toMatchPageIds([1, 0]);
 	});
 
@@ -163,8 +159,8 @@ test.describe('Tab Creation Behavior', () => {
 		await extensionManager.configureSettings({ background_link_position: 'window_first' });
 		const page0 = await pageManager.createPage(0);
 		await extensionManager.idleExtensionWorker();
-		const page1 = await pageManager.openLink(page0, 1, true);
-		await page1.waitForTimeout(TEST_TIMEOUT_MS);
+		const _page1 = await pageManager.openLink(page0, 1, true);
+		await extensionManager.delayForActionCompletion();
 		await expect(pageManager).toMatchPageIds([1, 0]);
 	});
 });
