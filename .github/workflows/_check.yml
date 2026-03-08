@@ -59,6 +59,7 @@ jobs:
         if: always()
         run: mv ${{ env.PLAYWRIGHT_REPORT_DIR }}/index.html ${{ env.PLAYWRIGHT_REPORT_DIR }}/playwright-report.html
       - name: Upload Playwright HTML report
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: playwright-report
