@@ -14,12 +14,13 @@ function main() {
 	const apiStorage = api.storage;
 	const apiTabs = api.tabs;
 	const apiWindows = api.windows;
+	const apiTabGroups = api.tabGroups;
 
 	void SyncSettings.startup(apiRuntime); // no await here
 	SyncSettings.registerListeners(listeners, apiRuntime, apiStorage);
 
 	void TabsInfo.startup(apiTabs, apiWindows); // no await here
-	TabsInfo.registerListeners(listeners, apiTabs, apiWindows);
+	TabsInfo.registerListeners(listeners, apiTabs, apiWindows, apiTabGroups);
 
 	// In right order to ensure the listeners in TabsInfo are registered before others.
 	// Subsequent events may fire before earlier ones finish processing if the earlier ones take too long.
