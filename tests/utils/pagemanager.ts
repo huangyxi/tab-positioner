@@ -146,6 +146,17 @@ export class PageManager {
 		});
 	}
 
+	async newTab(): Promise<Page> {
+		const pagePromise = this.context.waitForEvent('page');
+		await this.testWorker.evaluate(async () => {
+			const tab = await chrome.tabs.create({});
+			return tab;
+		});
+		const page = await pagePromise;
+		await page.waitForLoadState();
+		return page;
+	}
+
 	/**
 	 * Creates a new page and navigates to the specified URI.
 	 *
@@ -276,13 +287,13 @@ export class PageManager {
 			async (args) => {
 				const allTabs = await chrome.tabs.query({});
 				const tabsInGroup = await chrome.tabs.query({ groupId: args.groupId });
+				// Mock the behavior of auto-creating a new tab when the last tab in a group is collapsed
+				if (tabsInGroup.length === allTabs.length) {
+					void chrome.tabs.create({});
+				}
 				await chrome.tabGroups.update(args.groupId, {
 					collapsed: true,
 				});
-				// Mock the behavior of auto-creating a new tab when the last tab in a group is collapsed
-				if (tabsInGroup.length === allTabs.length) {
-					await chrome.tabs.create({});
-				}
 			},
 			{ groupId },
 		);

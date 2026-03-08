@@ -100,6 +100,33 @@ test.describe('Tab Creation Behavior', () => {
 		});
 	});
 
+	test('new_tab_position: after_active', async ({ context, extensionManager, pageManager }) => {
+		const _page0 = await pageManager.createPage(0);
+		const page1 = await pageManager.createPage(1);
+		const _page2 = await pageManager.createPage(2);
+		await page1.bringToFront();
+		await page1.waitForTimeout(1000);
+		await extensionManager.configureSettings({ new_tab_position: 'after_active' }, true);
+		const newPage = await pageManager.newTab();
+		await page1.waitForTimeout(1000);
+		await extensionManager.configureSettings(
+			{
+				new_tab_position: 'default',
+				foreground_link_position: 'after_active',
+			},
+			true,
+		);
+		await pageManager.openLink(newPage, 'new', false);
+		await page1.waitForTimeout(TEST_TIMEOUT_MS);
+		await expect(pageManager).toMatchPageIds([
+			0,
+			1,
+			'new',
+			2,
+		]);
+		await page1.waitForTimeout(1000);
+	});
+
 	test('Auto New Tab in the last collapsed group', async ({ context, extensionManager, pageManager }) => {
 		const _page0 = await pageManager.createPage(0);
 		const page1 = await pageManager.createPage(1);
