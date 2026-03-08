@@ -56,6 +56,7 @@ jobs:
         id: tests
         run: pnpm run test
       - name: Rename Playwright HTML file
+        if: always()
         run: mv ${{ env.PLAYWRIGHT_REPORT_DIR }}/index.html ${{ env.PLAYWRIGHT_REPORT_DIR }}/playwright-report.html
       - name: Upload Playwright HTML report
         uses: actions/upload-artifact@v7
