@@ -158,6 +158,18 @@ export class PageManager {
 	}
 
 	/**
+	 * Navigates the given page to the URI corresponding to the specified pageId.
+	 *
+	 * @param page - The page to navigate
+	 * @param pageId - The page identifier to navigate to
+	 */
+	async setPage(page: Page, pageId: PageId): Promise<void> {
+		const uri = pageUri(pageId);
+		await page.goto(uri);
+		await page.waitForLoadState();
+	}
+
+	/**
 	 * Creates a new page and navigates to the specified URI.
 	 *
 	 * @param pageId - The page identifier (number or string)
@@ -165,8 +177,7 @@ export class PageManager {
 	 */
 	async createPage(pageId: PageId): Promise<Page> {
 		const page = await this.context.newPage();
-		await page.goto(pageUri(pageId));
-		await page.waitForLoadState();
+		await this.setPage(page, pageId);
 		return page;
 	}
 

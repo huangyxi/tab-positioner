@@ -106,14 +106,7 @@ test.describe('Tab Creation Behavior', () => {
 		await extensionManager.configureSettings({ new_tab_position: 'after_active' }, true);
 		const newPage = await pageManager.newTab();
 		await extensionManager.delayForActionCompletion();
-		await extensionManager.configureSettings(
-			{
-				new_tab_position: 'default',
-				foreground_link_position: 'after_active',
-			},
-			true,
-		);
-		await pageManager.openLink(newPage, 'new', false);
+		await pageManager.setPage(newPage, 'new');
 		await extensionManager.delayForActionCompletion();
 		await expect(pageManager).toMatchPageIds([
 			0,
@@ -132,12 +125,11 @@ test.describe('Tab Creation Behavior', () => {
 		await page1.bringToFront();
 		await extensionManager.configureSettings({ new_tab_position: 'after_active' }, true);
 		const newPagePromise = context.waitForEvent('page');
+		await extensionManager.delayForActionCompletion();
 		await pageManager.collapseGroup(groupId);
 		const newPage = await newPagePromise;
 		await extensionManager.delayForActionCompletion();
-		await extensionManager.configureSettings({ foreground_link_position: 'after_active' }, true);
-		await pageManager.openLink(newPage, 'new', false);
-		await extensionManager.delayForActionCompletion();
+		await pageManager.setPage(newPage, 'new');
 		await expect(pageManager).toMatchPageIds([
 			0,
 			1,
