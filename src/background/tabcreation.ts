@@ -1,4 +1,8 @@
-import { NEW_PAGE_URIS } from '../shared/constants';
+import {
+	GROUP_COLLAPSED_TAB_CREATION_THRESHOLD_MS,
+	NEW_PAGE_URIS,
+	NEW_TAB_CREATION_DELAY_MS,
+} from '../shared/constants';
 import type { Listeners } from '../shared/listeners';
 import { logClosure } from '../shared/logging';
 import type { TabCreationPositionKey } from '../shared/settings';
@@ -47,13 +51,23 @@ async function createdTabMover(apiTabs: typeof api.tabs, apiWindows: typeof api.
 		}
 		return;
 	}
-	const { setting, settingKey: _, tabBatchThresholdMs } = await getTabCreationSetting(newTab);
-	logger.debug('Tab creation setting:', setting);
+	const { setting, settingKey, tabBatchThresholdMs } = await getTabCreationSetting(newTab);
+	logger.debug('Tab creation setting:', setting, 'setting key:', settingKey);
 	if (setting === 'default') return;
 	const delay = tabsInfo.getCreationDelay();
 	logger.debug('Creation delay:', delay);
 	if (delay < tabBatchThresholdMs) {
 		return;
+	}
+	if (settingKey === 'new_tab_position') {
+		await new Promise((resolve) => setTimeout(resolve, NEW_TAB_CREATION_DELAY_MS));
+		// Handle the case where a new tab is auto-created on collapsing the last tab in a group
+		const delay = tabsInfo.getGroupCollapsedDelay();
+		logger.debug('Group collapsed delay:', delay);
+		if (delay < GROUP_COLLAPSED_TAB_CREATION_THRESHOLD_MS) {
+			logger.info('New tab likely auto-created by collapsing the last group, skipping tab mover');
+			return;
+		}
 	}
 	logger.info('Normal window, moving tab');
 	await tabMover(apiTabs, tabsInfo, tabId, newTab.windowId, setting, newTab.index, hasLoaded);

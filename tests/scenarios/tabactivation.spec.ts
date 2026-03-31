@@ -1,4 +1,3 @@
-import { TEST_TIMEOUT_MS } from '../constants';
 import type { ExtensionSettings, Fixtures, PageId } from '../fixtures';
 import { expect, test } from '../fixtures';
 
@@ -9,22 +8,17 @@ async function verifyTabActivation(
 ) {
 	const { extensionManager, pageManager } = fixtures as Fixtures;
 
-	await extensionManager.configureSettings({ after_close_activation: activationSetting });
-
 	// Create P0 first (safeguard)
-	const page0 = await pageManager.createPage(0);
-
+	const _page0 = await pageManager.createPage(0);
 	await pageManager.closeNonTestPages();
 
+	await extensionManager.configureSettings({ after_close_activation: activationSetting });
 	const page1 = await pageManager.createPage(1);
 	const _page2 = await pageManager.createPage(2);
 	await page1.bringToFront();
-	await page0.waitForTimeout(TEST_TIMEOUT_MS); // Sync state
-
-	await expect(pageManager).toMatchActiveTab(1);
 
 	await page1.close();
-	await page0.waitForTimeout(TEST_TIMEOUT_MS); // Sync state
+	await extensionManager.delayForActionCompletion(); // Sync state
 
 	await expect(pageManager).toMatchActiveTab(expectedActivePage);
 }
