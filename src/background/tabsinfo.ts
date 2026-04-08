@@ -47,6 +47,9 @@ export class TabsInfo extends SessionSingleton {
 	// Used to track if the background worker has been offloaded.
 	private _hasTabActivated = false;
 
+	// Used to track the time of collapsing the current group, which may trigger auto-creating a new tab.
+	private lastGroupCollapsedAt: DateTime = 0;
+
 	/**
 	 * Get the **current** tabs in a window.
 	 * The result is updated immediately after each event, but **before** other events in the event queue.
@@ -126,6 +129,13 @@ export class TabsInfo extends SessionSingleton {
 	 */
 	public hasTabActivated(): boolean {
 		return this._hasTabActivated;
+	}
+
+	/**
+	 * Gets the time difference between the last group collapse and the current time.
+	 */
+	public getGroupCollapsedDelay(): DateTime {
+		return Date.now() - this.lastGroupCollapsedAt;
 	}
 
 	/**
@@ -251,7 +261,12 @@ export class TabsInfo extends SessionSingleton {
 		instance.initialize(normalTabs, recentNormalWindowId);
 	}
 
-	public static registerListeners(listeners: Listeners, apiTabs: typeof api.tabs, apiWindows: typeof api.windows) {
+	public static registerListeners(
+		listeners: Listeners,
+		apiTabs: typeof api.tabs,
+		apiWindows: typeof api.windows,
+		apiTabGroups: typeof api.tabGroups,
+	) {
 		listeners.add(apiTabs.onCreated, async (tab) => {
 			if (tab.id === undefined || tab.id === apiTabs.TAB_ID_NONE) {
 				return;
@@ -342,5 +357,15 @@ export class TabsInfo extends SessionSingleton {
 			},
 			{ windowTypes: ['normal'] },
 		);
+
+		listeners.add(apiTabGroups.onUpdated, async (group) => {
+			// Since there is no changeInfo for collapsed state in onUpdated event,
+			// we have to assume that no other new tab is created between collapsing the group and handling the event.
+			if (group.collapsed) {
+				log('info', ' TabsInfo: Group possibly collapsed:', group.id);
+				const instance = await this.getInstance();
+				instance.lastGroupCollapsedAt = Date.now();
+			}
+		});
 	}
 }

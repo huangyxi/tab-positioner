@@ -4,7 +4,10 @@
 	"name": "Helper Extension",
 	"description": "A helper extension with tabs permission for testing.",
 	"version": "0.1.0",
-	"permissions": ["tabs"],
+	"permissions": [
+		"tabs",
+		"tabGroups"
+	],
 	"background": {
 		"service_worker": "test_service_worker.js",
 		"type": "module"

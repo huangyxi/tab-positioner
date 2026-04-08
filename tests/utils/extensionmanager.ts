@@ -2,6 +2,7 @@ import type { BrowserContext, Page, Worker } from '@playwright/test';
 
 import manifest from '../../manifest.json' with { type: 'json' };
 import { SETTING_SCHEMAS } from '../../src/shared/settings';
+import { TEST_TIMEOUT_MS } from '../constants';
 import type { ExtensionSettings } from '../fixtures';
 import { isExtensionUri } from '../fixtures';
 
@@ -12,6 +13,10 @@ export class ExtensionManager {
 	constructor(context: BrowserContext, extensionWorker: Worker) {
 		this.context = context;
 		this.extensionWorker = extensionWorker;
+	}
+
+	public async delayForActionCompletion(): Promise<void> {
+		await new Promise((resolve) => setTimeout(resolve, TEST_TIMEOUT_MS));
 	}
 
 	private getOrigin(): string {
