@@ -27,7 +27,7 @@ jobs:
           # Need full history for version calculation in in ./utils/gitinfo.ts
           fetch-depth: 0
       - name: Set up pnpm
-        uses: pnpm/action-setup@v5
+        uses: pnpm/action-setup@v6
         with:
           version: 'latest'
       - name: Set up Node.js
