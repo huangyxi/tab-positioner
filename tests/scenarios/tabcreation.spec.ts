@@ -13,17 +13,17 @@ async function verifyTabCreation(
 
 	const _page0 = await pageManager.createPage(0);
 	const page1 = await pageManager.createPage(1);
+	// Open the PAGE2 from PAGE1's background link
+	const _page2 = await pageManager.openLink(page1, 2, true);
 	const _page3 = await pageManager.createPage(3);
 
-	// Open the PAGE2 from PAGE1's background link
 	await page1.bringToFront();
-	const _page2 = await pageManager.openLink(page1, 2, true);
 
 	await extensionManager.configureSettings(settings);
 
 	// RE-ACTIVATE after settings page closed
 	await page1.bringToFront();
-	await page1.waitForTimeout(500);
+	await page1.waitForTimeout(TEST_TIMEOUT_MS);
 
 	// test a new page's behavior
 	const newPageId: PageId = 'new';

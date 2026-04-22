@@ -58,7 +58,7 @@ export class ExtensionManager {
 					await optionsPage.locator(`input[name="${key}"]`).setChecked(value as boolean);
 					break;
 				case 'number':
-					await optionsPage.fill(`input[name="${key}"]`, String(value as number));
+					await optionsPage.fill(`input[name="${key}"]`, String(value));
 					break;
 				case 'choices':
 					await optionsPage.selectOption(`select[name="${key}"]`, String(value), { force: true });
