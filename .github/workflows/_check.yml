@@ -10,8 +10,8 @@ on:
         required: false
     outputs:
       lint_result:
-        description: 'Outcome of the lint step (success, failure, or skipped)'
-        value: ${{ jobs.main.outputs.lint_outcome }}
+        description: 'Result of the lint step (success, failure, or skipped)'
+        value: ${{ jobs.main.outputs.lint_result }}
 
 jobs:
   main:
@@ -19,7 +19,7 @@ jobs:
       PLAYWRIGHT_REPORT_DIR: './playwright-report'
     runs-on: ubuntu-latest
     outputs:
-      lint_outcome: ${{ steps.lint.outcome }}
+      lint_result: ${{ steps.lint.outcome }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
