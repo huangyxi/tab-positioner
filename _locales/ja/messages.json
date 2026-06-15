@@ -14,10 +14,10 @@
 	"status_input_invalid": {
 		"message": "無効な入力です。"
 	},
-	"botton_reset_setting": {
+	"button_reset_setting": {
 		"message": "デフォルトに戻す"
 	},
-	"botton_reset_all": {
+	"button_reset_all": {
 		"message": "すべてデフォルトに戻す"
 	},
 	"summary_advanced_settings": {

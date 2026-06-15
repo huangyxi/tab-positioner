@@ -14,10 +14,10 @@
 	"status_input_invalid": {
 		"message": "잘못된 입력입니다."
 	},
-	"botton_reset_setting": {
+	"button_reset_setting": {
 		"message": "기본값으로 재설정"
 	},
-	"botton_reset_all": {
+	"button_reset_all": {
 		"message": "모두 기본값으로 재설정"
 	},
 	"summary_advanced_settings": {

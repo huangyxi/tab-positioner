@@ -14,10 +14,10 @@
 	"status_input_invalid": {
 		"message": "輸入無效。"
 	},
-	"botton_reset_setting": {
+	"button_reset_setting": {
 		"message": "重設為預設值"
 	},
-	"botton_reset_all": {
+	"button_reset_all": {
 		"message": "全部重設為預設值"
 	},
 	"summary_advanced_settings": {

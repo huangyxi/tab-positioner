@@ -51,7 +51,7 @@ function BooleanSetting({ settingKey, setting }: SettingPair<'boolean'>): JSX.El
 							{_(setting.i18nKey)}
 						</span>
 					</label>
-					<button type="reset" class="reset" {..._t('botton_reset_setting')}></button>
+					<button type="reset" class="reset" {..._t('button_reset_setting')}></button>
 				</div>
 			</form>
 		</>
@@ -80,7 +80,7 @@ function NumberSetting({ settingKey, setting }: SettingPair<'number'>): JSX.Elem
 						max={max}
 						step={step}
 					/>
-					<button type="reset" class="reset" {..._t('botton_reset_setting')}></button>
+					<button type="reset" class="reset" {..._t('button_reset_setting')}></button>
 				</div>
 			</form>
 		</>
@@ -116,7 +116,7 @@ function ChoicesSetting<K extends TypeKey<'choices'>>({ settingKey, setting }: S
 							</option>
 						))}
 					</select>
-					<button type="reset" class="reset" {..._t('botton_reset_setting')}></button>
+					<button type="reset" class="reset" {..._t('button_reset_setting')}></button>
 				</div>
 			</form>
 		</>

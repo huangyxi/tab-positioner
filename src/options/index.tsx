@@ -38,8 +38,8 @@ export default function OptionsPage(): JSX.Element {
 
 						<footer>
 							<div id="status" class="status"></div>
-							<button id="reset-all" type="button" class="reset-all" {..._a('botton_reset_all')}>
-								{_('botton_reset_all')}
+							<button id="reset-all" type="button" class="reset-all" {..._a('button_reset_all')}>
+								{_('button_reset_all')}
 							</button>
 						</footer>
 					</div>

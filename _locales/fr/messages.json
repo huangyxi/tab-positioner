@@ -14,10 +14,10 @@
 	"status_input_invalid": {
 		"message": "Entrée invalide."
 	},
-	"botton_reset_setting": {
+	"button_reset_setting": {
 		"message": "Réinitialiser par défaut"
 	},
-	"botton_reset_all": {
+	"button_reset_all": {
 		"message": "Tout réinitialiser par défaut"
 	},
 	"summary_advanced_settings": {
