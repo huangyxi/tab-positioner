@@ -22,7 +22,7 @@ jobs:
       lint_result: ${{ steps.lint.outcome }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           # Need full history for version calculation in in ./utils/gitinfo.ts
           fetch-depth: 0
