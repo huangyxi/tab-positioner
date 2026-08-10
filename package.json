@@ -28,6 +28,7 @@
 		"@types/node": "^25.9.3",
 		"@typescript-eslint/eslint-plugin": "^8.61.1",
 		"@typescript-eslint/parser": "^8.61.1",
+		"@typescript/native": "npm:typescript@^7.0.2",
 		"@zip.js/zip.js": "^2.8.26",
 		"chrome-types": "^0.1.429",
 		"editorconfig-checker": "^6.1.1",
@@ -43,7 +44,7 @@
 		"stylelint": "^17.13.0",
 		"stylelint-config-standard-scss": "^17.0.0",
 		"tsx": "^4.22.4",
-		"typescript": "^6.0.3",
+		"typescript": "npm:@typescript/typescript6@^6.0.2",
 		"vite": "^8.0.16",
 		"vite-plugin-banner": "^0.8.1",
 		"vite-plugin-istanbul": "^9.0.1"
