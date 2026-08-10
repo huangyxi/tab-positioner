@@ -31,12 +31,7 @@ type SettingChoices<T extends string> = {
 };
 
 export type TabCreationPosition =
-	| typeof DEFAULT_VALUE
-	| 'before_active'
-	| 'after_active'
-	| 'window_first'
-	| 'window_last'
-	| never;
+	typeof DEFAULT_VALUE | 'before_active' | 'after_active' | 'window_first' | 'window_last' | never;
 const TAB_CREATION_POSITION_CHOICES: SettingChoices<TabCreationPosition> = {
 	[DEFAULT_VALUE]: { i18nKey: 'option_default' },
 	before_active: { i18nKey: 'option_before_active_creation' },
